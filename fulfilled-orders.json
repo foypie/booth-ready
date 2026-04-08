@@ -1,0 +1,29 @@
+{
+  "cs_test_a1hPsmcfEYs4KP0tlF1Zq31VvcT614tdWXWm26xrOdoyAQaiKEsE2n3sIN": {
+    "sessionId": "cs_test_a1hPsmcfEYs4KP0tlF1Zq31VvcT614tdWXWm26xrOdoyAQaiKEsE2n3sIN",
+    "customerEmail": "foypie@msn.com",
+    "paymentStatus": "paid",
+    "amountTotal": 2900,
+    "beatSlug": "60s-remix",
+    "beatName": "60s Remix",
+    "beatFile": "60s-Remix.mp3",
+    "licenseCode": "basic",
+    "licenseName": "Basic Lease",
+    "createdAt": "2026-04-08T15:21:25.775Z"
+  },
+  "cs_test_a140WAuerxiA91anm9tlJWOfIHbBgCxlRrQ0QhJD6b2fXAKO0uZCBHQ0Kh": {
+    "sessionId": "cs_test_a140WAuerxiA91anm9tlJWOfIHbBgCxlRrQ0QhJD6b2fXAKO0uZCBHQ0Kh",
+    "customerEmail": "foypie@msn.com",
+    "paymentStatus": "paid",
+    "amountTotal": 2900,
+    "beatSlug": "key-witness",
+    "beatName": "Key Witness",
+    "beatFile": "Key_Witness.mp3",
+    "licenseCode": "basic",
+    "licenseName": "Basic Lease",
+    "emailSentAt": null,
+    "emailError": "RESEND_API_KEY is missing",
+    "createdAt": "2026-04-08T17:59:30.871Z",
+    "updatedAt": "2026-04-08T17:59:33.452Z"
+  }
+}

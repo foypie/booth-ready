@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Order</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b0b0b;
+      color: #f5f5f5;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding-top: 32px;
+    }
+    .card {
+      background: #151515;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 28px;
+    }
+    h1 { margin-top: 0; }
+    p { color: #bdbdbd; line-height: 1.6; }
+    .summary {
+      margin: 24px 0;
+      padding: 18px;
+      border-radius: 16px;
+      background: #101010;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 8px 0;
+      color: #d8d8d8;
+    }
+    .actions { margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap; }
+    a {
+      display: inline-block;
+      padding: 14px 22px;
+      border-radius: 999px;
+      background: #c79a2b;
+      color: #111;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .secondary {
+      background: transparent;
+      color: #e5e5e5;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .fine {
+      font-size: 0.92rem;
+      color: #909090;
+      margin-top: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Your Order</h1>
+      <p>This local version shows the purchased beat and unlocks the source file link after payment is confirmed. For a live store, the next upgrade is signed links, email delivery, and webhook-backed fulfillment.</p>
+      <div class="summary" id="summary">Loading order...</div>
+      <div class="actions" id="actions">
+        <a class="secondary" href="/">Return to Catalog</a>
+      </div>
+      <div class="fine">Tip: when you deploy live, move final delivery behind webhook-based fulfillment and secure download links.</div>
+    </div>
+  </div>
+
+  <script>
+    async function loadOrder() {
+      const params = new URLSearchParams(window.location.search);
+      const sessionId = params.get("session_id");
+      const summary = document.getElementById("summary");
+      const actions = document.getElementById("actions");
+
+      if (!sessionId) {
+        summary.textContent = "No session id found in the URL.";
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/order?session_id=${encodeURIComponent(sessionId)}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          summary.textContent = data.error || "Order not found yet. If you just paid, refresh this page in a few seconds.";
+          return;
+        }
+
+        const amount = data.amountTotal ? `$${(data.amountTotal / 100).toFixed(2)}` : "-";
+
+        summary.innerHTML = `
+          <div class="row"><span>Beat</span><strong>${data.beatName || "-"}</strong></div>
+          <div class="row"><span>License</span><strong>${data.licenseName || "-"}</strong></div>
+          <div class="row"><span>Amount</span><strong>${amount}</strong></div>
+          <div class="row"><span>Email</span><strong>${data.customerEmail || "-"}</strong></div>
+          <div class="row"><span>Status</span><strong>${data.paymentStatus || "-"}</strong></div>
+        `;
+
+        if (data.paymentStatus === "paid" && data.beatFile) {
+          const link = document.createElement("a");
+          link.href = `/audio/${encodeURIComponent(data.beatFile)}`;
+          link.textContent = `Download ${data.beatName}`;
+          actions.prepend(link);
+        }
+      } catch (error) {
+        summary.textContent = "Unable to load order.";
+      }
+    }
+
+    loadOrder();
+  </script>
+</body>
+</html>

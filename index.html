@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Booth Ready</title>
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: #101010;
+      --panel-2: #151515;
+      --text: #f5f5f5;
+      --muted: #b0b0b0;
+      --line: rgba(255,255,255,0.08);
+      --gold: #c79a2b;
+      --gold-2: #ddb445;
+      --max: 1160px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 22px 32px;
+      border-bottom: 1px solid var(--line);
+      background: #0a0a0a;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .logo {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .logo span { color: var(--gold); }
+    nav a {
+      color: #d5d5d5;
+      text-decoration: none;
+      margin-left: 24px;
+      font-size: 1rem;
+    }
+    nav a:hover { color: white; }
+    .hero, .catalog, .licensing, .footer-wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding-left: 32px;
+      padding-right: 32px;
+    }
+    .hero {
+      padding-top: 56px;
+      padding-bottom: 28px;
+    }
+    .hero h1 {
+      font-size: 3.25rem;
+      line-height: 1.05;
+      margin: 0 0 14px;
+      max-width: 780px;
+    }
+    .hero p {
+      color: #c2c2c2;
+      font-size: 1.18rem;
+      line-height: 1.7;
+      max-width: 780px;
+      margin: 0;
+    }
+    .section-title {
+      font-size: 2.25rem;
+      margin: 0 0 10px;
+    }
+    .section-subtitle {
+      color: #a7a7a7;
+      margin: 0 0 28px;
+      line-height: 1.6;
+    }
+    .catalog { padding-top: 28px; padding-bottom: 40px; }
+    .status-banner {
+      margin: 18px 0 0;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      color: #d4d4d4;
+      display: none;
+    }
+    .status-banner.show { display: block; }
+    .beat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(305px, 1fr));
+      gap: 24px;
+    }
+    .beat-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .beat-card h3 {
+      margin: 0;
+      font-size: 1.95rem;
+    }
+    .meta {
+      color: var(--muted);
+      margin: 0 0 4px;
+      line-height: 1.5;
+    }
+    audio {
+      width: 100%;
+      margin-top: 2px;
+    }
+    .license-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: end;
+      margin-top: 4px;
+    }
+    .field-label {
+      display: block;
+      font-size: 0.92rem;
+      color: #cfcfcf;
+      margin-bottom: 8px;
+    }
+    .license-select {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #171717;
+      color: white;
+      padding: 14px 14px;
+      font-size: 1rem;
+    }
+    .price-pill {
+      min-width: 110px;
+      text-align: center;
+      border-radius: 14px;
+      background: #171717;
+      border: 1px solid var(--line);
+      color: var(--gold-2);
+      font-weight: 700;
+      padding: 14px 14px;
+      font-size: 1.15rem;
+    }
+    .license-copy {
+      font-size: 0.92rem;
+      color: #9f9f9f;
+      line-height: 1.5;
+      min-height: 42px;
+    }
+    .buy-button {
+      width: 100%;
+      border: none;
+      border-radius: 999px;
+      padding: 18px 20px;
+      font-size: 1.08rem;
+      font-weight: 700;
+      background: var(--gold);
+      color: #111;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+      margin-top: auto;
+    }
+    .buy-button:hover { transform: translateY(-1px); opacity: 0.96; }
+    .buy-button:disabled {
+      opacity: 0.65;
+      cursor: wait;
+      transform: none;
+    }
+    .licensing {
+      padding-top: 12px;
+      padding-bottom: 56px;
+    }
+    .license-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+    .license-box {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .license-box h4 {
+      margin: 0 0 8px;
+      font-size: 1.2rem;
+    }
+    .license-box p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.98rem;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 0 60px;
+      color: #8b8b8b;
+      text-align: center;
+    }
+    .footer-links {
+      margin-top: 10px;
+      font-size: 0.95rem;
+    }
+    .footer-links a {
+      color: #bdbdbd;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+    @media (max-width: 700px) {
+      header {
+        padding: 18px 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .hero, .catalog, .licensing, .footer-wrap {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+      .hero h1 {
+        font-size: 2.45rem;
+      }
+      .license-row {
+        grid-template-columns: 1fr;
+      }
+      .price-pill {
+        min-width: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Booth<span>Ready</span></div>
+    <nav>
+      <a href="#catalog">Browse Catalog</a>
+      <a href="#licensing">Licensing</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Premium beats for serious artists.</h1>
+    <p>
+      Stream the catalog, preview each beat, choose your license tier, and check out instantly with Stripe.
+      This version is built as a scalable beat store with one central catalog and expandable license options.
+    </p>
+    <div class="status-banner" id="statusBanner"></div>
+  </section>
+
+  <section class="catalog" id="catalog">
+    <h2 class="section-title">Beat Catalog</h2>
+    <p class="section-subtitle">
+      Choose a beat, pick a license, and launch secure checkout.
+    </p>
+    <div class="beat-grid" id="beatGrid"></div>
+  </section>
+
+  <section class="licensing" id="licensing">
+    <h2 class="section-title">Licensing</h2>
+    <p class="section-subtitle">
+      Clear pricing now. Delivery and advanced usage terms can be tightened further when you deploy live.
+    </p>
+    <div class="license-grid" id="licenseGrid"></div>
+  </section>
+
+  <div class="footer-wrap">
+    <footer>
+      <div>Booth Ready © 2026</div>
+      <div class="footer-links">
+        <a href="/success.html">Success</a>
+        <a href="/cancel.html">Cancel</a>
+        <a href="/order.html">Order Lookup</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/script.js"></script>
+</body>
+</html>
