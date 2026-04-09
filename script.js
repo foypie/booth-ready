@@ -20,20 +20,22 @@ function renderCatalog() {
     const card = document.createElement('article');
     card.className = 'card';
 
+    const licenseOptions = licenses
+      .map(
+        (l) =>
+          `<option value="${l.code}">${l.name} — ${formatPrice(l.price)}</option>`
+      )
+      .join('');
+
     card.innerHTML = `
       <h3>${beat.name}</h3>
       <p>${beat.meta || ''}</p>
 
-      <audio controls src="/audio/${encodeURIComponent(beat.file)}"></audio>
+      <audio controls preload="metadata" src="/audio/${encodeURIComponent(beat.file)}"></audio>
 
       <label>License</label>
       <select class="license-select">
-        ${licenses
-          .map(
-            (l) =>
-              `<option value="${l.code}">${l.name} — ${formatPrice(l.price)}</option>`
-          )
-          .join('')}
+        ${licenseOptions}
       </select>
 
       <button class="buy-btn">Buy Now</button>
@@ -74,13 +76,13 @@ function renderCatalog() {
   });
 }
 
-async function loadData() {
+async function loadCatalog() {
   try {
     const res = await fetch(`${API_BASE}/api/catalog`);
     const data = await res.json();
 
-    catalog = data.catalog;
-    licenses = data.licenses;
+    catalog = data.catalog || [];
+    licenses = data.licenses || [];
 
     renderCatalog();
   } catch (err) {
@@ -90,4 +92,4 @@ async function loadData() {
   }
 }
 
-loadData();
+window.addEventListener('DOMContentLoaded', loadCatalog);
