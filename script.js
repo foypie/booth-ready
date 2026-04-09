@@ -21,17 +21,17 @@ function renderCatalog() {
     card.className = 'card';
 
     card.innerHTML = `
-      <h3>${beat.title}</h3>
-      <p>${beat.description || ''}</p>
+      <h3>${beat.name}</h3>
+      <p>${beat.meta || ''}</p>
 
-      <audio controls preload="metadata" src="/audio/${encodeURIComponent(beat.file)}"></audio>
+      <audio controls src="/audio/${encodeURIComponent(beat.file)}"></audio>
 
       <label>License</label>
       <select class="license-select">
         ${licenses
           .map(
             (l) =>
-              `<option value="${l.id}">${l.name} — ${formatPrice(l.price)}</option>`
+              `<option value="${l.code}">${l.name} — ${formatPrice(l.price)}</option>`
           )
           .join('')}
       </select>
@@ -43,7 +43,7 @@ function renderCatalog() {
     const button = card.querySelector('.buy-btn');
 
     button.addEventListener('click', async () => {
-      const licenseId = select.value;
+      const licenseCode = select.value;
 
       try {
         const res = await fetch(`${API_BASE}/create-checkout-session`, {
@@ -52,8 +52,8 @@ function renderCatalog() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            beatId: beat.id,
-            licenseId,
+            beatSlug: beat.slug,
+            licenseCode,
           }),
         });
 
@@ -76,13 +76,11 @@ function renderCatalog() {
 
 async function loadData() {
   try {
-    const [catalogRes, licensesRes] = await Promise.all([
-      fetch(`${API_BASE}/api/catalog`),
-      fetch(`${API_BASE}/api/licenses`),
-    ]);
+    const res = await fetch(`${API_BASE}/api/catalog`);
+    const data = await res.json();
 
-    catalog = await catalogRes.json();
-    licenses = await licensesRes.json();
+    catalog = data.catalog;
+    licenses = data.licenses;
 
     renderCatalog();
   } catch (err) {
