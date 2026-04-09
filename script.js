@@ -18,99 +18,78 @@ function renderCatalog() {
 
   catalog.forEach((beat) => {
     const card = document.createElement('article');
-    card.className = 'beat-card';
-
-    const licenseOptions = licenses
-      .map(
-        (license) => `
-          <option value="${license.code}">
-            ${license.name} — ${formatPrice(license.price)}
-          </option>
-        `
-      )
-      .join('');
+    card.className = 'card';
 
     card.innerHTML = `
-      <h3>${beat.name}</h3>
-      <p>${beat.meta}</p>
-      <audio controls preload="none" src="/audio/${encodeURIComponent(beat.file)}"></audio>
+      <h3>${beat.title}</h3>
+      <p>${beat.description || ''}</p>
 
-      <label for="license-${beat.slug}">License</label>
-      <select id="license-${beat.slug}">
-        ${licenseOptions}
+      <audio controls preload="metadata" src="/audio/${encodeURIComponent(beat.file)}"></audio>
+
+      <label>License</label>
+      <select class="license-select">
+        ${licenses
+          .map(
+            (l) =>
+              `<option value="${l.id}">${l.name} — ${formatPrice(l.price)}</option>`
+          )
+          .join('')}
       </select>
 
-      <button type="button" data-beat-slug="${beat.slug}">
-        Buy Now
-      </button>
+      <button class="buy-btn">Buy Now</button>
     `;
 
-    const button = card.querySelector('button');
+    const select = card.querySelector('.license-select');
+    const button = card.querySelector('.buy-btn');
+
     button.addEventListener('click', async () => {
-      const select = card.querySelector(`#license-${beat.slug}`);
-      await checkout(beat.slug, select.value, button);
+      const licenseId = select.value;
+
+      try {
+        const res = await fetch(`${API_BASE}/create-checkout-session`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            beatId: beat.id,
+            licenseId,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          alert('Checkout failed');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error connecting to checkout');
+      }
     });
 
     container.appendChild(card);
   });
 }
 
-async function loadCatalog() {
-  const container = document.getElementById('catalog');
-  if (!container) return;
-
+async function loadData() {
   try {
-    const res = await fetch(`${API_BASE}/api/catalog`);
-    if (!res.ok) {
-      throw new Error(`Catalog request failed: ${res.status}`);
-    }
+    const [catalogRes, licensesRes] = await Promise.all([
+      fetch(`${API_BASE}/api/catalog`),
+      fetch(`${API_BASE}/api/licenses`),
+    ]);
 
-    const data = await res.json();
-    catalog = Array.isArray(data.catalog) ? data.catalog : [];
-    licenses = Array.isArray(data.licenses) ? data.licenses : [];
-
-    if (!catalog.length || !licenses.length) {
-      throw new Error('Catalog payload was empty.');
-    }
+    catalog = await catalogRes.json();
+    licenses = await licensesRes.json();
 
     renderCatalog();
   } catch (err) {
-    console.error('Catalog load error:', err);
-    container.innerHTML = '<p style="color:red;">Failed to load catalog</p>';
+    console.error(err);
+    document.getElementById('catalog').innerHTML =
+      '<p style="color:red;">Failed to load catalog</p>';
   }
 }
 
-async function checkout(beatSlug, licenseCode, button) {
-  const originalText = button.textContent;
-
-  try {
-    button.disabled = true;
-    button.textContent = 'Redirecting...';
-
-    const res = await fetch(`${API_BASE}/create-checkout-session`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ beatSlug, licenseCode }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.error || 'Checkout failed');
-    }
-
-    if (data.url) {
-      window.location.href = data.url;
-      return;
-    }
-
-    throw new Error('No checkout URL returned.');
-  } catch (err) {
-    console.error('Checkout error:', err);
-    alert(err.message || 'Checkout failed');
-    button.disabled = false;
-    button.textContent = originalText;
-  }
-}
-
-window.addEventListener('DOMContentLoaded', loadCatalog);
+loadData();
