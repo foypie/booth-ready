@@ -42,84 +42,12 @@ function shortLicenseName(license) {
   return license?.name || 'License';
 }
 
-function updateSectionHeading() {
-  const posterHead = document.querySelector('.poster-head');
-  if (!posterHead) return;
-  const eyebrow = posterHead.querySelector('.eyebrow');
-  const title = posterHead.querySelector('h2');
-  if (eyebrow) eyebrow.textContent = 'LATEST BEATS';
-  if (title) title.textContent = 'READY FOR BARS';
-}
-
-function updateRightRailCopy() {
-  const builtCopy = document.querySelector('.built-copy');
-  if (!builtCopy) return;
-
-  builtCopy.innerHTML = `
-    <div class="red-swipe"></div>
-    <p>CRATE DIGGING.<br>HARD DRUMS.</p>
-    <strong>BOOM BAP.</strong>
-    <span>MADE FOR EMCEES.<br>MADE FOR DEEJAYS.</span>
-  `;
-}
-
-function removeLowerStripArtifacts() {
-  const selectors = [
-    '.manifesto-note',
-    '.lower-right-note',
-    '.respect-note',
-    '.bottom-strip-note'
-  ];
-
-  selectors.forEach((selector) => {
-    document.querySelectorAll(selector).forEach((node) => node.remove());
-  });
-
-  document.querySelectorAll('.manifesto-band').forEach((band) => {
-    const children = Array.from(band.children);
-    if (children.length > 2) {
-      children.slice(2).forEach((node) => node.remove());
-    }
-    band.style.gridTemplateColumns = '180px minmax(0,1fr)';
-    band.style.overflow = 'hidden';
-  });
-}
-
-
-function moveFounderPhotoToRightRail() {
-  if (document.querySelector('.founder-rail-card')) return;
-
-  const rail = document.querySelector('.poster-side');
-  const stayPanel = Array.from(document.querySelectorAll('.poster-side > *'))
-    .find((node) => (node.textContent || '').toLowerCase().includes('stay connected'));
-
-  const founderPhotoWrap = document.querySelector('.manifesto-photo');
-  const founderImg = founderPhotoWrap ? founderPhotoWrap.querySelector('img') : null;
-
-  if (!rail || !stayPanel || !founderImg) return;
-
-  const card = document.createElement('section');
-  card.className = 'founder-rail-card';
-
-  card.innerHTML = `
-    <img src="${founderImg.getAttribute('src')}" alt="Mista Foy - Booth Ready">
-    <div class="founder-rail-meta">
-      <strong>MISTA FOY</strong>
-      <span>BOOTH READY</span>
-    </div>
-  `;
-
-  rail.insertBefore(card, stayPanel);
-  founderPhotoWrap.classList.add('founder-photo-moved');
-
-  const band = founderPhotoWrap.closest('.manifesto-band');
-  if (band) band.classList.add('single-slogan-strip');
-}
-
 function renderLicenses() {
   const grid = document.getElementById('licenseGrid');
   if (!grid) return;
+
   grid.innerHTML = '';
+
   licenses.forEach((license) => {
     const box = document.createElement('article');
     box.className = 'license-box';
@@ -135,10 +63,12 @@ function renderLicenses() {
 function hashString(input) {
   const str = String(input || '');
   let hash = 0;
+
   for (let i = 0; i < str.length; i += 1) {
     hash = (hash << 5) - hash + str.charCodeAt(i);
     hash |= 0;
   }
+
   return Math.abs(hash);
 }
 
@@ -157,19 +87,28 @@ function getBeatKey(beat) {
 
 function getCoverUrl(beat, index) {
   const key = getBeatKey(beat);
-  if (key && COVER_MANIFEST[key]) return COVER_MANIFEST[key];
+
+  if (key && COVER_MANIFEST[key]) {
+    return COVER_MANIFEST[key];
+  }
+
   if (COVER_POOL.length > 0) {
-    const poolIndex = key ? hashString(key) % COVER_POOL.length : index % COVER_POOL.length;
+    const poolIndex = key
+      ? hashString(key) % COVER_POOL.length
+      : index % COVER_POOL.length;
     return COVER_POOL[poolIndex];
   }
+
   return null;
 }
 
 function getArtBackground(beat, index) {
   const coverUrl = getCoverUrl(beat, index);
+
   if (!coverUrl) {
     return 'linear-gradient(135deg, rgba(76,35,18,.92), rgba(10,8,7,.95))';
   }
+
   return `linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.10)), url("${coverUrl}") center/cover`;
 }
 
@@ -179,9 +118,11 @@ function getWaveformUrl(beat) {
 
 async function launchCheckout(beat, licenseCode, triggerButton) {
   const originalHTML = triggerButton.innerHTML;
+
   triggerButton.disabled = true;
   triggerButton.classList.add('is-loading');
   triggerButton.innerHTML = `<span class="price-option-price">...</span><span class="price-option-name">Opening</span>`;
+
   try {
     const res = await fetch(`${API_BASE}/create-checkout-session`, {
       method: 'POST',
@@ -191,11 +132,14 @@ async function launchCheckout(beat, licenseCode, triggerButton) {
         licenseCode,
       }),
     });
+
     const data = await res.json();
+
     if (data.url) {
       window.location.href = data.url;
       return;
     }
+
     alert(data.error || 'Checkout failed');
   } catch (err) {
     console.error(err);
@@ -215,7 +159,10 @@ function bindWaveformPlayer(card) {
   const durationEl = card.querySelector('.preview-time-duration');
   const waveformHit = card.querySelector('.preview-wave-hit');
   const waveformImg = card.querySelector('.preview-wave');
-  if (!audio || !playButton || !progress || !currentTimeEl || !durationEl || !waveformHit) return;
+
+  if (!audio || !playButton || !progress || !currentTimeEl || !durationEl || !waveformHit) {
+    return;
+  }
 
   waveformImg.addEventListener('error', () => {
     waveformImg.src = DEFAULT_WAVEFORM;
@@ -232,6 +179,7 @@ function bindWaveformPlayer(card) {
     const duration = audio.duration || 0;
     const current = audio.currentTime || 0;
     const ratio = duration > 0 ? (current / duration) * 100 : 0;
+
     progress.style.width = `${ratio}%`;
     currentTimeEl.textContent = formatTime(current);
     durationEl.textContent = formatTime(duration);
@@ -252,6 +200,7 @@ function bindWaveformPlayer(card) {
   waveformHit.addEventListener('click', (event) => {
     const rect = waveformHit.getBoundingClientRect();
     const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+
     if (Number.isFinite(audio.duration) && audio.duration > 0) {
       audio.currentTime = ratio * audio.duration;
       syncUI();
@@ -269,10 +218,14 @@ function bindWaveformPlayer(card) {
 
 function bindViewAllButton() {
   const button = document.querySelector('.view-all');
+  const grid = document.getElementById('beatGrid');
   const main = document.querySelector('.poster-main');
-  if (!button || !main) return;
+
+  if (!button || !grid || !main) return;
+
   button.setAttribute('type', 'button');
   button.setAttribute('aria-label', 'View all beats');
+
   button.addEventListener('click', () => {
     main.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
@@ -281,44 +234,62 @@ function bindViewAllButton() {
 function renderCatalog() {
   const container = document.getElementById('beatGrid');
   if (!container) return;
+
   container.innerHTML = '';
 
   catalog.forEach((beat, index) => {
     const card = document.createElement('article');
     card.className = 'beat-card';
+
     const art = getArtBackground(beat, index);
     const waveformUrl = getWaveformUrl(beat);
 
-    const priceButtons = licenses.map((license) => `
-      <button
-        class="price-option"
-        type="button"
-        data-license="${license.code}"
-        aria-label="Buy ${beat.name} - ${license.name} for ${formatPrice(license.price)}"
-      >
-        <span class="price-option-price">${formatPrice(license.price)}</span>
-        <span class="price-option-name">${shortLicenseName(license)}</span>
-      </button>
-    `).join('');
+    const priceButtons = licenses
+      .map((license) => `
+          <button
+            class="price-option"
+            type="button"
+            data-license="${license.code}"
+            aria-label="Buy ${beat.name} - ${license.name} for ${formatPrice(license.price)}"
+          >
+            <span class="price-option-price">${formatPrice(license.price)}</span>
+            <span class="price-option-name">${shortLicenseName(license)}</span>
+          </button>
+        `)
+      .join('');
 
     card.innerHTML = `
       <div class="beat-art" style='--art:${art};'></div>
+
       <h3 class="beat-title">${beat.name}</h3>
       <p class="beat-subtitle">${beat.meta || ''}</p>
+
       <div class="preview-player">
         <button class="preview-play" type="button" aria-label="Play preview">▶</button>
+
         <div class="preview-wave-wrap">
           <div class="preview-progress"></div>
-          <img class="preview-wave" src="${waveformUrl}" alt="${beat.name} waveform" />
+          <img
+            class="preview-wave"
+            src="${waveformUrl}"
+            alt="${beat.name} waveform"
+          />
           <button class="preview-wave-hit" type="button" aria-label="Seek preview"></button>
         </div>
+
         <div class="preview-times">
           <span class="preview-time-current">0:00</span>
           <span class="preview-time-sep">/</span>
           <span class="preview-time-duration">0:00</span>
         </div>
-        <audio class="preview-audio" preload="metadata" src="/audio/${encodeURIComponent(beat.file)}"></audio>
+
+        <audio
+          class="preview-audio"
+          preload="metadata"
+          src="/audio/${encodeURIComponent(beat.file)}"
+        ></audio>
       </div>
+
       <div class="price-button-row">
         ${priceButtons}
       </div>
@@ -335,18 +306,16 @@ function renderCatalog() {
   });
 
   bindViewAllButton();
-  updateSectionHeading();
-  updateRightRailCopy();
-  removeLowerStripArtifacts();
-  moveFounderPhotoToRightRail();
 }
 
 async function loadCatalog() {
   try {
     const res = await fetch(`${API_BASE}/api/catalog`);
     const data = await res.json();
+
     catalog = data.catalog || [];
     licenses = data.licenses || [];
+
     renderCatalog();
     renderLicenses();
   } catch (err) {
@@ -361,9 +330,5 @@ async function loadCatalog() {
 
 window.addEventListener('DOMContentLoaded', () => {
   bindViewAllButton();
-  updateSectionHeading();
-  updateRightRailCopy();
-  removeLowerStripArtifacts();
-  moveFounderPhotoToRightRail();
   loadCatalog();
 });

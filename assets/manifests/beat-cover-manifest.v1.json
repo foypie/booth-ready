@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "source": "cut from approved boom bap Booth Ready concept homepage mockup",
+  "covers": {
+    "60s-remix": {
+      "master": "/assets/approved-covers/master/60s-remix.png",
+      "web": "/assets/approved-covers/web/60s-remix.webp",
+      "waveform": "/assets/waveforms/60s-remix-waveform.png"
+    },
+    "60s": {
+      "master": "/assets/approved-covers/master/60s.png",
+      "web": "/assets/approved-covers/web/60s.webp",
+      "waveform": "/assets/waveforms/60s-waveform.png"
+    },
+    "black-shuga": {
+      "master": "/assets/approved-covers/master/black-shuga.png",
+      "web": "/assets/approved-covers/web/black-shuga.webp",
+      "waveform": "/assets/waveforms/black-shuga-waveform.png"
+    },
+    "epic": {
+      "master": "/assets/approved-covers/master/epic.png",
+      "web": "/assets/approved-covers/web/epic.webp",
+      "waveform": "/assets/waveforms/epic-waveform.png"
+    },
+    "key-witness": {
+      "master": "/assets/approved-covers/master/key-witness.png",
+      "web": "/assets/approved-covers/web/key-witness.webp",
+      "waveform": "/assets/waveforms/key-witness-waveform.png"
+    },
+    "moonstruck": {
+      "master": "/assets/approved-covers/master/moonstruck.png",
+      "web": "/assets/approved-covers/web/moonstruck.webp",
+      "waveform": "/assets/waveforms/moonstruck-waveform.png"
+    },
+    "mozee-along": {
+      "master": "/assets/approved-covers/master/mozee-along.png",
+      "web": "/assets/approved-covers/web/mozee-along.webp",
+      "waveform": "/assets/waveforms/mozee-along-waveform.png"
+    },
+    "widgets": {
+      "master": "/assets/approved-covers/master/widgets.png",
+      "web": "/assets/approved-covers/web/widgets.webp",
+      "waveform": "/assets/waveforms/widgets-waveform.png"
+    }
+  },
+  "defaultWaveform": "/assets/waveforms/default-waveform.png"
+}

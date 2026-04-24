@@ -1,0 +1,152 @@
+{
+  "beats": [
+    {
+      "slug": "60s-remix",
+      "title": "60'S REMIX",
+      "displayTitle": "60's Remix",
+      "bpm": 92,
+      "key": "A Minor",
+      "genre": "Boom Bap",
+      "mood": "Vintage Flip",
+      "leasePrice": 29.99,
+      "premiumPrice": 79.99,
+      "exclusivePrice": 299.99,
+      "audioSrc": "/audio/60s-Remix.mp3",
+      "coverWeb": "/assets/approved-covers/web/60s-remix.webp",
+      "coverMaster": "/assets/approved-covers/master/60s-remix.png",
+      "waveformImage": "/assets/waveforms/60s-remix-waveform.png"
+    },
+    {
+      "slug": "60s",
+      "title": "60'S",
+      "displayTitle": "60's",
+      "bpm": 136,
+      "key": "D Minor",
+      "genre": "Boom Bap",
+      "mood": "Crate Energy",
+      "leasePrice": 29.99,
+      "premiumPrice": 79.99,
+      "exclusivePrice": 299.99,
+      "audioSrc": "/audio/60s.mp3",
+      "coverWeb": "/assets/approved-covers/web/60s.webp",
+      "coverMaster": "/assets/approved-covers/master/60s.png",
+      "waveformImage": "/assets/waveforms/60s-waveform.png"
+    },
+    {
+      "slug": "black-shuga",
+      "title": "BLACK SHUGA",
+      "displayTitle": "Black Shuga",
+      "bpm": 124,
+      "key": "C# Minor",
+      "genre": "Boom Bap",
+      "mood": "Soulful Grit",
+      "leasePrice": 29.99,
+      "premiumPrice": 79.99,
+      "exclusivePrice": 299.99,
+      "audioSrc": "/audio/Black_Shuga.mp3",
+      "coverWeb": "/assets/approved-covers/web/black-shuga.webp",
+      "coverMaster": "/assets/approved-covers/master/black-shuga.png",
+      "waveformImage": "/assets/waveforms/black-shuga-waveform.png"
+    },
+    {
+      "slug": "epic",
+      "title": "EPIC",
+      "displayTitle": "Epic",
+      "bpm": 100,
+      "key": "E Minor",
+      "genre": "Boom Bap",
+      "mood": "Cinematic",
+      "leasePrice": 29.99,
+      "premiumPrice": 79.99,
+      "exclusivePrice": 299.99,
+      "audioSrc": "/audio/Epic.mp3",
+      "coverWeb": "/assets/approved-covers/web/epic.webp",
+      "coverMaster": "/assets/approved-covers/master/epic.png",
+      "waveformImage": "/assets/waveforms/epic-waveform.png"
+    },
+    {
+      "slug": "key-witness",
+      "title": "KEY WITNESS",
+      "displayTitle": "Key Witness",
+      "bpm": 86,
+      "key": "B Minor",
+      "genre": "Boom Bap",
+      "mood": "Noir Tension",
+      "leasePrice": 29.99,
+      "premiumPrice": 79.99,
+      "exclusivePrice": 299.99,
+      "audioSrc": "/audio/Key_Witness.mp3",
+      "coverWeb": "/assets/approved-covers/web/key-witness.webp",
+      "coverMaster": "/assets/approved-covers/master/key-witness.png",
+      "waveformImage": "/assets/waveforms/key-witness-waveform.png"
+    },
+    {
+      "slug": "moonstruck",
+      "title": "MOONSTRUCK",
+      "displayTitle": "Moonstruck",
+      "bpm": 92,
+      "key": "A Minor",
+      "genre": "Boom Bap",
+      "mood": "Night Soul",
+      "leasePrice": 29.99,
+      "premiumPrice": 79.99,
+      "exclusivePrice": 299.99,
+      "audioSrc": "/audio/Moonstruck.mp3",
+      "coverWeb": "/assets/approved-covers/web/moonstruck.webp",
+      "coverMaster": "/assets/approved-covers/master/moonstruck.png",
+      "waveformImage": "/assets/waveforms/moonstruck-waveform.png"
+    },
+    {
+      "slug": "mozee-along",
+      "title": "MOZEE ALONG",
+      "displayTitle": "Mozee Along",
+      "bpm": 140,
+      "key": "G Minor",
+      "genre": "Boom Bap",
+      "mood": "Street Ride",
+      "leasePrice": 29.99,
+      "premiumPrice": 79.99,
+      "exclusivePrice": 299.99,
+      "audioSrc": "/audio/Mozee_Along.mp3",
+      "coverWeb": "/assets/approved-covers/web/mozee-along.webp",
+      "coverMaster": "/assets/approved-covers/master/mozee-along.png",
+      "waveformImage": "/assets/waveforms/mozee-along-waveform.png"
+    },
+    {
+      "slug": "widgets",
+      "title": "WIDGETS",
+      "displayTitle": "Widgets",
+      "bpm": 150,
+      "key": "F# Minor",
+      "genre": "Boom Bap",
+      "mood": "Mechanical Knock",
+      "leasePrice": 29.99,
+      "premiumPrice": 79.99,
+      "exclusivePrice": 299.99,
+      "audioSrc": "/audio/Widgets.mp3",
+      "coverWeb": "/assets/approved-covers/web/widgets.webp",
+      "coverMaster": "/assets/approved-covers/master/widgets.png",
+      "waveformImage": "/assets/waveforms/widgets-waveform.png"
+    }
+  ],
+  "licenses": [
+    {
+      "slug": "basic",
+      "title": "Basic Lease",
+      "price": 29.99,
+      "description": "MP3 delivery. Independent release ready."
+    },
+    {
+      "slug": "premium",
+      "title": "Premium Lease",
+      "price": 79.99,
+      "description": "MP3 + WAV. Better for serious release prep."
+    },
+    {
+      "slug": "exclusive",
+      "title": "Exclusive Rights",
+      "price": 299.99,
+      "description": "Take the beat off the market."
+    }
+  ]
+}

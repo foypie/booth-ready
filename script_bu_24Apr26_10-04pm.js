@@ -85,37 +85,6 @@ function removeLowerStripArtifacts() {
   });
 }
 
-
-function moveFounderPhotoToRightRail() {
-  if (document.querySelector('.founder-rail-card')) return;
-
-  const rail = document.querySelector('.poster-side');
-  const stayPanel = Array.from(document.querySelectorAll('.poster-side > *'))
-    .find((node) => (node.textContent || '').toLowerCase().includes('stay connected'));
-
-  const founderPhotoWrap = document.querySelector('.manifesto-photo');
-  const founderImg = founderPhotoWrap ? founderPhotoWrap.querySelector('img') : null;
-
-  if (!rail || !stayPanel || !founderImg) return;
-
-  const card = document.createElement('section');
-  card.className = 'founder-rail-card';
-
-  card.innerHTML = `
-    <img src="${founderImg.getAttribute('src')}" alt="Mista Foy - Booth Ready">
-    <div class="founder-rail-meta">
-      <strong>MISTA FOY</strong>
-      <span>BOOTH READY</span>
-    </div>
-  `;
-
-  rail.insertBefore(card, stayPanel);
-  founderPhotoWrap.classList.add('founder-photo-moved');
-
-  const band = founderPhotoWrap.closest('.manifesto-band');
-  if (band) band.classList.add('single-slogan-strip');
-}
-
 function renderLicenses() {
   const grid = document.getElementById('licenseGrid');
   if (!grid) return;
@@ -338,7 +307,6 @@ function renderCatalog() {
   updateSectionHeading();
   updateRightRailCopy();
   removeLowerStripArtifacts();
-  moveFounderPhotoToRightRail();
 }
 
 async function loadCatalog() {
@@ -364,6 +332,5 @@ window.addEventListener('DOMContentLoaded', () => {
   updateSectionHeading();
   updateRightRailCopy();
   removeLowerStripArtifacts();
-  moveFounderPhotoToRightRail();
   loadCatalog();
 });

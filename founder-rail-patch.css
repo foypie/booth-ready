@@ -1,0 +1,52 @@
+/* Booth Ready — Safe Founder Rail Patch
+   Add this file AFTER styles.css in index.html.
+   It does not replace your current CSS.
+*/
+
+.founder-rail-card {
+  background: #0f0a08;
+  border: 2px solid rgba(119, 52, 27, 0.66);
+  color: #f4ecde;
+  box-shadow: 0 18px 30px rgba(0,0,0,.22);
+  overflow: hidden;
+}
+
+.founder-rail-card img {
+  width: 100%;
+  display: block;
+  aspect-ratio: 1 / 0.82;
+  object-fit: cover;
+  object-position: center 36%;
+  filter: saturate(.92) contrast(1.04) brightness(.86);
+}
+
+.founder-rail-meta {
+  padding: 10px 12px 12px;
+  border-top: 1px solid rgba(255, 98, 54, .20);
+  background: linear-gradient(180deg, rgba(18,10,7,.98), rgba(8,5,4,.98));
+}
+
+.founder-rail-meta strong {
+  display: block;
+  font-family: Anton, sans-serif;
+  font-size: 1.05rem;
+  line-height: 1;
+  letter-spacing: .04em;
+  color: #f4ecde;
+}
+
+.founder-rail-meta span {
+  display: block;
+  margin-top: 4px;
+  font-family: Anton, sans-serif;
+  font-size: .72rem;
+  line-height: 1;
+  letter-spacing: .08em;
+  color: #ff6236;
+  text-transform: uppercase;
+}
+
+/* Hide the old isolated lower-left photo after it has been cloned into the rail. */
+.founder-photo-moved {
+  display: none !important;
+}
