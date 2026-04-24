@@ -2736,3 +2736,395 @@ main.page > .closing-script{
     min-height:120px !important;
   }
 }
+
+
+/* =========================================================
+   BOOTH READY — TRUE LICENSE CONVERSION PACK
+   Turns the license section into a conversion-focused offer ladder.
+   Preserves the current marketplace, audio, checkout, and right rail.
+   ========================================================= */
+
+.license-conversion-section{
+  padding:22px 0 42px !important;
+  border-top:1px solid rgba(255,112,62,.22) !important;
+}
+
+.license-section-kicker{
+  margin:0 0 5px !important;
+  color:var(--orange) !important;
+  font-family:Anton, Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif !important;
+  letter-spacing:.28em !important;
+  font-size:.78rem !important;
+  text-transform:uppercase !important;
+}
+
+.license-section-head{
+  display:flex !important;
+  justify-content:space-between !important;
+  align-items:flex-end !important;
+  gap:24px !important;
+  margin-bottom:15px !important;
+}
+
+.license-section-head h2{
+  margin:0 !important;
+  font-family:Anton, Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif !important;
+  font-size:3rem !important;
+  line-height:.88 !important;
+  color:#c4ad8a !important;
+  opacity:.96 !important;
+  text-shadow:0 2px 14px rgba(0,0,0,.22) !important;
+}
+
+.license-section-head p{
+  margin:7px 0 0 !important;
+  color:#dfcfba !important;
+  font-size:.88rem !important;
+  line-height:1.35 !important;
+}
+
+.license-trust{
+  flex:0 0 auto !important;
+  color:#efe6d5 !important;
+  border:1px solid rgba(255,112,62,.30) !important;
+  background:rgba(12,6,4,.72) !important;
+  padding:9px 12px !important;
+  font-family:Anton, Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif !important;
+  font-size:.78rem !important;
+  line-height:1 !important;
+  letter-spacing:.04em !important;
+  text-transform:uppercase !important;
+}
+
+.license-conversion-grid{
+  display:grid !important;
+  grid-template-columns:repeat(4, minmax(0, 1fr)) !important;
+  gap:13px !important;
+  align-items:stretch !important;
+}
+
+.license-conversion-card{
+  position:relative !important;
+  display:flex !important;
+  flex-direction:column !important;
+  min-height:218px !important;
+  padding:16px 15px 15px !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,98,54,.08), transparent 38%),
+    linear-gradient(180deg, rgba(17,8,5,.98), rgba(8,4,3,.98)) !important;
+  border:2px solid rgba(119,52,27,.68) !important;
+  box-shadow:0 18px 30px rgba(0,0,0,.22) !important;
+}
+
+.license-conversion-card h4{
+  margin:0 0 5px !important;
+  font-family:Anton, Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif !important;
+  font-size:1.58rem !important;
+  line-height:.92 !important;
+  color:#efe6d5 !important;
+}
+
+.license-conversion-card .license-price{
+  margin:0 0 10px !important;
+  color:#ffb25c !important;
+  font-family:Anton, Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif !important;
+  font-size:1.45rem !important;
+  line-height:1 !important;
+}
+
+.license-card-summary{
+  margin:0 0 12px !important;
+  color:#dfcfba !important;
+  font-size:.78rem !important;
+  line-height:1.35 !important;
+}
+
+.license-benefits{
+  margin:0 0 14px !important;
+  padding:0 !important;
+  list-style:none !important;
+  display:grid !important;
+  gap:6px !important;
+}
+
+.license-benefits li{
+  position:relative !important;
+  padding-left:14px !important;
+  color:#efe6d5 !important;
+  font-size:.72rem !important;
+  line-height:1.24 !important;
+}
+
+.license-benefits li::before{
+  content:"" !important;
+  position:absolute !important;
+  left:0 !important;
+  top:.52em !important;
+  width:6px !important;
+  height:6px !important;
+  border-radius:50% !important;
+  background:var(--orange) !important;
+  box-shadow:0 0 10px rgba(255,98,54,.25) !important;
+}
+
+.license-cta{
+  margin-top:auto !important;
+  min-height:34px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border:1px solid rgba(235,198,151,.28) !important;
+  background:rgba(0,0,0,.28) !important;
+  color:#fff5ea !important;
+  font-family:Anton, Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif !important;
+  font-size:.82rem !important;
+  line-height:1 !important;
+  letter-spacing:.05em !important;
+  text-transform:uppercase !important;
+  transition:transform .16s ease, filter .16s ease, border-color .16s ease, background .16s ease !important;
+}
+
+.license-cta:hover{
+  transform:translateY(-2px) !important;
+  filter:brightness(1.08) !important;
+  border-color:rgba(255,170,85,.62) !important;
+  background:rgba(32,14,8,.64) !important;
+}
+
+.license-featured{
+  border-color:rgba(255,98,54,.90) !important;
+  box-shadow:
+    0 22px 42px rgba(0,0,0,.28),
+    0 0 0 1px rgba(255,98,54,.22),
+    0 0 26px rgba(255,98,54,.11) !important;
+  transform:translateY(-6px) !important;
+}
+
+.popular-ribbon{
+  position:absolute !important;
+  top:-12px !important;
+  right:12px !important;
+  background:linear-gradient(180deg, #ff6236, #b6341d) !important;
+  color:#fff5ea !important;
+  border:1px solid rgba(255,195,120,.32) !important;
+  padding:5px 9px !important;
+  font-family:Anton, Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif !important;
+  font-size:.68rem !important;
+  line-height:1 !important;
+  letter-spacing:.08em !important;
+  text-transform:uppercase !important;
+  box-shadow:0 10px 18px rgba(0,0,0,.25) !important;
+}
+
+.license-cta-primary{
+  background:linear-gradient(180deg, #d84e2b, #a72f1b) !important;
+  border-color:rgba(255,170,85,.44) !important;
+}
+
+.license-exclusive{
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,178,92,.11), transparent 40%),
+    linear-gradient(180deg, rgba(20,10,6,.98), rgba(8,4,3,.98)) !important;
+}
+
+.license-cta-exclusive{
+  border-color:rgba(255,178,92,.34) !important;
+  color:#ffb25c !important;
+}
+
+@media (max-width:1200px){
+  .license-section-head{
+    align-items:flex-start !important;
+    flex-direction:column !important;
+    gap:10px !important;
+  }
+
+  .license-trust{
+    width:100% !important;
+  }
+
+  .license-conversion-grid{
+    grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+  }
+
+  .license-featured{
+    transform:none !important;
+  }
+}
+
+@media (max-width:640px){
+  .license-section-head h2{
+    font-size:2.65rem !important;
+  }
+
+  .license-conversion-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  .license-conversion-card{
+    min-height:auto !important;
+  }
+}
+
+
+/* =========================================================
+   BOOTH READY — FINAL LICENSE HEIGHT FIX PACK
+   Fixes real-window license visibility and prevents cramped card rendering.
+   Also supports the static conversion license cards instead of script-overwritten
+   legacy 3-card rendering.
+   ========================================================= */
+
+.license-conversion-section{
+  padding-top:18px !important;
+  padding-bottom:36px !important;
+  overflow:visible !important;
+}
+
+.license-section-head{
+  margin-bottom:13px !important;
+}
+
+.license-section-head h2{
+  font-size:2.72rem !important;
+}
+
+.license-section-head p{
+  font-size:.82rem !important;
+  margin-top:5px !important;
+}
+
+.license-trust{
+  align-self:flex-end !important;
+  font-size:.70rem !important;
+  padding:7px 10px !important;
+  max-width:360px !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+
+.license-conversion-grid{
+  display:grid !important;
+  grid-template-columns:repeat(4, minmax(0, 1fr)) !important;
+  gap:10px !important;
+  align-items:stretch !important;
+  overflow:visible !important;
+}
+
+.license-conversion-card{
+  min-height:174px !important;
+  height:auto !important;
+  padding:13px 12px 12px !important;
+  overflow:visible !important;
+}
+
+.license-conversion-card h4{
+  font-size:1.28rem !important;
+  margin-bottom:3px !important;
+}
+
+.license-conversion-card .license-price{
+  font-size:1.18rem !important;
+  margin-bottom:6px !important;
+}
+
+.license-card-summary{
+  font-size:.66rem !important;
+  line-height:1.26 !important;
+  margin-bottom:8px !important;
+}
+
+.license-benefits{
+  gap:4px !important;
+  margin-bottom:10px !important;
+}
+
+.license-benefits li{
+  font-size:.61rem !important;
+  line-height:1.18 !important;
+  padding-left:12px !important;
+}
+
+.license-benefits li::before{
+  width:5px !important;
+  height:5px !important;
+}
+
+.license-cta{
+  min-height:28px !important;
+  font-size:.68rem !important;
+}
+
+.license-featured{
+  transform:translateY(-3px) !important;
+}
+
+.popular-ribbon{
+  top:-9px !important;
+  right:9px !important;
+  padding:4px 7px !important;
+  font-size:.58rem !important;
+}
+
+/* Preserve real-browser fit on MacBook/common desktop widths. */
+@media (min-width:1201px) and (max-width:1599px){
+  .license-conversion-section{
+    padding-top:14px !important;
+    padding-bottom:30px !important;
+  }
+
+  .license-conversion-grid{
+    grid-template-columns:repeat(4, minmax(0, 1fr)) !important;
+    gap:9px !important;
+  }
+
+  .license-conversion-card{
+    min-height:162px !important;
+    padding:12px 11px 11px !important;
+  }
+
+  .license-section-head h2{
+    font-size:2.45rem !important;
+  }
+
+  .license-card-summary{
+    font-size:.62rem !important;
+  }
+
+  .license-benefits li{
+    font-size:.58rem !important;
+  }
+}
+
+/* Tablet and mobile: allow natural height. */
+@media (max-width:1200px){
+  .license-section-head{
+    align-items:flex-start !important;
+  }
+
+  .license-trust{
+    align-self:stretch !important;
+    max-width:none !important;
+    white-space:normal !important;
+  }
+
+  .license-conversion-grid{
+    grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+    gap:12px !important;
+  }
+
+  .license-conversion-card{
+    min-height:auto !important;
+    padding:15px !important;
+  }
+
+  .license-featured{
+    transform:none !important;
+  }
+}
+
+@media (max-width:640px){
+  .license-conversion-grid{
+    grid-template-columns:1fr !important;
+  }
+}
