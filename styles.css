@@ -3128,3 +3128,101 @@ main.page > .closing-script{
     grid-template-columns:1fr !important;
   }
 }
+
+
+/* =========================================================
+   BOOTH READY — FINAL HERO RESET PACK
+   Clean reset: one isolated hero component, one single hero image.
+   Old split-hero classes are neutralized to prevent overlap/cropping.
+   ========================================================= */
+
+/* Disable legacy split hero system completely. */
+.hero-exact,
+.hero-left,
+.hero-right{
+  display:none !important;
+  visibility:hidden !important;
+  height:0 !important;
+  min-height:0 !important;
+  max-height:0 !important;
+  overflow:hidden !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  transform:none !important;
+}
+
+/* The reset hero uses a unique ID and inline lock. These are backup rules. */
+#brHeroReset{
+  position:relative !important;
+  display:block !important;
+  width:100% !important;
+  max-width:100% !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  margin:0 0 16px 0 !important;
+  padding:0 !important;
+  overflow:visible !important;
+  background:#050303 !important;
+  line-height:0 !important;
+}
+
+#brHeroReset img{
+  display:block !important;
+  width:100% !important;
+  max-width:100% !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  object-fit:contain !important;
+  object-position:center center !important;
+  transform:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+}
+
+/* Hero button hit areas mapped to the clean composite hero image. */
+#brHeroReset .br-hero-reset-hit{
+  position:absolute !important;
+  display:block !important;
+  z-index:50 !important;
+  background:transparent !important;
+}
+
+#brHeroReset .br-hero-reset-hit-browse{
+  left:5.8% !important;
+  top:79.5% !important;
+  width:14.4% !important;
+  height:8.5% !important;
+}
+
+#brHeroReset .br-hero-reset-hit-exclusive{
+  left:21.7% !important;
+  top:79.5% !important;
+  width:16.0% !important;
+  height:8.5% !important;
+}
+
+/* Remove old strip/double-hero artifacts. */
+.feature-strip-exact{
+  display:none !important;
+  visibility:hidden !important;
+  height:0 !important;
+  min-height:0 !important;
+  max-height:0 !important;
+  overflow:hidden !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+}
+
+.poster-marketplace{
+  margin-top:0 !important;
+}
+
+html,
+body{
+  overflow-x:hidden !important;
+}
