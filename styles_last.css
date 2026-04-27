@@ -922,30 +922,21 @@ button{cursor:pointer}
   }
 }
 
-/* MOBILE SLOGAN CARD SAFE RESTORE PATCH
-   Restores the original official slogan artwork and removes the failed mic-banner override.
-   Keeps the card compact on mobile without blank image blocks.
-*/
+/* MOBILE SLOGAN CARD CLEAN FIX */
 
 @media (max-width: 768px){
 
   .rail-slogan-card-stacked{
     overflow:hidden !important;
-    background:#0b0605 !important;
+    background:#0a0504 !important;
   }
 
   .rail-slogan-card-stacked .rail-slogan-photo{
-    height:82px !important;
-    min-height:82px !important;
-    background-color:#080403 !important;
-    background-image:
-      linear-gradient(180deg, rgba(0,0,0,.04), rgba(0,0,0,.30)),
-      url("/assets/official-slogan-banner.png") !important;
-    background-repeat:no-repeat, no-repeat !important;
-    background-position:center center, left center !important;
-    background-size:100% 100%, 240% auto !important;
-    border-bottom:1px solid rgba(255,112,62,.24) !important;
-    filter:saturate(.95) contrast(1.05) brightness(.82) !important;
+    height:72px !important;
+    min-height:72px !important;
+    background-image:url("assets/mic-banner.jpg") !important;
+    background-size:cover !important;
+    background-position:center center !important;
   }
 
   .rail-slogan-card-stacked .rail-slogan-photo::before,
@@ -955,10 +946,8 @@ button{cursor:pointer}
   }
 
   .rail-slogan-words{
-    padding:11px 10px 13px !important;
-    background:
-      radial-gradient(circle at 50% 50%, rgba(255,98,54,.07), transparent 56%),
-      linear-gradient(180deg, rgba(15,7,5,.98), rgba(7,3,2,.98)) !important;
+    padding:12px 10px 14px !important;
+    background:#120807 !important;
     text-align:center !important;
   }
 
@@ -977,188 +966,5 @@ button{cursor:pointer}
   .rail-slogan-words::after{
     display:none !important;
     content:none !important;
-  }
-}
-
-/* MOBILE BRAND HIERARCHY POLISH PATCH */
-
-@media (max-width: 768px){
-
-  /* BUILT DIFFERENT */
-  .built-copy{
-    text-align:center !important;
-    padding:16px 14px !important;
-  }
-
-  .built-copy::before{
-    text-align:center !important;
-    margin:0 auto 10px !important;
-  }
-
-  .red-swipe{
-    margin:0 auto 12px !important;
-  }
-
-  .built-copy p,
-  .built-copy strong,
-  .built-copy span{
-    text-align:center !important;
-  }
-
-  /* SLOGAN PANEL */
-  .rail-slogan-photo{
-    height:96px !important;
-    min-height:96px !important;
-    background-size:100% 100%, 145% auto !important;
-    background-position:center center, center center !important;
-    filter:saturate(.96) contrast(1.03) brightness(.88) !important;
-  }
-
-  .rail-slogan-words{
-    padding:12px 10px 14px !important;
-  }
-}
-
-/* MOBILE FOUNDER FINAL TIGHTEN */
-
-@media (max-width: 768px){
-  .founder-rail-card img{
-    max-height:150px !important;
-    aspect-ratio:1 / .44 !important;
-    object-fit:cover !important;
-    object-position:center 34% !important;
-  }
-}
-
-/* =========================================================
-   BOOTH READY — FINAL DESKTOP FULL-WIDTH AUTHORITY PATCH
-   Purpose:
-   - Restore wide desktop presence
-   - Reduce black side gutters
-   - Keep mobile/tablet behavior unchanged
-   - Preserve beat cards, checkout, audio, right rail, and mobile fixes
-   ========================================================= */
-
-@media (min-width: 1201px){
-
-  :root{
-    --page: 1840px !important;
-    --gutter: 8px !important;
-  }
-
-  .page{
-    width: min(var(--page), calc(100vw - 16px)) !important;
-    max-width: var(--page) !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-
-  #brHeroReset,
-  .hero-exact,
-  .feature-strip-exact,
-  .poster-marketplace,
-  .licenses-section,
-  .license-conversion-section{
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  .poster-marketplace{
-    grid-template-columns: minmax(0, 1fr) 330px !important;
-    gap: 18px !important;
-  }
-
-  .poster-side{
-    width: 330px !important;
-    max-width: 330px !important;
-  }
-
-  .beat-grid{
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-    gap: 10px !important;
-  }
-
-  .poster-main{
-    padding: 16px !important;
-  }
-}
-
-@media (min-width: 1600px){
-
-  :root{
-    --page: 2040px !important;
-    --gutter: 4px !important;
-  }
-
-  .page{
-    width: min(var(--page), calc(100vw - 8px)) !important;
-  }
-
-  .poster-marketplace{
-    grid-template-columns: minmax(0, 1fr) 360px !important;
-    gap: 20px !important;
-  }
-
-  .poster-side{
-    width: 360px !important;
-    max-width: 360px !important;
-  }
-
-  .beat-grid{
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-    gap: 12px !important;
-  }
-}
-
-/* =====================================================
-   BOOTH READY FINAL DESKTOP AUTHORITY MICRO-TUNE
-   Last desktop polish before revenue mode
-   ===================================================== */
-
-@media (min-width: 1201px){
-
-  .page{
-    width:min(96vw, 1920px) !important;
-    max-width:1920px !important;
-  }
-
-  #brHeroReset{
-    width:100% !important;
-  }
-
-  .poster-marketplace{
-    grid-template-columns:minmax(0,1fr) 355px !important;
-    gap:20px !important;
-  }
-
-  .poster-side{
-    width:355px !important;
-    max-width:355px !important;
-  }
-
-  .poster-main{
-    padding:18px !important;
-  }
-
-  .beat-grid{
-    gap:12px !important;
-  }
-}
-
-@media (min-width: 1600px){
-
-  .page{
-    width:min(97vw, 2080px) !important;
-    max-width:2080px !important;
-  }
-
-  .poster-marketplace{
-    grid-template-columns:minmax(0,1fr) 380px !important;
-    gap:22px !important;
-  }
-
-  .poster-side{
-    width:380px !important;
-    max-width:380px !important;
   }
 }
