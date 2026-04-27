@@ -1162,3 +1162,92 @@ button{cursor:pointer}
     max-width:380px !important;
   }
 }
+
+/* === FINAL POLISH (SAFE) === */
+
+/* tighten overall layout */
+section {
+  margin: 40px 0;
+}
+
+/* make beat cards more premium + compact */
+.card {
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* tighten text spacing */
+.card h3 {
+  margin-bottom: 4px;
+}
+
+.card p {
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+
+/* cleaner buttons */
+.card button {
+  border: 1px solid rgba(255,255,255,0.15);
+  background: transparent;
+}
+
+.card button:hover {
+  background: #c0392b;
+  border-color: #c0392b;
+}
+
+/* waveform spacing fix */
+.waveform {
+  margin: 10px 0;
+}
+
+/* align pricing row */
+.price-row {
+  display: flex;
+  gap: 8px;
+}
+
+/* === FINAL MICRO POLISH === */
+
+/* tighten section spacing slightly */
+section {
+  margin: 40px 0;
+}
+
+/* subtle premium hover on cards */
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.45);
+}
+
+/* cleaner spacing under titles */
+.card h3 {
+  margin-bottom: 6px;
+}
+
+/* tighten metadata */
+.card p {
+  margin-bottom: 6px;
+  opacity: 0.85;
+}
+
+/* improve button feel */
+.card button {
+  border: 1px solid rgba(255,255,255,0.12);
+  background: transparent;
+}
+
+.card button:hover {
+  background: #c0392b;
+  border-color: #c0392b;
+}
