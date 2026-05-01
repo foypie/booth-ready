@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Booth Ready | Exact Concept Build</title>
+  <meta name="description" content="Booth Ready Beats delivers gritty, original boom bap instrumentals from Mista Foy and Beatz4Life, LLC. Browse beats, choose a license, and download instantly." />
+  <title>Booth Ready Beats | Original Boom Bap Instrumentals</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&family=Permanent+Marker&display=swap" rel="stylesheet">
@@ -38,6 +39,49 @@
       background:rgba(8,4,3,.55);
       box-shadow:0 0 0 1px rgba(0,0,0,.35), 0 8px 22px rgba(0,0,0,.28);
     }
+
+    .rail-slogan-photo-video{
+      display:block;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center center;
+    }
+
+    /* Right rail mic video height match founder image */
+    @media (min-width: 769px){
+      .rail-slogan-card-stacked .rail-slogan-photo.rail-slogan-photo-video{
+        width:100% !important;
+        height:auto !important;
+        min-height:0 !important;
+        aspect-ratio:1 / .84 !important;
+        object-fit:cover !important;
+        object-position:center center !important;
+      }
+    }
+
+
+    /* Desktop lower-content pull-up after taller right-rail video */
+    @media (min-width: 901px){
+      .poster-marketplace + .anchor-target + #about-section{
+        margin-top:-118px !important;
+        position:relative;
+        z-index:2;
+      }
+    }
+
+    @media (min-width: 1400px){
+      .poster-marketplace + .anchor-target + #about-section{
+        margin-top:-132px !important;
+      }
+    }
+
+    @media (max-width: 900px){
+      .poster-marketplace + .anchor-target + #about-section{
+        margin-top:0 !important;
+      }
+    }
+
     .br-admin-nav-link:hover{
       color:#fff3d0;
       background:rgba(241,90,42,.22);
@@ -119,7 +163,9 @@
         </article>
 
         <article class="rail-slogan-card rail-slogan-card-stacked" aria-label="From the crates to the booth">
-          <div class="rail-slogan-photo" aria-hidden="true"></div>
+          <video class="rail-slogan-photo rail-slogan-photo-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+            <source src="/assets/booth-loop.mp4" type="video/mp4" />
+          </video>
           <div class="rail-slogan-words">
             <span class="rail-slogan-line rail-slogan-line-cream">FROM THE CRATES</span>
             <span class="rail-slogan-line rail-slogan-line-orange">TO THE BOOTH.</span>
@@ -127,6 +173,8 @@
         </article>
 </aside>
     </section>
+
+
 
     <div id="about" class="anchor-target" aria-hidden="true"></div>
     <section class="licenses-section content-section" id="about-section">
@@ -139,43 +187,7 @@
       </div>
     </section>
 
-    <div id="exclusives" class="anchor-target" aria-hidden="true"></div>
-    <section class="licenses-section content-section" id="exclusives-section">
-      <div class="license-section-kicker">EXCLUSIVES</div>
-      <div class="license-section-head">
-        <div>
-          <h2>Exclusive rights for serious releases</h2>
-          <p>Exclusive rights are available for artists who want to secure a beat for a single, project, or larger campaign. Once exclusive terms are approved and completed, the beat can be removed from the public catalog according to the written agreement.</p>
-        </div>
-      </div>
 
-      <div class="license-grid license-conversion-grid">
-        <article class="license-box license-conversion-card license-exclusive">
-          <div class="license-card-top">
-            <h4>Exclusive License</h4>
-            <div class="license-price">$499+</div>
-          </div>
-          <p class="license-card-summary">Best for artists who want stronger control over a beat and release strategy.</p>
-          <ul class="license-benefits">
-            <li>Written agreement required</li>
-            <li>Ownership terms must be expressly transferred</li>
-            <li>Credit required unless otherwise agreed</li>
-          </ul>
-          <a class="license-cta license-cta-exclusive" href="#contact">Ask About Exclusive</a>
-        </article>
-
-        <article class="license-box license-conversion-card">
-          <div class="license-card-top">
-            <h4>Required Credit</h4>
-          </div>
-          <p class="license-card-summary">Use this producer credit unless your written agreement states otherwise.</p>
-          <ul class="license-benefits">
-            <li>Prod. by Mista Foy for Beatz4Life, LLC</li>
-          </ul>
-          <a class="license-cta" href="#licenses">View License Options</a>
-        </article>
-      </div>
-    </section>
 
     <div id="faq" class="anchor-target" aria-hidden="true"></div>
     <section class="licenses-section content-section" id="faq-section">
@@ -217,6 +229,8 @@
         </article>
       </div>
     </section>
+
+
 
     <div id="licenses" class="anchor-target" aria-hidden="true"></div>
     <section class="licenses-section license-conversion-section" id="licenses-section">
@@ -287,6 +301,48 @@
         </article>
       </div>
     </section>
+
+
+
+    <div id="exclusives" class="anchor-target" aria-hidden="true"></div>
+    <section class="licenses-section content-section" id="exclusives-section">
+      <div class="license-section-kicker">EXCLUSIVES</div>
+      <div class="license-section-head">
+        <div>
+          <h2>Exclusive rights for serious releases</h2>
+          <p>Exclusive rights are available for artists who want to secure a beat for a single, project, or larger campaign. Once exclusive terms are approved and completed, the beat can be removed from the public catalog according to the written agreement.</p>
+        </div>
+      </div>
+
+      <div class="license-grid license-conversion-grid">
+        <article class="license-box license-conversion-card license-exclusive">
+          <div class="license-card-top">
+            <h4>Exclusive License</h4>
+            <div class="license-price">$499+</div>
+          </div>
+          <p class="license-card-summary">Best for artists who want stronger control over a beat and release strategy.</p>
+          <ul class="license-benefits">
+            <li>Written agreement required</li>
+            <li>Ownership terms must be expressly transferred</li>
+            <li>Credit required unless otherwise agreed</li>
+          </ul>
+          <a class="license-cta license-cta-exclusive" href="#contact">Ask About Exclusive</a>
+        </article>
+
+        <article class="license-box license-conversion-card">
+          <div class="license-card-top">
+            <h4>Required Credit</h4>
+          </div>
+          <p class="license-card-summary">Use this producer credit unless your written agreement states otherwise.</p>
+          <ul class="license-benefits">
+            <li>Prod. by Mista Foy for Beatz4Life, LLC</li>
+          </ul>
+          <a class="license-cta" href="#licenses">View License Options</a>
+        </article>
+      </div>
+    </section>
+
+
 
     <div id="contact" class="anchor-target" aria-hidden="true"></div>
     <section class="licenses-section content-section" id="contact-section">
