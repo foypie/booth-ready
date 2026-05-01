@@ -2198,3 +2198,204 @@ section {
   position: relative;
   z-index: 1;
 }
+
+
+/* =========================================================
+   BOOTH READY v1.2 — STOREFRONT SPACING FIX
+   Purpose:
+   - Prevent marketplace/right rail from crowding or visually covering hero bottom
+   - Remove prior negative hero seam offset
+   - Preserve beat cards, audio, checkout, admin, email, and catalog logic
+   File scope: styles.css only
+   ========================================================= */
+
+/* Remove the v1.1 negative seam overlap that pulled the marketplace upward. */
+#brHeroReset{
+  margin-bottom: 30px !important;
+  overflow: hidden !important;
+}
+
+/* Keep the hero image fully contained and anchored without clipping the lower CTA band. */
+#brHeroReset img{
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+}
+
+/* Ensure the marketplace starts below the hero instead of riding into it. */
+.poster-marketplace{
+  margin-top: 0 !important;
+  clear: both !important;
+}
+
+/* Keep the feature strip from using any negative pull-up behavior. */
+.feature-strip-exact{
+  margin-top: 0 !important;
+}
+
+/* Tighten the first content section after the marketplace so the fix does not create extra black drift below. */
+.poster-marketplace + .anchor-target + .content-section,
+.poster-marketplace + .anchor-target + .licenses-section{
+  padding-top: 34px !important;
+}
+
+/* Desktop-specific hero-to-marketplace rhythm. */
+@media (min-width: 1201px){
+  #brHeroReset{
+    margin-bottom: 34px !important;
+  }
+
+  .poster-marketplace{
+    margin-top: 0 !important;
+  }
+
+  .poster-marketplace + .anchor-target + .content-section,
+  .poster-marketplace + .anchor-target + .licenses-section{
+    padding-top: 38px !important;
+  }
+}
+
+/* Large desktop: maintain clear separation without making the page feel loose. */
+@media (min-width: 1600px){
+  #brHeroReset{
+    margin-bottom: 38px !important;
+  }
+
+  .poster-marketplace + .anchor-target + .content-section,
+  .poster-marketplace + .anchor-target + .licenses-section{
+    padding-top: 40px !important;
+  }
+}
+
+/* Tablet/mobile: smaller gap, but still no overlap. */
+@media (max-width: 1200px){
+  #brHeroReset{
+    margin-bottom: 22px !important;
+  }
+
+  .poster-marketplace{
+    margin-top: 0 !important;
+  }
+}
+
+@media (max-width: 700px){
+  #brHeroReset{
+    margin-bottom: 16px !important;
+  }
+}
+
+
+/* =========================================================
+   BOOTH READY v1.3 — LOWER SECTIONS PULL-UP
+   Purpose:
+   - Move About, Exclusives, FAQ, Licenses, and Contact sections upward
+   - Reduce excess black space below beat grid/right rail
+   - Preserve v1.2 hero-to-marketplace separation
+   File scope: styles.css only
+   ========================================================= */
+
+/* Keep the marketplace protected from hero overlap, but remove excessive bottom drift. */
+.poster-marketplace{
+  margin-bottom: 26px !important;
+}
+
+/* Pull the first content section up closer to the beat grid/right rail. */
+.poster-marketplace + .anchor-target{
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Tighten content-section rhythm below the marketplace. */
+.poster-marketplace + .anchor-target + .content-section,
+.poster-marketplace + .anchor-target + .licenses-section{
+  padding-top: 8px !important;
+}
+
+/* Global lower-section tightening for the long informational stack. */
+.content-section,
+.licenses-section,
+.license-conversion-section{
+  padding-top: 18px !important;
+  padding-bottom: 26px !important;
+}
+
+/* Tighten section header spacing without reducing readability. */
+.license-section-head{
+  margin-bottom: 10px !important;
+}
+
+.license-section-head p{
+  margin-top: 4px !important;
+}
+
+/* Reduce excess space before section grids. */
+.license-grid,
+.license-conversion-grid,
+.faq-grid,
+.contact-grid{
+  margin-top: 8px !important;
+}
+
+/* Desktop-specific pull-up: strongest where the visual gap is most noticeable. */
+@media (min-width: 1201px){
+  .poster-marketplace{
+    margin-bottom: 18px !important;
+  }
+
+  .poster-marketplace + .anchor-target + .content-section,
+  .poster-marketplace + .anchor-target + .licenses-section{
+    padding-top: 0 !important;
+  }
+
+  .content-section,
+  .licenses-section,
+  .license-conversion-section{
+    padding-top: 14px !important;
+    padding-bottom: 24px !important;
+  }
+}
+
+/* Large desktop: keep sections compact but not cramped. */
+@media (min-width: 1600px){
+  .poster-marketplace{
+    margin-bottom: 20px !important;
+  }
+
+  .content-section,
+  .licenses-section,
+  .license-conversion-section{
+    padding-top: 16px !important;
+    padding-bottom: 26px !important;
+  }
+}
+
+/* Tablet/mobile: avoid over-compressing stacked content. */
+@media (max-width: 1200px){
+  .poster-marketplace{
+    margin-bottom: 22px !important;
+  }
+
+  .content-section,
+  .licenses-section,
+  .license-conversion-section{
+    padding-top: 20px !important;
+    padding-bottom: 28px !important;
+  }
+}
+
+@media (max-width: 700px){
+  .poster-marketplace{
+    margin-bottom: 18px !important;
+  }
+
+  .content-section,
+  .licenses-section,
+  .license-conversion-section{
+    padding-top: 18px !important;
+    padding-bottom: 24px !important;
+  }
+}
+
