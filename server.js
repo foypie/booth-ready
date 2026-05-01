@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
+const crypto = require("crypto");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { Resend } = require("resend");
 
@@ -12,40 +13,141 @@ const PORT = process.env.PORT || 4242;
 const DOMAIN = process.env.DOMAIN || `http://localhost:${PORT}`;
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || "";
 const ordersPath = path.join(__dirname, "fulfilled-orders.json");
+const dataPath = path.join(__dirname, "data", "beats.json");
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-const CATALOG = [
-  { slug: "60s-remix", name: "60s Remix", file: "60s-Remix.mp3", meta: "Boom Bap • Vintage Feel" },
+/* =========================
+   ADMIN AUTH
+========================= */
+
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "boothreadyadmin";
+const ADMIN_COOKIE_NAME = "booth_ready_admin";
+const ADMIN_COOKIE_VALUE = Buffer.from(`admin:${ADMIN_PASSWORD}`).toString("base64");
+
+function parseCookies(req) {
+  return String(req.headers.cookie || "")
+    .split(";")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .reduce((cookies, part) => {
+      const eqIndex = part.indexOf("=");
+      if (eqIndex === -1) return cookies;
+      const key = decodeURIComponent(part.slice(0, eqIndex));
+      const value = decodeURIComponent(part.slice(eqIndex + 1));
+      cookies[key] = value;
+      return cookies;
+    }, {});
+}
+
+function isAdminAuthenticated(req) {
+  const cookies = parseCookies(req);
+  return cookies[ADMIN_COOKIE_NAME] === ADMIN_COOKIE_VALUE;
+}
+
+function requireAdmin(req, res, next) {
+  if (isAdminAuthenticated(req)) return next();
+
+  if (req.path.startsWith("/admin/") || req.path === "/admin/add-beat") {
+    return res.status(401).json({ error: "Admin login required" });
+  }
+
+  return res.redirect("/admin-login.html");
+}
+
+/* =========================
+   FALLBACK DATA
+========================= */
+
+const FALLBACK_CATALOG = [
+  { slug: "60s-remix", name: "60s Remix", file: "60s Remix.mp3", meta: "Boom Bap • Vintage Feel" },
   { slug: "60s", name: "60s", file: "60s.mp3", meta: "Classic • Warm" },
-  { slug: "black-shuga", name: "Black Shuga", file: "Black_Shuga.mp3", meta: "Soulful • Boom Bap" },
+  { slug: "black-shuga", name: "Black Shuga", file: "Black Shuga.mp3", meta: "Soulful • Boom Bap" },
   { slug: "epic", name: "Epic", file: "Epic.mp3", meta: "Cinematic • Hard-Hitting" },
-  { slug: "key-witness", name: "Key Witness", file: "Key_Witness.mp3", meta: "Dark • Gritty" },
+  { slug: "key-witness", name: "Key Witness", file: "Key Witness.mp3", meta: "Dark • Gritty" },
   { slug: "moonstruck", name: "Moonstruck", file: "Moonstruck.mp3", meta: "Moody • Atmospheric" },
-  { slug: "mozee-along", name: "Mozee Along", file: "Mozee_Along.mp3", meta: "Smooth • Head-Nod" },
+  { slug: "mozee-along", name: "Mozee Along", file: "Mozee Along.mp3", meta: "Smooth • Head-Nod" },
   { slug: "widgets", name: "Widgets", file: "Widgets.mp3", meta: "Modern • Punchy" },
 ];
 
-const LICENSES = [
-  {
-    code: "basic",
-    name: "Basic Lease",
-    price: 29,
-    description: "Affordable entry license for demos, early releases, and lightweight distribution."
-  },
-  {
-    code: "premium",
-    name: "Premium Lease",
-    price: 79,
-    description: "Upgraded license tier for broader release use and stronger commercial flexibility."
-  },
-  {
-    code: "unlimited",
-    name: "Unlimited Lease",
-    price: 199,
-    description: "Highest standard lease tier before exclusives, built for serious commercial rollout."
-  }
+const FALLBACK_LICENSES = [
+  { code: "basic", name: "Basic License", price: 29 },
+  { code: "premium", name: "Premium License", price: 79 },
+  { code: "unlimited", name: "Unlimited License", price: 199 }
 ];
+
+/* =========================
+   HELPERS
+========================= */
+
+function slugify(text) {
+  return String(text || "")
+    .toLowerCase()
+    .trim()
+    .replace(/['’]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function normalizeLicense(license) {
+  return {
+    code: String(license.code || "").trim(),
+    name: String(license.name || license.code || "License").trim(),
+    price: Number(license.price),
+    description: String(license.description || "").trim()
+  };
+}
+
+function normalizeBeat(beat) {
+  const slug = slugify(beat.slug || beat.name || "");
+  const rawStatus = String(beat.status || (beat.active === false ? "hidden" : "active")).toLowerCase().trim();
+  const status = ["active", "hidden", "sold"].includes(rawStatus) ? rawStatus : "active";
+
+  return {
+    ...beat,
+    name: String(beat.name || "Untitled Beat").trim(),
+    slug,
+    file: String(beat.file || "").trim(),
+    meta: String(beat.meta || beat.style || beat.description || "").replace(/\s+/g, " ").trim(),
+    status,
+    active: status === "active",
+    updatedAt: beat.updatedAt || null
+  };
+}
+
+function isBeatActive(beat) {
+  const normalized = normalizeBeat(beat);
+  return normalized.status === "active" && normalized.active !== false;
+}
+
+function readCatalogData() {
+  try {
+    if (!fs.existsSync(dataPath)) {
+      return { catalog: FALLBACK_CATALOG.map(normalizeBeat), licenses: FALLBACK_LICENSES };
+    }
+
+    const raw = fs.readFileSync(dataPath, "utf8");
+    const parsed = JSON.parse(raw);
+
+    if (Array.isArray(parsed)) {
+      return { catalog: parsed.map(normalizeBeat), licenses: FALLBACK_LICENSES };
+    }
+
+    return {
+      catalog: (Array.isArray(parsed.catalog) ? parsed.catalog : FALLBACK_CATALOG).map(normalizeBeat),
+      licenses: Array.isArray(parsed.licenses) ? parsed.licenses.map(normalizeLicense) : FALLBACK_LICENSES
+    };
+  } catch (error) {
+    console.error("Read catalog error:", error.message);
+    return { catalog: FALLBACK_CATALOG.map(normalizeBeat), licenses: FALLBACK_LICENSES };
+  }
+}
+
+function writeCatalogData(data) {
+  const dataDir = path.dirname(dataPath);
+  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+  fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
+}
 
 function readOrders() {
   try {
@@ -62,16 +164,17 @@ function writeOrders(orders) {
 }
 
 function getBeatBySlug(slug) {
-  return CATALOG.find((item) => item.slug === slug);
+  const { catalog } = readCatalogData();
+  return catalog.find((item) => item.slug === slug);
 }
 
 function getLicenseByCode(code) {
-  return LICENSES.find((item) => item.code === code);
+  const { licenses } = readCatalogData();
+  return licenses.find((item) => item.code === code);
 }
 
 function upsertOrder(session, extra = {}) {
   const orders = readOrders();
-
   const existing = orders[session.id] || {};
   orders[session.id] = {
     sessionId: session.id,
@@ -83,70 +186,167 @@ function upsertOrder(session, extra = {}) {
     beatFile: session.metadata?.beatFile || existing.beatFile || null,
     licenseCode: session.metadata?.licenseCode || existing.licenseCode || null,
     licenseName: session.metadata?.licenseName || existing.licenseName || null,
+    downloadToken: existing.downloadToken || buildDownloadToken(session.id),
     emailSentAt: extra.emailSentAt || existing.emailSentAt || null,
     emailError: extra.emailError || existing.emailError || null,
     createdAt: existing.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
-
   writeOrders(orders);
   return orders[session.id];
 }
 
-function buildDownloadUrl(beatFile) {
-  return `${DOMAIN}/audio/${encodeURIComponent(beatFile)}`;
+function getTokenSecret() {
+  return process.env.DOWNLOAD_TOKEN_SECRET || process.env.STRIPE_SECRET_KEY || ADMIN_PASSWORD || "booth-ready-download-secret";
+}
+
+function buildDownloadToken(sessionId) {
+  return crypto
+    .createHmac("sha256", getTokenSecret())
+    .update(String(sessionId))
+    .digest("hex");
+}
+
+function safeCompareToken(a, b) {
+  const left = Buffer.from(String(a || ""), "utf8");
+  const right = Buffer.from(String(b || ""), "utf8");
+  if (left.length !== right.length) return false;
+  return crypto.timingSafeEqual(left, right);
+}
+
+function buildDownloadUrlForOrder(order) {
+  const token = order.downloadToken || buildDownloadToken(order.sessionId);
+  return `${DOMAIN}/download?session_id=${encodeURIComponent(order.sessionId)}&token=${encodeURIComponent(token)}`;
 }
 
 function buildOrderUrl(sessionId) {
   return `${DOMAIN}/order.html?session_id=${encodeURIComponent(sessionId)}`;
 }
 
+
+const AUDIO_EXTENSIONS = [".mp3", ".MP3", ".wav", ".WAV", ".m4a", ".M4A"];
+
+function cleanAudioFilename(value) {
+  return path.basename(String(value || "").replace(/\0/g, "").trim());
+}
+
+function stripAudioExtension(filename) {
+  return cleanAudioFilename(filename).replace(/\.(mp3|wav|m4a)$/i, "");
+}
+
+function audioLookupKey(filename) {
+  return slugify(stripAudioExtension(filename));
+}
+
+function addAudioNameVariants(set, value) {
+  const cleaned = cleanAudioFilename(value);
+  if (!cleaned) return;
+
+  const rawBase = stripAudioExtension(cleaned);
+  const extMatch = cleaned.match(/\.(mp3|wav|m4a)$/i);
+  const preferredExts = extMatch ? [extMatch[0], ...AUDIO_EXTENSIONS] : AUDIO_EXTENSIONS;
+
+  const bases = new Set([
+    rawBase,
+    rawBase.replace(/\s+/g, "_"),
+    rawBase.replace(/\s+/g, "-"),
+    rawBase.replace(/[_-]+/g, " "),
+    slugify(rawBase),
+    slugify(rawBase).replace(/-/g, "_"),
+  ]);
+
+  if (extMatch) set.add(cleaned);
+
+  bases.forEach((base) => {
+    const safeBase = cleanAudioFilename(base);
+    if (!safeBase) return;
+    preferredExts.forEach((ext) => set.add(`${safeBase}${ext}`));
+  });
+}
+
+function resolveAudioFileForOrder(order) {
+  const audioDir = path.join(__dirname, "audio");
+  if (!fs.existsSync(audioDir)) return null;
+
+  const candidates = new Set();
+  addAudioNameVariants(candidates, order.beatFile);
+  addAudioNameVariants(candidates, order.beatName);
+  addAudioNameVariants(candidates, order.beatSlug);
+
+  const currentBeat = order.beatSlug ? getBeatBySlug(order.beatSlug) : null;
+  if (currentBeat) {
+    addAudioNameVariants(candidates, currentBeat.file);
+    addAudioNameVariants(candidates, currentBeat.name);
+    addAudioNameVariants(candidates, currentBeat.slug);
+  }
+
+  for (const candidate of candidates) {
+    const candidatePath = path.join(audioDir, candidate);
+    if (fs.existsSync(candidatePath) && fs.statSync(candidatePath).isFile()) {
+      return {
+        filePath: candidatePath,
+        actualFilename: path.basename(candidatePath),
+        downloadFilename: cleanAudioFilename(order.beatFile) || path.basename(candidatePath)
+      };
+    }
+  }
+
+  const candidateLowerNames = new Set(Array.from(candidates).map((name) => name.toLowerCase()));
+  const candidateKeys = new Set(Array.from(candidates).map(audioLookupKey).filter(Boolean));
+
+  const audioFiles = fs.readdirSync(audioDir, { withFileTypes: true })
+    .filter((entry) => entry.isFile())
+    .map((entry) => entry.name);
+
+  for (const filename of audioFiles) {
+    const lowerName = filename.toLowerCase();
+    const lookupKey = audioLookupKey(filename);
+
+    if (candidateLowerNames.has(lowerName) || candidateKeys.has(lookupKey)) {
+      const filePath = path.join(audioDir, filename);
+      return {
+        filePath,
+        actualFilename: filename,
+        downloadFilename: cleanAudioFilename(order.beatFile) || filename
+      };
+    }
+  }
+
+  return null;
+}
+
 function buildEmailHtml(order) {
   const amount = order.amountTotal ? `$${(order.amountTotal / 100).toFixed(2)}` : "-";
-  const downloadUrl = buildDownloadUrl(order.beatFile);
+  const downloadUrl = buildDownloadUrlForOrder(order);
   const orderUrl = buildOrderUrl(order.sessionId);
 
   return `
     <div style="font-family: Arial, sans-serif; background:#0b0b0b; padding:32px; color:#f5f5f5;">
       <div style="max-width:680px; margin:0 auto; background:#151515; border:1px solid rgba(255,255,255,.08); border-radius:20px; padding:32px;">
         <h1 style="margin:0 0 14px; font-size:32px;">Your Booth Ready order is confirmed</h1>
-        <p style="color:#cfcfcf; line-height:1.65; margin:0 0 22px;">
-          Thanks for your purchase. Your beat is ready now.
-        </p>
-
+        <p style="color:#cfcfcf; line-height:1.65; margin:0 0 22px;">Thanks for your purchase. Your beat is ready now.</p>
         <div style="background:#101010; border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:18px; margin:0 0 22px;">
           <div style="display:flex; justify-content:space-between; gap:12px; padding:8px 0;"><span>Beat</span><strong>${order.beatName || "-"}</strong></div>
           <div style="display:flex; justify-content:space-between; gap:12px; padding:8px 0;"><span>License</span><strong>${order.licenseName || "-"}</strong></div>
           <div style="display:flex; justify-content:space-between; gap:12px; padding:8px 0;"><span>Amount</span><strong>${amount}</strong></div>
           <div style="display:flex; justify-content:space-between; gap:12px; padding:8px 0;"><span>Status</span><strong>${order.paymentStatus || "-"}</strong></div>
         </div>
-
         <div style="margin:24px 0;">
           <a href="${downloadUrl}" style="display:inline-block; padding:14px 22px; border-radius:999px; background:#c79a2b; color:#111; text-decoration:none; font-weight:700; margin-right:10px;">Download your beat</a>
           <a href="${orderUrl}" style="display:inline-block; padding:14px 22px; border-radius:999px; border:1px solid rgba(255,255,255,.12); color:#f5f5f5; text-decoration:none;">Open order page</a>
         </div>
-
-        <p style="color:#9f9f9f; font-size:14px; line-height:1.6; margin-top:22px;">
-          This email was sent automatically after Stripe confirmed your payment.
-        </p>
+        <p style="color:#8e8e8e; font-size:12px; line-height:1.5;">Keep this email for your records. If you have trouble downloading, open the order page link above.</p>
       </div>
     </div>
   `;
 }
 
 async function sendDeliveryEmail(order) {
-  if (!resend) {
-    throw new Error("RESEND_API_KEY is missing");
-  }
-  if (!process.env.RESEND_FROM_EMAIL) {
-    throw new Error("RESEND_FROM_EMAIL is missing");
-  }
-  if (!order.customerEmail) {
-    throw new Error("Customer email is missing");
-  }
+  if (!resend) throw new Error("RESEND_API_KEY is missing");
+  if (!process.env.RESEND_FROM_EMAIL) throw new Error("RESEND_FROM_EMAIL is missing");
+  if (!order.customerEmail) throw new Error("Customer email is missing");
 
   const subject = `${order.beatName} — download ready`;
-
   const { data, error } = await resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL,
     to: [order.customerEmail],
@@ -154,37 +354,187 @@ async function sendDeliveryEmail(order) {
     html: buildEmailHtml(order),
   });
 
-  if (error) {
-    throw new Error(error.message || "Resend send failed");
-  }
-
+  if (error) throw new Error(error.message || "Resend send failed");
   return data;
 }
+
+async function deliverOrderIfNeeded(order) {
+  if (!order || order.paymentStatus !== "paid") return order;
+  if (order.emailSentAt) return order;
+
+  try {
+    await sendDeliveryEmail(order);
+    const orders = readOrders();
+    if (orders[order.sessionId]) {
+      orders[order.sessionId].emailSentAt = new Date().toISOString();
+      orders[order.sessionId].emailError = null;
+      orders[order.sessionId].updatedAt = new Date().toISOString();
+      writeOrders(orders);
+      return orders[order.sessionId];
+    }
+  } catch (emailError) {
+    console.error("Delivery email error:", emailError.message);
+    const orders = readOrders();
+    if (orders[order.sessionId]) {
+      orders[order.sessionId].emailError = emailError.message;
+      orders[order.sessionId].updatedAt = new Date().toISOString();
+      writeOrders(orders);
+      return orders[order.sessionId];
+    }
+  }
+
+  return order;
+}
+
+/* =========================
+   MIDDLEWARE
+========================= */
 
 app.use(cors());
 app.use("/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
-app.use(express.static(__dirname));
+app.use(express.urlencoded({ extended: false }));
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
+/* =========================
+   ADMIN ROUTES
+   These must come BEFORE express.static so admin.html is protected.
+========================= */
+
+app.get("/admin-login.html", (req, res) => {
+  if (isAdminAuthenticated(req)) return res.redirect("/admin.html");
+  return res.sendFile(path.join(__dirname, "admin-login.html"));
 });
 
+app.post("/admin-login", (req, res) => {
+  const submittedPassword = String(req.body.password || "");
+
+  if (submittedPassword !== ADMIN_PASSWORD) {
+    return res.redirect("/admin-login.html?error=1");
+  }
+
+  res.setHeader(
+    "Set-Cookie",
+    `${ADMIN_COOKIE_NAME}=${encodeURIComponent(ADMIN_COOKIE_VALUE)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=86400`
+  );
+
+  return res.redirect("/admin.html");
+});
+
+app.get("/admin-logout", (req, res) => {
+  res.setHeader(
+    "Set-Cookie",
+    `${ADMIN_COOKIE_NAME}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0`
+  );
+  return res.redirect("/");
+});
+
+app.get("/admin.html", requireAdmin, (req, res) => {
+  return res.sendFile(path.join(__dirname, "admin.html"));
+});
+
+app.post("/admin/add-beat", requireAdmin, (req, res) => {
+  try {
+    const { name, file, meta, style, description, slug } = req.body;
+    const finalMeta = String(meta || style || description || "").replace(/\s+/g, " ").trim();
+
+    if (!name || !file || !finalMeta) {
+      return res.status(400).json({ error: "Beat name, audio filename, and metadata are required." });
+    }
+
+    const data = readCatalogData();
+    const finalSlug = slugify(slug || name);
+
+    if (!finalSlug) {
+      return res.status(400).json({ error: "Unable to generate slug." });
+    }
+
+    if (data.catalog.some((beat) => beat.slug === finalSlug)) {
+      return res.status(409).json({ error: `Beat slug already exists: ${finalSlug}` });
+    }
+
+    const newBeat = normalizeBeat({
+      name: String(name).trim(),
+      slug: finalSlug,
+      file: String(file).trim(),
+      meta: finalMeta,
+      status: "active",
+      active: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    });
+
+    data.catalog.push(newBeat);
+    writeCatalogData(data);
+
+    return res.json({ success: true, beat: newBeat });
+  } catch (error) {
+    console.error("Add beat error:", error);
+    return res.status(500).json({ error: "Server error" });
+  }
+});
+
+app.get("/admin/catalog", requireAdmin, (req, res) => {
+  const data = readCatalogData();
+  res.json({ catalog: data.catalog, licenses: data.licenses });
+});
+
+app.post("/admin/beat-status", requireAdmin, (req, res) => {
+  try {
+    const slug = slugify(req.body.slug);
+    const status = String(req.body.status || "").toLowerCase().trim();
+
+    if (!slug) return res.status(400).json({ error: "Beat slug is required." });
+    if (!["active", "hidden", "sold"].includes(status)) {
+      return res.status(400).json({ error: "Status must be active, hidden, or sold." });
+    }
+
+    const data = readCatalogData();
+    const index = data.catalog.findIndex((beat) => beat.slug === slug);
+
+    if (index === -1) {
+      return res.status(404).json({ error: `Beat not found: ${slug}` });
+    }
+
+    data.catalog[index] = normalizeBeat({
+      ...data.catalog[index],
+      status,
+      active: status === "active",
+      updatedAt: new Date().toISOString()
+    });
+
+    writeCatalogData(data);
+    return res.json({ success: true, beat: data.catalog[index] });
+  } catch (error) {
+    console.error("Beat status error:", error);
+    return res.status(500).json({ error: "Server error" });
+  }
+});
+
+/* =========================
+   PUBLIC ROUTES + STATIC
+========================= */
+
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
+
 app.get("/api/catalog", (req, res) => {
-  res.json({ catalog: CATALOG, licenses: LICENSES });
+  const data = readCatalogData();
+  res.json({
+    catalog: data.catalog.filter(isBeatActive),
+    licenses: data.licenses
+  });
 });
 
 app.get("/api/session-status", async (req, res) => {
   try {
     const sessionId = req.query.session_id;
-    if (!sessionId) {
-      return res.status(400).json({ error: "Missing session_id" });
-    }
+    if (!sessionId) return res.status(400).json({ error: "Missing session_id" });
 
     const session = await stripe.checkout.sessions.retrieve(sessionId);
+    let order = null;
 
     if (session.payment_status === "paid") {
-      upsertOrder(session);
+      order = upsertOrder(session);
+      order = await deliverOrderIfNeeded(order);
     }
 
     res.json({
@@ -196,7 +546,11 @@ app.get("/api/session-status", async (req, res) => {
       beatFile: session.metadata?.beatFile || null,
       licenseName: session.metadata?.licenseName || null,
       licenseCode: session.metadata?.licenseCode || null,
-      amountTotal: session.amount_total || null
+      amountTotal: session.amount_total || null,
+      downloadUrl: order && order.paymentStatus === "paid" ? buildDownloadUrlForOrder(order) : null,
+      orderUrl: buildOrderUrl(session.id),
+      emailSentAt: order?.emailSentAt || null,
+      emailError: order?.emailError || null
     });
   } catch (error) {
     console.error("Session status error:", error.message);
@@ -206,29 +560,81 @@ app.get("/api/session-status", async (req, res) => {
 
 app.get("/api/order", (req, res) => {
   const sessionId = req.query.session_id;
-  if (!sessionId) {
-    return res.status(400).json({ error: "Missing session_id" });
-  }
+  if (!sessionId) return res.status(400).json({ error: "Missing session_id" });
 
   const orders = readOrders();
   const order = orders[sessionId];
 
-  if (!order) {
-    return res.status(404).json({ error: "Order not found yet" });
-  }
+  if (!order) return res.status(404).json({ error: "Order not found yet" });
 
-  res.json(order);
+  res.json({
+    ...order,
+    downloadUrl: order.paymentStatus === "paid" ? buildDownloadUrlForOrder(order) : null,
+    orderUrl: buildOrderUrl(order.sessionId)
+  });
+});
+
+app.get("/download", (req, res) => {
+  try {
+    const sessionId = String(req.query.session_id || "");
+    const token = String(req.query.token || "");
+
+    if (!sessionId || !token) {
+      return res.status(400).send("Missing download credentials.");
+    }
+
+    const orders = readOrders();
+    const order = orders[sessionId];
+
+    if (!order || order.paymentStatus !== "paid") {
+      return res.status(403).send("Download unavailable.");
+    }
+
+    const expectedToken = order.downloadToken || buildDownloadToken(order.sessionId);
+    if (!safeCompareToken(token, expectedToken)) {
+      return res.status(403).send("Invalid download link.");
+    }
+
+    const resolvedAudio = resolveAudioFileForOrder(order);
+
+    if (!resolvedAudio) {
+      console.error("Download file not found:", {
+        sessionId,
+        beatSlug: order.beatSlug,
+        beatName: order.beatName,
+        beatFile: order.beatFile
+      });
+      return res.status(404).send("Audio file not found.");
+    }
+
+    return res.download(resolvedAudio.filePath, resolvedAudio.downloadFilename);
+  } catch (error) {
+    console.error("Download error:", error.message);
+    return res.status(500).send("Download error.");
+  }
 });
 
 app.post("/create-checkout-session", async (req, res) => {
   try {
     const { beatSlug, licenseCode } = req.body;
-
     const beat = getBeatBySlug(beatSlug);
     const license = getLicenseByCode(licenseCode);
 
-    if (!beat || !license) {
-      return res.status(400).json({ error: "Invalid beat or license selection" });
+    if (!beat) {
+      return res.status(400).json({ error: `Beat not found: ${beatSlug}` });
+    }
+
+    if (!isBeatActive(beat)) {
+      return res.status(409).json({ error: "This beat is no longer available for purchase." });
+    }
+
+    if (!license) {
+      return res.status(400).json({ error: `License not found: ${licenseCode}` });
+    }
+
+    const price = Number(license.price);
+    if (!Number.isFinite(price) || price <= 0) {
+      return res.status(400).json({ error: `Invalid license price for ${licenseCode}` });
     }
 
     const session = await stripe.checkout.sessions.create({
@@ -236,25 +642,23 @@ app.post("/create-checkout-session", async (req, res) => {
       mode: "payment",
       customer_creation: "always",
       billing_address_collection: "auto",
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: `${beat.name} — ${license.name}`,
-              description: beat.meta
-            },
-            unit_amount: license.price * 100
+      line_items: [{
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: `${String(beat.name || "Untitled Beat").trim()} — ${String(license.name || "License").trim()}`,
+            description: String(beat.meta || "Booth Ready instrumental").trim() || "Booth Ready instrumental"
           },
-          quantity: 1
-        }
-      ],
+          unit_amount: Math.round(price * 100)
+        },
+        quantity: 1
+      }],
       metadata: {
-        beatSlug: beat.slug,
-        beatName: beat.name,
-        beatFile: beat.file,
-        licenseCode: license.code,
-        licenseName: license.name
+        beatSlug: String(beat.slug || ""),
+        beatName: String(beat.name || ""),
+        beatFile: String(beat.file || ""),
+        licenseCode: String(license.code || ""),
+        licenseName: String(license.name || "")
       },
       success_url: `${DOMAIN}/success.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${DOMAIN}/cancel.html`
@@ -263,7 +667,7 @@ app.post("/create-checkout-session", async (req, res) => {
     res.json({ url: session.url });
   } catch (error) {
     console.error("Stripe error:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: error.message || "Internal Server Error" });
   }
 });
 
@@ -278,16 +682,8 @@ app.post("/webhook", async (req, res) => {
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
-      const order = upsertOrder(session);
-
-      try {
-        await sendDeliveryEmail(order);
-        upsertOrder(session, { emailSentAt: new Date().toISOString(), emailError: null });
-        console.log(`Delivery email sent for ${session.id}`);
-      } catch (emailError) {
-        console.error("Delivery email error:", emailError.message);
-        upsertOrder(session, { emailError: emailError.message });
-      }
+      let order = upsertOrder(session);
+      await deliverOrderIfNeeded(order);
     }
 
     res.json({ received: true });
@@ -297,6 +693,8 @@ app.post("/webhook", async (req, res) => {
   }
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+app.use(express.static(__dirname));
+
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });

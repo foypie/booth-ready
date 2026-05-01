@@ -1,0 +1,96 @@
+{
+  "catalog": [
+    {
+      "slug": "60s-remix",
+      "name": "60s Remix",
+      "file": "60s Remix.mp3",
+      "meta": "Boom Bap • Vintage Feel",
+      "status": "active",
+      "active": true,
+      "updatedAt": null
+    },
+    {
+      "slug": "60s",
+      "name": "60s",
+      "file": "60s.mp3",
+      "meta": "Classic • Warm",
+      "status": "active",
+      "active": true,
+      "updatedAt": null
+    },
+    {
+      "slug": "black-shuga",
+      "name": "Black Shuga",
+      "file": "Black Shuga.mp3",
+      "meta": "Soulful • Boom Bap",
+      "status": "active",
+      "active": true,
+      "updatedAt": null
+    },
+    {
+      "slug": "epic",
+      "name": "Epic",
+      "file": "Epic.mp3",
+      "meta": "Cinematic • Hard-Hitting",
+      "status": "active",
+      "active": true,
+      "updatedAt": null
+    },
+    {
+      "slug": "key-witness",
+      "name": "Key Witness",
+      "file": "Key Witness.mp3",
+      "meta": "Dark • Gritty",
+      "status": "active",
+      "active": true,
+      "updatedAt": null
+    },
+    {
+      "slug": "moonstruck",
+      "name": "Moonstruck",
+      "file": "Moonstruck.mp3",
+      "meta": "Moody • Atmospheric",
+      "status": "active",
+      "active": true,
+      "updatedAt": null
+    },
+    {
+      "slug": "mozee-along",
+      "name": "Mozee Along",
+      "file": "Mozee Along.mp3",
+      "meta": "Smooth • Head-Nod",
+      "status": "active",
+      "active": true,
+      "updatedAt": null
+    },
+    {
+      "slug": "widgets",
+      "name": "Widgets",
+      "file": "Widgets.mp3",
+      "meta": "Modern • Punchy",
+      "status": "active",
+      "active": true,
+      "updatedAt": "2026-04-30T14:18:37.046Z"
+    }
+  ],
+  "licenses": [
+    {
+      "code": "basic",
+      "name": "Basic License",
+      "price": 29,
+      "description": "MP3 lease for demos and early releases."
+    },
+    {
+      "code": "premium",
+      "name": "Premium License",
+      "price": 79,
+      "description": "Higher-quality license for streaming and monetized platforms."
+    },
+    {
+      "code": "unlimited",
+      "name": "Unlimited License",
+      "price": 199,
+      "description": "Expanded commercial license for serious releases."
+    }
+  ]
+}

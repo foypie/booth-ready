@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Booth Ready | Admin Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#070403;
+      --cream:#e2d0a8;
+      --muted:rgba(226,208,168,.72);
+      --orange:#f15a2a;
+      --line:rgba(241,90,42,.36);
+      --error:#ff6961;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      background:
+        radial-gradient(circle at 20% 12%, rgba(241,90,42,.20), transparent 34%),
+        radial-gradient(circle at 84% 18%, rgba(226,208,168,.10), transparent 30%),
+        #070403;
+      color:var(--cream);
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    .card{
+      width:min(520px,100%);
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(32,16,11,.96), rgba(10,5,4,.98));
+      border-radius:22px;
+      padding:30px;
+      box-shadow:0 30px 90px rgba(0,0,0,.56);
+    }
+    .kicker{
+      font-family:Anton,Impact,sans-serif;
+      letter-spacing:.18em;
+      color:var(--orange);
+      font-size:14px;
+      margin-bottom:8px;
+    }
+    h1{
+      font-family:Anton,Impact,sans-serif;
+      text-transform:uppercase;
+      font-size:clamp(44px,8vw,72px);
+      line-height:.9;
+      margin:0 0 12px;
+      letter-spacing:.02em;
+    }
+    p{color:var(--muted);line-height:1.55;margin:0 0 22px;font-weight:650}
+    label{
+      display:block;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:900;
+      margin:0 0 8px;
+    }
+    input{
+      width:100%;
+      border:1px solid rgba(226,208,168,.22);
+      background:rgba(0,0,0,.34);
+      color:var(--cream);
+      border-radius:12px;
+      padding:15px 14px;
+      font:inherit;
+      outline:none;
+    }
+    input:focus{
+      border-color:var(--orange);
+      box-shadow:0 0 0 3px rgba(241,90,42,.16);
+    }
+    .actions{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+    button,.back{
+      border-radius:12px;
+      padding:14px 18px;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:1000;
+      text-decoration:none;
+      cursor:pointer;
+    }
+    button{
+      border:0;
+      background:var(--orange);
+      color:#1b0904;
+      box-shadow:0 10px 30px rgba(241,90,42,.24);
+    }
+    .back{
+      color:var(--cream);
+      border:1px solid rgba(226,208,168,.22);
+      background:rgba(226,208,168,.08);
+    }
+    .error{
+      display:none;
+      margin-top:14px;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid rgba(255,105,97,.4);
+      color:var(--error);
+      background:rgba(255,105,97,.08);
+      font-weight:800;
+      line-height:1.45;
+    }
+    body.login-error .error{display:block}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="kicker">BOOTH READY ADMIN</div>
+    <h1>Admin Login</h1>
+    <p>Enter the admin password to manage beats.</p>
+
+    <form method="POST" action="/admin-login">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required autofocus />
+      <div class="actions">
+        <button type="submit">Enter Admin</button>
+        <a class="back" href="/">Back to Store</a>
+      </div>
+      <div class="error">Incorrect password. Try again.</div>
+    </form>
+  </main>
+
+  <script>
+    if (new URLSearchParams(window.location.search).get("error")) {
+      document.body.classList.add("login-error");
+    }
+  </script>
+</body>
+</html>

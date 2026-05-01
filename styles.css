@@ -1251,3 +1251,950 @@ section {
   background: #c0392b;
   border-color: #c0392b;
 }
+
+/* =========================================
+   FINAL READABILITY V2 - NOTICEABLE LOCK
+   Purpose:
+   - Make section labels clearly readable
+   - Make explanatory copy comfortable at desktop size
+   - Make FAQ / license card text readable without changing layout logic
+   - Preserve checkout, audio, catalog, script, hero, and responsive structure
+   ========================================= */
+
+.license-section-kicker,
+.eyebrow {
+  font-size: 30px !important;
+  line-height: 1 !important;
+  letter-spacing: 6px !important;
+  margin-bottom: 18px !important;
+  color: var(--orange) !important;
+}
+
+.license-section-head h2,
+.licenses-section h2,
+.poster-head h2,
+.poster-heading h2 {
+  font-size: clamp(58px, 5vw, 96px) !important;
+  line-height: 0.92 !important;
+  margin-bottom: 20px !important;
+}
+
+.license-section-head p {
+  font-size: 24px !important;
+  line-height: 1.55 !important;
+  max-width: 1120px !important;
+  color: #eadfce !important;
+}
+
+.license-trust {
+  font-size: 16px !important;
+  line-height: 1.25 !important;
+  padding: 14px 18px !important;
+  max-width: 520px !important;
+}
+
+.licenses-section,
+.license-conversion-section {
+  padding-top: 110px !important;
+  padding-bottom: 110px !important;
+}
+
+.license-box h4,
+.license-card h4,
+.license-conversion-card h4 {
+  font-size: 32px !important;
+  line-height: 1 !important;
+  margin-bottom: 12px !important;
+}
+
+.license-price {
+  font-size: 30px !important;
+  line-height: 1 !important;
+  margin-bottom: 16px !important;
+}
+
+.license-card-summary,
+.license-box p,
+.license-card p {
+  font-size: 20px !important;
+  line-height: 1.5 !important;
+  color: #eadfce !important;
+}
+
+.license-benefits {
+  gap: 10px !important;
+  margin-top: 14px !important;
+  margin-bottom: 20px !important;
+}
+
+.license-benefits li {
+  font-size: 18px !important;
+  line-height: 1.45 !important;
+  padding-left: 20px !important;
+}
+
+.license-conversion-card,
+.license-box,
+.license-card {
+  padding: 28px !important;
+}
+
+.license-conversion-grid,
+.license-grid {
+  gap: 24px !important;
+}
+
+.license-cta {
+  min-height: 46px !important;
+  font-size: 16px !important;
+  letter-spacing: .07em !important;
+}
+
+@media (min-width: 1201px) {
+  .license-section-head {
+    margin-bottom: 36px !important;
+  }
+
+  .content-section .license-section-head {
+    align-items: flex-start !important;
+  }
+
+  .content-section .license-trust {
+    margin-top: 18px !important;
+  }
+
+  .license-conversion-card {
+    min-height: 300px !important;
+  }
+
+  .content-section {
+    margin-top: 80px !important;
+    margin-bottom: 80px !important;
+  }
+}
+
+@media (max-width: 1200px) {
+  .license-section-kicker,
+  .eyebrow {
+    font-size: 20px !important;
+    letter-spacing: 4px !important;
+  }
+
+  .license-section-head h2,
+  .licenses-section h2,
+  .poster-head h2,
+  .poster-heading h2 {
+    font-size: 48px !important;
+  }
+
+  .license-section-head p,
+  .license-card-summary,
+  .license-box p,
+  .license-card p {
+    font-size: 17px !important;
+  }
+
+  .license-benefits li {
+    font-size: 15px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .license-section-kicker,
+  .eyebrow {
+    font-size: 15px !important;
+    letter-spacing: 3px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .license-section-head h2,
+  .licenses-section h2,
+  .poster-head h2,
+  .poster-heading h2 {
+    font-size: 36px !important;
+  }
+
+  .license-section-head p,
+  .license-card-summary,
+  .license-box p,
+  .license-card p {
+    font-size: 14px !important;
+  }
+
+  .license-benefits li {
+    font-size: 13px !important;
+  }
+
+  .licenses-section,
+  .license-conversion-section {
+    padding-top: 44px !important;
+    padding-bottom: 44px !important;
+  }
+
+  .license-conversion-card,
+  .license-box,
+  .license-card {
+    padding: 18px !important;
+  }
+}
+
+/* =========================================
+   BOOTH READY — FINAL POLISH LOCK
+   Purpose:
+   - Preserve improved section labels
+   - Reduce oversized beige section headlines
+   - Keep body/card text readable
+   - Tighten vertical rhythm without touching checkout/audio/catalog logic
+   ========================================= */
+
+/* Core section rhythm */
+.content-section,
+.licenses-section,
+.license-conversion-section {
+  padding-top: 58px !important;
+  padding-bottom: 58px !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Keep section labels strong and readable */
+.license-section-kicker,
+.eyebrow {
+  font-size: 24px !important;
+  line-height: 1 !important;
+  letter-spacing: 5px !important;
+  margin-bottom: 12px !important;
+  color: var(--orange) !important;
+}
+
+/* Reduce large beige section headlines to a better hierarchy */
+.license-section-head h2,
+.licenses-section h2,
+.poster-head h2,
+.poster-heading h2 {
+  font-size: clamp(46px, 4vw, 74px) !important;
+  line-height: .94 !important;
+  margin-top: 0 !important;
+  margin-bottom: 14px !important;
+}
+
+/* Preserve comfortable body readability */
+.license-section-head p {
+  font-size: 20px !important;
+  line-height: 1.55 !important;
+  max-width: 900px !important;
+  color: #eadfce !important;
+  margin-top: 0 !important;
+}
+
+/* Right-side callout should remain compact */
+.license-trust {
+  font-size: 14px !important;
+  line-height: 1.25 !important;
+  padding: 11px 14px !important;
+  max-width: 440px !important;
+}
+
+/* Better desktop alignment for informational sections */
+@media (min-width: 1201px) {
+  .content-section .license-section-head,
+  .license-section-head {
+    margin-bottom: 24px !important;
+    align-items: flex-start !important;
+  }
+
+  .content-section .license-trust {
+    margin-top: 10px !important;
+  }
+
+  .content-section {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+}
+
+/* Keep license / FAQ cards readable but not oversized */
+.license-box h4,
+.license-card h4,
+.license-conversion-card h4 {
+  font-size: 28px !important;
+  line-height: 1 !important;
+  margin-bottom: 10px !important;
+}
+
+.license-price {
+  font-size: 26px !important;
+  line-height: 1 !important;
+  margin-bottom: 12px !important;
+}
+
+.license-card-summary,
+.license-box p,
+.license-card p {
+  font-size: 18px !important;
+  line-height: 1.48 !important;
+  color: #eadfce !important;
+}
+
+.license-benefits {
+  gap: 8px !important;
+  margin-top: 12px !important;
+  margin-bottom: 16px !important;
+}
+
+.license-benefits li {
+  font-size: 16px !important;
+  line-height: 1.42 !important;
+  padding-left: 18px !important;
+}
+
+.license-conversion-card,
+.license-box,
+.license-card {
+  padding: 22px !important;
+}
+
+.license-conversion-card {
+  min-height: 252px !important;
+}
+
+.license-conversion-grid,
+.license-grid {
+  gap: 18px !important;
+}
+
+.license-cta {
+  min-height: 42px !important;
+  font-size: 14px !important;
+  letter-spacing: .07em !important;
+}
+
+/* Tablet */
+@media (max-width: 1200px) {
+  .content-section,
+  .licenses-section,
+  .license-conversion-section {
+    padding-top: 46px !important;
+    padding-bottom: 46px !important;
+  }
+
+  .license-section-kicker,
+  .eyebrow {
+    font-size: 19px !important;
+    letter-spacing: 4px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .license-section-head h2,
+  .licenses-section h2,
+  .poster-head h2,
+  .poster-heading h2 {
+    font-size: 44px !important;
+    line-height: .95 !important;
+    margin-bottom: 12px !important;
+  }
+
+  .license-section-head p,
+  .license-card-summary,
+  .license-box p,
+  .license-card p {
+    font-size: 17px !important;
+  }
+
+  .license-benefits li {
+    font-size: 15px !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .content-section,
+  .licenses-section,
+  .license-conversion-section {
+    padding-top: 34px !important;
+    padding-bottom: 34px !important;
+  }
+
+  .license-section-kicker,
+  .eyebrow {
+    font-size: 15px !important;
+    letter-spacing: 3px !important;
+    margin-bottom: 9px !important;
+  }
+
+  .license-section-head h2,
+  .licenses-section h2,
+  .poster-head h2,
+  .poster-heading h2 {
+    font-size: 34px !important;
+    line-height: .96 !important;
+    margin-bottom: 10px !important;
+  }
+
+  .license-section-head p,
+  .license-card-summary,
+  .license-box p,
+  .license-card p {
+    font-size: 14px !important;
+    line-height: 1.45 !important;
+  }
+
+  .license-benefits li {
+    font-size: 13px !important;
+  }
+
+  .license-conversion-card,
+  .license-box,
+  .license-card {
+    padding: 18px !important;
+  }
+}
+
+
+/* =========================================================
+   BOOTH READY — FINAL MICRO PASS + ANCHOR POSITIONING
+   Purpose:
+   - Tighten final section spacing by ~10–15%
+   - Normalize FAQ/license card rhythm
+   - Strengthen license CTAs without changing checkout/audio logic
+   - Add safe scroll anchor offsets for nav links
+   ========================================================= */
+
+html{
+  scroll-padding-top: 18px !important;
+}
+
+#about,
+#exclusives,
+#faq,
+#licenses,
+#license,
+#contact,
+#catalog,
+#beats{
+  scroll-margin-top: 18px !important;
+}
+
+/* Final vertical rhythm: tighter than prior polish, still premium */
+.content-section,
+.licenses-section,
+.license-conversion-section{
+  padding-top: 60px !important;
+  padding-bottom: 60px !important;
+}
+
+@media (min-width: 1201px){
+  .content-section,
+  .licenses-section,
+  .license-conversion-section{
+    padding-top: 66px !important;
+    padding-bottom: 66px !important;
+  }
+
+  .content-section + .content-section,
+  .content-section + .licenses-section,
+  .content-section + .license-conversion-section,
+  .license-conversion-section + .content-section,
+  .licenses-section + .content-section{
+    margin-top: -10px !important;
+  }
+}
+
+/* Slight headline trim so FAQ / Licenses don't overpower cards */
+.license-section-head h2,
+.licenses-section h2,
+.poster-head h2,
+.poster-heading h2{
+  font-size: clamp(42px, 3.75vw, 68px) !important;
+  line-height: .95 !important;
+  margin-bottom: 12px !important;
+}
+
+/* Section labels stay assertive */
+.license-section-kicker,
+.eyebrow{
+  font-size: 22px !important;
+  line-height: 1 !important;
+  letter-spacing: .18em !important;
+  margin-bottom: 12px !important;
+}
+
+/* Descriptions stay readable but more controlled */
+.license-section-head p{
+  font-size: 18px !important;
+  line-height: 1.5 !important;
+  max-width: 960px !important;
+}
+
+/* FAQ/grid equalization. Safe even if FAQ uses license-style classes. */
+.faq-grid,
+.license-grid,
+.license-conversion-grid{
+  align-items: stretch !important;
+}
+
+.faq-card,
+.license-box,
+.license-card,
+.license-conversion-card{
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.faq-card{
+  padding: 22px !important;
+  border: 1px solid rgba(255,98,54,.42) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,98,54,.055), transparent 42%),
+    linear-gradient(180deg, rgba(17,8,5,.98), rgba(8,4,3,.98)) !important;
+}
+
+.faq-card h3,
+.faq-card h4{
+  margin: 0 0 9px !important;
+  font-family: Anton, Impact, "Arial Narrow Bold", sans-serif !important;
+  font-size: 24px !important;
+  line-height: .98 !important;
+  color: #efe6d5 !important;
+}
+
+.faq-card p{
+  margin: 0 !important;
+  font-size: 16px !important;
+  line-height: 1.45 !important;
+  color: #eadfce !important;
+}
+
+/* License card rhythm */
+.license-conversion-card,
+.license-box,
+.license-card{
+  padding: 22px !important;
+  min-height: 246px !important;
+}
+
+.license-box h4,
+.license-card h4,
+.license-conversion-card h4{
+  font-size: 25px !important;
+  line-height: .98 !important;
+  margin-bottom: 8px !important;
+}
+
+.license-price{
+  font-size: 25px !important;
+  line-height: 1 !important;
+  margin-bottom: 10px !important;
+}
+
+.license-card-summary,
+.license-box p,
+.license-card p{
+  font-size: 16px !important;
+  line-height: 1.45 !important;
+}
+
+.license-benefits{
+  gap: 7px !important;
+  margin-top: 11px !important;
+  margin-bottom: 14px !important;
+}
+
+.license-benefits li{
+  font-size: 14px !important;
+  line-height: 1.38 !important;
+}
+
+/* Stronger conversion buttons */
+.license-cta{
+  margin-top: auto !important;
+  min-height: 42px !important;
+  border-color: rgba(255,178,92,.48) !important;
+  background: linear-gradient(180deg, rgba(255,98,54,.98), rgba(177,48,28,.98)) !important;
+  color: #fff5ea !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  letter-spacing: .075em !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,.20) !important;
+}
+
+.license-cta:hover{
+  filter: brightness(1.08) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Keep trust chips compact */
+.license-trust{
+  font-size: 13px !important;
+  line-height: 1.2 !important;
+  padding: 10px 13px !important;
+}
+
+@media (max-width: 1200px){
+  html{scroll-padding-top: 14px !important;}
+
+  #about,
+  #exclusives,
+  #faq,
+  #licenses,
+  #license,
+  #contact,
+  #catalog,
+  #beats{
+    scroll-margin-top: 14px !important;
+  }
+
+  .content-section,
+  .licenses-section,
+  .license-conversion-section{
+    padding-top: 42px !important;
+    padding-bottom: 42px !important;
+  }
+
+  .license-section-head h2,
+  .licenses-section h2,
+  .poster-head h2,
+  .poster-heading h2{
+    font-size: 40px !important;
+  }
+
+  .license-section-kicker,
+  .eyebrow{
+    font-size: 18px !important;
+    letter-spacing: .16em !important;
+  }
+
+  .license-section-head p{
+    font-size: 16px !important;
+  }
+
+  .faq-card h3,
+  .faq-card h4,
+  .license-box h4,
+  .license-card h4,
+  .license-conversion-card h4{
+    font-size: 22px !important;
+  }
+}
+
+@media (max-width: 768px){
+  html{scroll-padding-top: 10px !important;}
+
+  #about,
+  #exclusives,
+  #faq,
+  #licenses,
+  #license,
+  #contact,
+  #catalog,
+  #beats{
+    scroll-margin-top: 10px !important;
+  }
+
+  .content-section,
+  .licenses-section,
+  .license-conversion-section{
+    padding-top: 32px !important;
+    padding-bottom: 32px !important;
+  }
+
+  .license-section-head h2,
+  .licenses-section h2,
+  .poster-head h2,
+  .poster-heading h2{
+    font-size: 32px !important;
+    line-height: .98 !important;
+  }
+
+  .license-section-kicker,
+  .eyebrow{
+    font-size: 15px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .faq-card,
+  .license-conversion-card,
+  .license-box,
+  .license-card{
+    padding: 17px !important;
+    min-height: 0 !important;
+  }
+
+  .faq-card p,
+  .license-card-summary,
+  .license-box p,
+  .license-card p{
+    font-size: 14px !important;
+  }
+
+  .license-benefits li{
+    font-size: 13px !important;
+  }
+}
+
+
+/* =========================================================
+   BOOTH READY — FINAL POLISH CSS PASS
+   Purpose:
+   - Preserve working nav hitboxes / HTML structure
+   - Tighten remaining black-space rhythm
+   - Improve section framing after top-nav clicks
+   - Preserve checkout, audio, catalog, hero, beat cards, and mobile behavior
+   ========================================================= */
+
+/* Final scroll framing */
+html{
+  scroll-padding-top: 6px !important;
+}
+
+.anchor-target,
+#about,
+#exclusives,
+#faq,
+#licenses,
+#contact,
+#catalog,
+#beats{
+  scroll-margin-top: 6px !important;
+}
+
+/* Final premium vertical rhythm */
+.content-section,
+.licenses-section,
+.license-conversion-section{
+  padding-top: 36px !important;
+  padding-bottom: 36px !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Reduce black-space drift between stacked content sections */
+.content-section + .content-section,
+.content-section + .licenses-section,
+.content-section + .license-conversion-section,
+.licenses-section + .content-section,
+.license-conversion-section + .content-section{
+  margin-top: -22px !important;
+}
+
+/* Keep section headers visually near the anchor landing point */
+.license-section-head{
+  margin-bottom: 16px !important;
+  gap: 14px !important;
+}
+
+.license-section-kicker,
+.eyebrow{
+  margin-bottom: 7px !important;
+}
+
+/* Preserve hierarchy while preventing oversized section blocks */
+.license-section-head h2,
+.licenses-section h2,
+.poster-head h2,
+.poster-heading h2{
+  font-size: clamp(40px, 3.55vw, 64px) !important;
+  line-height: .95 !important;
+  margin-top: 0 !important;
+  margin-bottom: 9px !important;
+}
+
+.license-section-head p{
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  max-width: 940px !important;
+}
+
+/* Slightly tighter card system without changing card identity */
+.license-grid,
+.license-conversion-grid{
+  gap: 15px !important;
+}
+
+.license-conversion-card,
+.license-box,
+.license-card{
+  min-height: 210px !important;
+  padding: 20px !important;
+}
+
+.license-box h4,
+.license-card h4,
+.license-conversion-card h4{
+  margin-bottom: 7px !important;
+}
+
+.license-card-summary,
+.license-box p,
+.license-card p{
+  line-height: 1.42 !important;
+}
+
+.license-benefits{
+  gap: 6px !important;
+  margin-top: 9px !important;
+  margin-bottom: 12px !important;
+}
+
+/* Keep CTAs strong, but not oversized */
+.license-cta{
+  min-height: 40px !important;
+}
+
+/* Contact should close the page cleanly */
+#contact-section{
+  padding-bottom: 28px !important;
+}
+
+/* Desktop-specific final framing */
+@media (min-width: 1201px){
+  .content-section,
+  .licenses-section,
+  .license-conversion-section{
+    padding-top: 38px !important;
+    padding-bottom: 38px !important;
+  }
+
+  .content-section + .content-section,
+  .content-section + .licenses-section,
+  .content-section + .license-conversion-section,
+  .licenses-section + .content-section,
+  .license-conversion-section + .content-section{
+    margin-top: -24px !important;
+  }
+
+  .anchor-target,
+  #about,
+  #exclusives,
+  #faq,
+  #licenses,
+  #contact,
+  #catalog,
+  #beats{
+    scroll-margin-top: 4px !important;
+  }
+
+  html{
+    scroll-padding-top: 4px !important;
+  }
+}
+
+/* Tablet */
+@media (max-width: 1200px){
+  html{
+    scroll-padding-top: 8px !important;
+  }
+
+  .content-section,
+  .licenses-section,
+  .license-conversion-section{
+    padding-top: 32px !important;
+    padding-bottom: 32px !important;
+  }
+
+  .content-section + .content-section,
+  .content-section + .licenses-section,
+  .content-section + .license-conversion-section,
+  .licenses-section + .content-section,
+  .license-conversion-section + .content-section{
+    margin-top: -8px !important;
+  }
+
+  .license-section-head{
+    margin-bottom: 14px !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px){
+  html{
+    scroll-padding-top: 8px !important;
+  }
+
+  .content-section,
+  .licenses-section,
+  .license-conversion-section{
+    padding-top: 28px !important;
+    padding-bottom: 28px !important;
+  }
+
+  .content-section + .content-section,
+  .content-section + .licenses-section,
+  .content-section + .license-conversion-section,
+  .licenses-section + .content-section,
+  .license-conversion-section + .content-section{
+    margin-top: 0 !important;
+  }
+
+  .license-section-head{
+    margin-bottom: 12px !important;
+  }
+
+  .license-grid,
+  .license-conversion-grid{
+    gap: 12px !important;
+  }
+
+  .license-conversion-card,
+  .license-box,
+  .license-card{
+    min-height: 0 !important;
+    padding: 17px !important;
+  }
+}
+
+/* ========================================
+   HERO FINAL SEAM FIX — BALANCED
+   ======================================== */
+
+#brHeroReset {
+  margin-bottom: -12px !important;
+}
+
+.feature-strip-exact {
+  margin-top: -12px !important;
+}
+
+/* Prevent visual clipping of buttons area */
+#brHeroReset img {
+  display: block;
+  object-fit: cover;
+  object-position: center bottom;
+}
+
+/* =========================
+   RIGHT SIDE ATMOSPHERE FOUNDATION
+   (STRUCTURAL — SAFE)
+   ========================= */
+
+.poster-marketplace {
+  position: relative;
+}
+
+/* create persistent right-side visual column */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 340px; /* match your side rail width */
+  height: 100vh;
+  background: linear-gradient(
+    to left,
+    rgba(8,4,3,0.95),
+    rgba(8,4,3,0.85)
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* keep actual content above */
+.poster-main,
+.poster-side,
+header,
+main,
+section {
+  position: relative;
+  z-index: 1;
+}

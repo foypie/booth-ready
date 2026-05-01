@@ -7,6 +7,43 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&family=Permanent+Marker&display=swap" rel="stylesheet">
+  <style>
+    .anchor-target{
+      display:block;
+      height:0;
+      line-height:0;
+      visibility:hidden;
+      scroll-margin-top:24px;
+    }
+
+    .br-admin-nav-link{
+      position:absolute;
+      left:80.6%;
+      top:4.65%;
+      z-index:8;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      height:5.0%;
+      min-width:5.5%;
+      padding:0 10px;
+      color:#e8d7b1;
+      text-decoration:none;
+      font-family:Anton, Impact, sans-serif;
+      font-size:clamp(10px, .95vw, 14px);
+      letter-spacing:.08em;
+      line-height:1;
+      text-transform:uppercase;
+      border:1px solid rgba(241,90,42,.7);
+      background:rgba(8,4,3,.55);
+      box-shadow:0 0 0 1px rgba(0,0,0,.35), 0 8px 22px rgba(0,0,0,.28);
+    }
+    .br-admin-nav-link:hover{
+      color:#fff3d0;
+      background:rgba(241,90,42,.22);
+      border-color:#f15a2a;
+    }
+  </style>
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
@@ -22,13 +59,16 @@
       <img src="/assets/hero-complete.png" alt="Booth Ready hero artwork" style="display:block;width:100%;max-width:100%;height:auto;margin:0;padding:0;border:0;object-fit:contain;object-position:center center;transform:none;" />
       <a class="br-hero-reset-hit br-hero-reset-hit-browse" href="#beats" aria-label="Browse Beats"></a>
       <a class="br-hero-reset-hit br-hero-reset-hit-exclusive" href="#licenses" aria-label="Exclusive Rights"></a>
+
+      <!-- Invisible click areas over the navigation text embedded in the hero artwork -->
+      <a href="#beats" aria-label="Beats" style="position:absolute;left:31.8%;top:4.6%;width:5.2%;height:5.2%;display:block;z-index:5;"></a>
+      <a href="#exclusives" aria-label="Exclusives" style="position:absolute;left:39.0%;top:4.6%;width:8.2%;height:5.2%;display:block;z-index:5;"></a>
+      <a href="#about" aria-label="About" style="position:absolute;left:49.0%;top:4.6%;width:5.8%;height:5.2%;display:block;z-index:5;"></a>
+      <a href="#licenses" aria-label="Licenses" style="position:absolute;left:56.8%;top:4.6%;width:7.3%;height:5.2%;display:block;z-index:5;"></a>
+      <a href="#faq" aria-label="FAQ" style="position:absolute;left:66.2%;top:4.6%;width:4.3%;height:5.2%;display:block;z-index:5;"></a>
+      <a href="#contact" aria-label="Contact" style="position:absolute;left:72.0%;top:4.6%;width:7.2%;height:5.2%;display:block;z-index:5;"></a>
+      <a class="br-admin-nav-link" href="/admin-login.html" aria-label="Admin">ADMIN</a>
     </section>
-
-
-    <section class="feature-strip-exact">
-      <img src="/assets/feature-strip.png" alt="Features strip" />
-    </section>
-
     <section class="poster-marketplace" id="beats">
       <div class="poster-main">
         <div class="poster-head">
@@ -63,7 +103,7 @@
           </div>
         </article>
 
-        <article class="stay-panel" id="contact">
+        <article class="stay-panel" id="contactRail">
           <div class="stay-stars">★ ★</div>
           <h3>STAY CONNECTED</h3>
           <p>NEW BEATS. SPECIAL OFFERS. UPDATES.</p>
@@ -88,14 +128,104 @@
 </aside>
     </section>
 
-    <section class="licenses-section license-conversion-section" id="licenses">
+    <div id="about" class="anchor-target" aria-hidden="true"></div>
+    <section class="licenses-section content-section" id="about-section">
+      <div class="license-section-kicker">ABOUT</div>
+      <div class="license-section-head">
+        <div>
+          <h2>Built for emcees. Made from the crates.</h2>
+          <p>Produced by Beatz4Life, LLC and crafted by Mista Foy, Booth Ready delivers gritty, sample-inspired boom bap instrumentals built for emcees, deejays, and serious artists.</p>
+        </div>
+      </div>
+    </section>
+
+    <div id="exclusives" class="anchor-target" aria-hidden="true"></div>
+    <section class="licenses-section content-section" id="exclusives-section">
+      <div class="license-section-kicker">EXCLUSIVES</div>
+      <div class="license-section-head">
+        <div>
+          <h2>Exclusive rights for serious releases</h2>
+          <p>Exclusive rights are available for artists who want to secure a beat for a single, project, or larger campaign. Once exclusive terms are approved and completed, the beat can be removed from the public catalog according to the written agreement.</p>
+        </div>
+      </div>
+
+      <div class="license-grid license-conversion-grid">
+        <article class="license-box license-conversion-card license-exclusive">
+          <div class="license-card-top">
+            <h4>Exclusive License</h4>
+            <div class="license-price">$499+</div>
+          </div>
+          <p class="license-card-summary">Best for artists who want stronger control over a beat and release strategy.</p>
+          <ul class="license-benefits">
+            <li>Written agreement required</li>
+            <li>Ownership terms must be expressly transferred</li>
+            <li>Credit required unless otherwise agreed</li>
+          </ul>
+          <a class="license-cta license-cta-exclusive" href="#contact">Ask About Exclusive</a>
+        </article>
+
+        <article class="license-box license-conversion-card">
+          <div class="license-card-top">
+            <h4>Required Credit</h4>
+          </div>
+          <p class="license-card-summary">Use this producer credit unless your written agreement states otherwise.</p>
+          <ul class="license-benefits">
+            <li>Prod. by Mista Foy for Beatz4Life, LLC</li>
+          </ul>
+          <a class="license-cta" href="#licenses">View License Options</a>
+        </article>
+      </div>
+    </section>
+
+    <div id="faq" class="anchor-target" aria-hidden="true"></div>
+    <section class="licenses-section content-section" id="faq-section">
+      <div class="license-section-kicker">FAQ</div>
+      <div class="license-section-head">
+        <div>
+          <h2>Frequently asked questions</h2>
+          <p>Quick answers for artists purchasing, releasing, and crediting Booth Ready instrumentals.</p>
+        </div>
+      </div>
+
+      <div class="license-grid license-conversion-grid">
+        <article class="license-box license-conversion-card">
+          <div class="license-card-top">
+            <h4>Who produces the beats?</h4>
+          </div>
+          <p class="license-card-summary">Booth Ready instrumentals are produced by Beatz4Life, LLC and crafted by Mista Foy.</p>
+        </article>
+
+        <article class="license-box license-conversion-card">
+          <div class="license-card-top">
+            <h4>What credit should I use?</h4>
+          </div>
+          <p class="license-card-summary">Use: Prod. by Mista Foy for Beatz4Life, LLC.</p>
+        </article>
+
+        <article class="license-box license-conversion-card">
+          <div class="license-card-top">
+            <h4>Can I resell the beat or claim ownership?</h4>
+          </div>
+          <p class="license-card-summary">No. You may use the beat according to your purchased license, but you may not resell, redistribute, or claim ownership of the instrumental unless ownership rights are expressly transferred in a written Exclusive License Agreement.</p>
+        </article>
+
+        <article class="license-box license-conversion-card">
+          <div class="license-card-top">
+            <h4>How do I ask about exclusive rights?</h4>
+          </div>
+          <p class="license-card-summary">Use the contact section to request exclusive rights. Final terms should be confirmed in writing before release.</p>
+        </article>
+      </div>
+    </section>
+
+    <div id="licenses" class="anchor-target" aria-hidden="true"></div>
+    <section class="licenses-section license-conversion-section" id="licenses-section">
       <div class="license-section-kicker">LICENSES</div>
       <div class="license-section-head">
         <div>
           <h2>Choose your license</h2>
           <p>Start with the right lease today. Upgrade anytime when the record grows.</p>
         </div>
-        <div class="license-trust">Instant checkout • Secure payment • Ready for release</div>
       </div>
 
       <div class="license-grid license-conversion-grid">
@@ -154,6 +284,38 @@
             <li>Contact required for final approval</li>
           </ul>
           <a class="license-cta license-cta-exclusive" href="#contact">Ask About Exclusive</a>
+        </article>
+      </div>
+    </section>
+
+    <div id="contact" class="anchor-target" aria-hidden="true"></div>
+    <section class="licenses-section content-section" id="contact-section">
+      <div class="license-section-kicker">CONTACT</div>
+      <div class="license-section-head">
+        <div>
+          <h2>Contact Booth Ready</h2>
+          <p>For exclusive rights, licensing questions, custom production inquiries, or general Booth Ready updates, use the contact form below.</p>
+        </div>
+      </div>
+
+      <div class="license-grid license-conversion-grid">
+        <article class="license-box license-conversion-card license-exclusive">
+          <div class="license-card-top">
+            <h4>Exclusive Rights</h4>
+          </div>
+          <p class="license-card-summary">Interested in securing a beat exclusively? Send your inquiry and include the beat title if you already know which instrumental you want.</p>
+          <a class="license-cta license-cta-exclusive" href="mailto:contact@beatz4life.net?subject=Booth%20Ready%20Exclusive%20Inquiry">Email Exclusive Inquiry</a>
+        </article>
+
+        <article class="license-box license-conversion-card">
+          <div class="license-card-top">
+            <h4>Stay Connected</h4>
+          </div>
+          <p class="license-card-summary">Get updates on new beats, special offers, and Booth Ready announcements.</p>
+          <form class="stay-form">
+            <input type="email" placeholder="Enter your email" aria-label="Enter your email" />
+            <button type="submit" aria-label="Subscribe">→</button>
+          </form>
         </article>
       </div>
     </section>
