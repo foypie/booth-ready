@@ -2399,3 +2399,58 @@ section {
   }
 }
 
+
+/* =========================================================
+   BOOTH READY v1.4 — DESKTOP HERO CLEARANCE FIX
+   Purpose:
+   - Add stronger desktop-only clearance between hero and marketplace
+   - Stop beat grid/right rail from feeling attached to the hero bottom
+   - Preserve v1.3 lower-section pull-up
+   File scope: styles.css only
+   ========================================================= */
+
+/* Default safety clearance below the hero. */
+#brHeroReset{
+  margin-bottom: 46px !important;
+}
+
+/* Keep marketplace from being pulled upward by older spacing rules. */
+.poster-marketplace{
+  margin-top: 0 !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Desktop: stronger visual gap between hero and beat grid/right rail. */
+@media (min-width: 1201px){
+  #brHeroReset{
+    margin-bottom: 62px !important;
+  }
+
+  .poster-marketplace{
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+}
+
+/* Large desktop: maintain the same clean separation without making the page loose. */
+@media (min-width: 1600px){
+  #brHeroReset{
+    margin-bottom: 66px !important;
+  }
+}
+
+/* Mid-desktop/laptop: enough clearance for the common browser widths seen in QC. */
+@media (min-width: 901px) and (max-width: 1200px){
+  #brHeroReset{
+    margin-bottom: 48px !important;
+  }
+}
+
+/* Tablet/mobile: keep the tighter stacked layout. */
+@media (max-width: 900px){
+  #brHeroReset{
+    margin-bottom: 24px !important;
+  }
+}
+
