@@ -2454,3 +2454,543 @@ section {
   }
 }
 
+
+
+/* =========================================================
+   Booth Ready — Clean Hero/Nav Foundation
+   Added 2026-05-04
+   Real HTML navigation, Admin link, hero copy, and CTA buttons.
+   Background images are artwork only.
+   ========================================================= */
+
+html {
+  scroll-behavior: smooth;
+}
+
+#beats,
+#about-section,
+#licenses-section,
+#faq-section,
+#exclusives-section,
+#contact-section {
+  scroll-margin-top: 28px;
+}
+
+.br-hero-foundation {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-height: clamp(520px, 43vw, 720px);
+  overflow: hidden;
+  background: #050303;
+  border-bottom: 1px solid rgba(255, 91, 48, 0.35);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.38);
+}
+
+.br-hero-picture {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+}
+
+.br-hero-picture img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.br-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(5, 1, 0, 0.88) 0%, rgba(5, 1, 0, 0.64) 36%, rgba(5, 1, 0, 0.12) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0.62) 100%);
+  pointer-events: none;
+}
+
+.br-hero-header {
+  position: absolute;
+  z-index: 3;
+  top: 20px;
+  left: clamp(24px, 4.4vw, 76px);
+  right: clamp(24px, 4.4vw, 76px);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 28px;
+}
+
+.br-hero-logo {
+  display: inline-flex;
+  flex-direction: column;
+  color: #f4ead4;
+  text-decoration: none;
+  text-transform: uppercase;
+  line-height: 0.82;
+  font-weight: 1000;
+  letter-spacing: -0.04em;
+  font-size: clamp(1.45rem, 2.35vw, 2.7rem);
+}
+
+.br-hero-logo em {
+  margin-top: 7px;
+  color: #f4ead4;
+  font-style: italic;
+  font-size: clamp(0.56rem, 0.85vw, 0.86rem);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  opacity: 0.94;
+}
+
+.br-hero-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 2.25vw, 42px);
+  min-height: 34px;
+}
+
+.br-hero-nav a,
+.br-hero-admin {
+  color: #f4ead4;
+  text-decoration: none;
+  font-size: clamp(0.72rem, 0.82vw, 0.94rem);
+  line-height: 1;
+  letter-spacing: 0.07em;
+  font-weight: 1000;
+  text-transform: uppercase;
+}
+
+.br-hero-nav a:hover,
+.br-hero-nav a:focus-visible,
+.br-hero-admin:hover,
+.br-hero-admin:focus-visible {
+  color: #ff4a2b;
+  outline: none;
+}
+
+.br-hero-admin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 94px;
+  min-height: 30px;
+  padding: 0 14px;
+  border: 2px solid #ff4a2b;
+  background: rgba(5, 1, 0, 0.62);
+}
+
+.br-hero-copy {
+  position: absolute;
+  z-index: 2;
+  left: clamp(28px, 7.6vw, 132px);
+  bottom: clamp(48px, 7vw, 112px);
+  max-width: min(760px, 52vw);
+  color: #f4ead4;
+  text-transform: uppercase;
+}
+
+.br-hero-kicker {
+  margin: 0 0 12px;
+  color: #ff4a2b;
+  font-size: clamp(1.05rem, 1.72vw, 2rem);
+  line-height: 1;
+  letter-spacing: 0.05em;
+  font-weight: 1000;
+}
+
+.br-hero-copy h1 {
+  margin: 0;
+  color: #f4ead4;
+  font-size: clamp(5.8rem, 9.4vw, 13rem);
+  line-height: 0.76;
+  letter-spacing: -0.06em;
+  font-weight: 1000;
+  text-shadow: 0 5px 0 rgba(0, 0, 0, 0.35);
+}
+
+.br-hero-subtitle {
+  display: inline-block;
+  margin: 18px 0 22px;
+  padding: 8px 12px;
+  background: #e7d7b5;
+  color: #160b06;
+  font-size: clamp(0.82rem, 1.05vw, 1.2rem);
+  line-height: 1;
+  letter-spacing: 0.08em;
+  font-weight: 1000;
+}
+
+.br-hero-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.br-hero-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(44px, 3.7vw, 64px);
+  padding: 0 clamp(20px, 2.6vw, 42px);
+  border: 2px solid rgba(231, 215, 181, 0.88);
+  color: #f4ead4;
+  background: rgba(0, 0, 0, 0.42);
+  text-decoration: none;
+  font-size: clamp(0.82rem, 1.05vw, 1.15rem);
+  line-height: 1;
+  letter-spacing: 0.05em;
+  font-weight: 1000;
+  text-transform: uppercase;
+}
+
+.br-hero-primary {
+  border-color: #ff4a2b !important;
+  background: #c23a24 !important;
+  color: #fff5e8 !important;
+}
+
+.br-hero-actions a:hover,
+.br-hero-actions a:focus-visible {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+  outline: none;
+}
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .br-hero-foundation {
+    min-height: clamp(430px, 48vw, 560px);
+  }
+
+  .br-hero-header {
+    top: 14px;
+    left: 22px;
+    right: 22px;
+    gap: 16px;
+  }
+
+  .br-hero-logo {
+    font-size: clamp(1rem, 2.1vw, 1.55rem);
+  }
+
+  .br-hero-logo em {
+    font-size: 0.52rem;
+  }
+
+  .br-hero-nav {
+    gap: clamp(10px, 1.6vw, 18px);
+  }
+
+  .br-hero-nav a,
+  .br-hero-admin {
+    font-size: clamp(0.55rem, 0.85vw, 0.72rem);
+  }
+
+  .br-hero-admin {
+    min-width: 74px;
+    min-height: 26px;
+    padding: 0 10px;
+  }
+
+  .br-hero-copy {
+    left: 34px;
+    bottom: 36px;
+    max-width: 58vw;
+  }
+
+  .br-hero-copy h1 {
+    font-size: clamp(4.6rem, 9.5vw, 7.8rem);
+  }
+
+  .br-hero-kicker {
+    font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+  }
+
+  .br-hero-subtitle {
+    margin: 12px 0 16px;
+  }
+
+  #about-section,
+  #faq-section,
+  #licenses-section,
+  #exclusives-section,
+  #contact-section {
+    clear: both;
+    margin-top: 42px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  #beats,
+  #about-section,
+  #licenses-section,
+  #faq-section,
+  #exclusives-section,
+  #contact-section {
+    scroll-margin-top: 12px;
+  }
+
+  .br-hero-foundation {
+    min-height: 430px;
+    height: 430px;
+  }
+
+  .br-hero-picture img {
+    object-position: 62% center;
+  }
+
+  .br-hero-overlay {
+    background:
+      linear-gradient(90deg, rgba(5, 1, 0, 0.78) 0%, rgba(5, 1, 0, 0.52) 42%, rgba(5, 1, 0, 0.08) 100%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.56) 100%);
+  }
+
+  .br-hero-header {
+    display: none;
+  }
+
+  .br-hero-copy {
+    left: 18px;
+    right: 18px;
+    bottom: 26px;
+    max-width: none;
+  }
+
+  .br-hero-kicker {
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+  }
+
+  .br-hero-copy h1 {
+    font-size: clamp(4.1rem, 19vw, 6.2rem);
+  }
+
+  .br-hero-subtitle {
+    margin: 12px 0 14px;
+    padding: 6px 8px;
+    font-size: 0.72rem;
+  }
+
+  .br-hero-actions {
+    gap: 10px;
+  }
+
+  .br-hero-actions a {
+    min-height: 42px;
+    padding: 0 14px;
+    font-size: 0.78rem;
+  }
+
+  .poster-marketplace,
+  .beats-paper {
+    margin-top: 0 !important;
+    padding-top: 12px !important;
+  }
+
+  .paper-main,
+  .poster-main {
+    padding: 18px 14px !important;
+  }
+
+  .beat-card {
+    padding: 14px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .br-hero-foundation {
+    min-height: 410px;
+    height: 410px;
+  }
+
+  .br-hero-picture img {
+    object-position: 66% center;
+  }
+
+  .br-hero-copy {
+    left: 16px;
+    right: 16px;
+    bottom: 22px;
+  }
+
+  .br-hero-copy h1 {
+    font-size: clamp(3.8rem, 18vw, 5.5rem);
+  }
+
+  .br-hero-actions a {
+    min-height: 40px;
+    padding: 0 12px;
+    font-size: 0.72rem;
+  }
+}
+
+/* =========================================================
+   Booth Ready — Tablet About Clearance Fix
+   Added 2026-05-04
+   Prevents About section from colliding with mic/brand graphic
+   on iPad Pro and Surface Pro style widths.
+   ========================================================= */
+
+@media (min-width: 769px) and (max-width: 1180px) {
+  #about-section {
+    clear: both !important;
+    margin-top: 72px !important;
+    padding-top: 28px !important;
+  }
+
+  #about {
+    display: block;
+    height: 1px;
+    margin-top: -1px;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1180px) {
+  #about-section {
+    margin-top: 96px !important;
+    padding-top: 34px !important;
+  }
+}
+
+
+
+/* =========================================================
+   Booth Ready — True Tablet Poster-Side Flow Fix
+   Added 2026-05-04
+   Correctly targets the real rail container: .poster-side.
+   Keeps desktop and phone layouts intact.
+   ========================================================= */
+
+@media (min-width: 769px) and (max-width: 1180px) {
+  /*
+    Tablet foundation:
+    - beat catalog first
+    - poster-side rail flows underneath as a real grid
+    - mic slogan card becomes its own full-width row
+    - About starts after all rail content
+  */
+
+  .poster-marketplace {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+    align-items: start !important;
+    overflow: visible !important;
+  }
+
+  .poster-main {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .poster-side {
+    grid-column: 1 / -1 !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    position: static !important;
+    clear: both !important;
+    overflow: visible !important;
+    margin: 0 0 42px 0 !important;
+    padding: 0 !important;
+  }
+
+  .poster-side > * {
+    position: static !important;
+    float: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+  }
+
+  .poster-side .rail-slogan-card,
+  .poster-side .rail-slogan-card-stacked {
+    grid-column: 1 / -1 !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 420px !important;
+    justify-self: start !important;
+    margin: 18px 0 54px 0 !important;
+    padding-bottom: 0 !important;
+    overflow: visible !important;
+  }
+
+  .poster-side .rail-slogan-photo,
+  .poster-side .rail-slogan-photo-video {
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 190px !important;
+    max-height: none !important;
+    object-fit: cover !important;
+  }
+
+  .poster-side .rail-slogan-words {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    clear: both !important;
+    margin: 0 !important;
+    padding: 10px 8px 14px !important;
+  }
+
+  .poster-marketplace + .anchor-target,
+  .poster-marketplace + .anchor-target + #about-section,
+  .poster-marketplace + .anchor-target + .content-section {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    clear: both !important;
+  }
+
+  #about-section {
+    display: block !important;
+    clear: both !important;
+    position: relative !important;
+    margin-top: 28px !important;
+    padding-top: 20px !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 900px) {
+  .poster-side {
+    grid-template-columns: 1fr !important;
+  }
+
+  .poster-side .rail-slogan-card,
+  .poster-side .rail-slogan-card-stacked {
+    max-width: 100% !important;
+    margin-bottom: 36px !important;
+  }
+
+  .poster-side .rail-slogan-photo,
+  .poster-side .rail-slogan-photo-video {
+    min-height: 180px !important;
+  }
+
+  #about-section {
+    margin-top: 22px !important;
+    padding-top: 16px !important;
+  }
+}
+
+

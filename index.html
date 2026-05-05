@@ -99,20 +99,43 @@
 
   <main class="page">
 
-    <section id="brHeroReset" aria-label="Booth Ready hero" style="position:relative;display:block;width:100%;max-width:100%;height:auto;margin:0 0 16px 0;padding:0;overflow:visible;background:#050303;line-height:0;border-bottom:1px solid rgba(255,100,42,.18);box-shadow:0 20px 60px rgba(0,0,0,.38);">
-      <img src="/assets/hero-complete.png" alt="Booth Ready hero artwork" style="display:block;width:100%;max-width:100%;height:auto;margin:0;padding:0;border:0;object-fit:contain;object-position:center center;transform:none;" />
-      <a class="br-hero-reset-hit br-hero-reset-hit-browse" href="#beats" aria-label="Browse Beats"></a>
-      <a class="br-hero-reset-hit br-hero-reset-hit-exclusive" href="#licenses" aria-label="Exclusive Rights"></a>
+    <section id="brHeroReset" class="br-hero-foundation" aria-label="Booth Ready hero">
+  <picture class="br-hero-picture">
+    <source media="(max-width: 768px)" srcset="assets/hero/booth-ready-hero-mobile-bg.png">
+    <img src="assets/hero/booth-ready-hero-desktop-bg.png" alt="Booth Ready studio with recording booth and production gear">
+  </picture>
 
-      <!-- Invisible click areas over the navigation text embedded in the hero artwork -->
-      <a href="#beats" aria-label="Beats" style="position:absolute;left:31.8%;top:4.6%;width:5.2%;height:5.2%;display:block;z-index:5;"></a>
-      <a href="#exclusives" aria-label="Exclusives" style="position:absolute;left:39.0%;top:4.6%;width:8.2%;height:5.2%;display:block;z-index:5;"></a>
-      <a href="#about" aria-label="About" style="position:absolute;left:49.0%;top:4.6%;width:5.8%;height:5.2%;display:block;z-index:5;"></a>
-      <a href="#licenses" aria-label="Licenses" style="position:absolute;left:56.8%;top:4.6%;width:7.3%;height:5.2%;display:block;z-index:5;"></a>
-      <a href="#faq" aria-label="FAQ" style="position:absolute;left:66.2%;top:4.6%;width:4.3%;height:5.2%;display:block;z-index:5;"></a>
-      <a href="#contact" aria-label="Contact" style="position:absolute;left:72.0%;top:4.6%;width:7.2%;height:5.2%;display:block;z-index:5;"></a>
-      <a class="br-admin-nav-link" href="/admin-login.html" aria-label="Admin">ADMIN</a>
-    </section>
+  <div class="br-hero-overlay" aria-hidden="true"></div>
+
+  <div class="br-hero-header">
+    <a class="br-hero-logo" href="#brHeroReset" aria-label="Booth Ready home">
+      <span>BOOTH</span>
+      <span>READY</span>
+      <em>From the crates to the booth.</em>
+    </a>
+
+    <nav class="br-hero-nav" aria-label="Main navigation">
+      <a href="#beats">BEATS</a>
+      <a href="#exclusives-section">EXCLUSIVES</a>
+      <a href="#about-section">ABOUT</a>
+      <a href="#licenses-section">LICENSES</a>
+      <a href="#faq-section">FAQ</a>
+      <a href="#contact-section">CONTACT</a>
+    </nav>
+
+    <a class="br-hero-admin" href="/admin-login.html">ADMIN</a>
+  </div>
+
+  <div class="br-hero-copy">
+    <p class="br-hero-kicker">From the crates to the booth.</p>
+    <h1>Booth<br>Ready</h1>
+    <p class="br-hero-subtitle">Original Boom Bap Beats • Ready for Vocals</p>
+    <div class="br-hero-actions">
+      <a class="br-hero-primary" href="#beats">Browse Beats</a>
+      <a class="br-hero-secondary" href="#exclusives-section">Exclusive Rights</a>
+    </div>
+  </div>
+</section>
     <section class="poster-marketplace" id="beats">
       <div class="poster-main">
         <div class="poster-head">
@@ -156,9 +179,9 @@
             <button type="submit" aria-label="Subscribe">→</button>
           </form>
           <div class="stay-links">
-            <a href="#licenses">TERMS</a>
-            <a href="#faq">PRIVACY</a>
-            <a href="#contact">CONTACT</a>
+            <a href="#licenses-section">TERMS</a>
+            <a href="#faq-section">PRIVACY</a>
+            <a href="#contact-section">CONTACT</a>
           </div>
         </article>
 
@@ -297,7 +320,7 @@
             <li>Best for singles and major releases</li>
             <li>Contact required for final approval</li>
           </ul>
-          <a class="license-cta license-cta-exclusive" href="#contact">Ask About Exclusive</a>
+          <a class="license-cta license-cta-exclusive" href="#contact-section">Ask About Exclusive</a>
         </article>
       </div>
     </section>
@@ -326,7 +349,7 @@
             <li>Ownership terms must be expressly transferred</li>
             <li>Credit required unless otherwise agreed</li>
           </ul>
-          <a class="license-cta license-cta-exclusive" href="#contact">Ask About Exclusive</a>
+          <a class="license-cta license-cta-exclusive" href="#contact-section">Ask About Exclusive</a>
         </article>
 
         <article class="license-box license-conversion-card">
@@ -337,7 +360,7 @@
           <ul class="license-benefits">
             <li>Prod. by Mista Foy for Beatz4Life, LLC</li>
           </ul>
-          <a class="license-cta" href="#licenses">View License Options</a>
+          <a class="license-cta" href="#licenses-section">View License Options</a>
         </article>
       </div>
     </section>
