@@ -1,3 +1,4 @@
+let boothReadyAudioPlayToken = 0;
 // RESET HASH + FORCE TOP LOAD
 window.addEventListener("load", function () {
   window.scrollTo(0, 0);
@@ -231,44 +232,27 @@ async function launchCheckout(beat, licenseCode, triggerButton) {
 }
 
 function bindWaveformPlayer(card) {
-  const audio = card.querySelector('audio');
+  const audioEl = card.querySelector('audio');
   const playButton = card.querySelector('.preview-play');
   const progress = card.querySelector('.preview-progress');
   const currentTimeEl = card.querySelector('.preview-time-current');
   const durationEl = card.querySelector('.preview-time-duration');
   const waveformHit = card.querySelector('.preview-wave-hit');
   const waveformImg = card.querySelector('.preview-wave');
-  if (!audio || !playButton || !progress || !currentTimeEl || !durationEl || !waveformHit) return;
 
-  const audioCandidates = String(audio.dataset.audioCandidates || '')
+  if (!audioEl || !playButton || !progress || !currentTimeEl || !durationEl || !waveformHit) return;
+
+  const audioCandidates = String(audioEl.dataset.audioCandidates || audioEl.getAttribute('src') || '')
     .split('|')
     .filter(Boolean);
 
-  let audioCandidateIndex = Math.max(0, audioCandidates.indexOf(audio.getAttribute('src')));
+  let audioCandidateIndex = Math.max(0, audioCandidates.indexOf(audioEl.getAttribute('src')));
 
-  function tryNextAudioCandidate(shouldPlay = false) {
-    if (audioCandidateIndex >= audioCandidates.length - 1) return false;
-
-    audioCandidateIndex += 1;
-    audio.src = audioCandidates[audioCandidateIndex];
-    audio.load();
-
-    if (shouldPlay) {
-      audio.play().catch(() => {
-        tryNextAudioCandidate(true);
-      });
-    }
-
-    return true;
+  if (waveformImg) {
+    waveformImg.addEventListener('error', () => {
+      waveformImg.src = DEFAULT_WAVEFORM;
+    });
   }
-
-  audio.addEventListener('error', () => {
-    tryNextAudioCandidate(false);
-  });
-
-  waveformImg.addEventListener('error', () => {
-    waveformImg.src = DEFAULT_WAVEFORM;
-  });
 
   function formatTime(seconds) {
     if (!Number.isFinite(seconds)) return '0:00';
@@ -277,48 +261,215 @@ function bindWaveformPlayer(card) {
     return `${mins}:${String(secs).padStart(2, '0')}`;
   }
 
-  function syncUI() {
-    const duration = audio.duration || 0;
-    const current = audio.currentTime || 0;
-    const ratio = duration > 0 ? (current / duration) * 100 : 0;
-    progress.style.width = `${ratio}%`;
-    currentTimeEl.textContent = formatTime(current);
-    durationEl.textContent = formatTime(duration);
-    playButton.textContent = audio.paused ? '▶' : '❚❚';
+  /*
+    Booth Ready shared audio engine.
+    This intentionally uses ONE real Audio object for every beat card.
+
+    Why:
+    iPhone/Safari can allow delayed play/load activity from multiple <audio>
+    elements. A beat tapped first can finish buffering late and start after
+    another beat was selected. One shared Audio object prevents overlap at
+    the root because only one media engine exists.
+  */
+  if (!window.boothReadySharedAudioEngine) {
+    const sharedAudio = new Audio();
+    sharedAudio.preload = 'metadata';
+
+    window.boothReadySharedAudioEngine = {
+      audio: sharedAudio,
+      token: 0,
+      activePlayer: null,
+      players: new Set(),
+      installed: false
+    };
+  }
+
+  const engine = window.boothReadySharedAudioEngine;
+
+  const player = {
+    card,
+    playButton,
+    progress,
+    currentTimeEl,
+    durationEl,
+    audioCandidates,
+    get currentSrc() {
+      return audioCandidates[audioCandidateIndex] || audioEl.getAttribute('src') || '';
+    },
+    resetUI() {
+      progress.style.width = '0%';
+      currentTimeEl.textContent = '0:00';
+      durationEl.textContent = '0:00';
+      playButton.textContent = '▶';
+    },
+    syncUI() {
+      if (engine.activePlayer !== player) {
+        playButton.textContent = '▶';
+        return;
+      }
+
+      const duration = engine.audio.duration || 0;
+      const current = engine.audio.currentTime || 0;
+      const ratio = duration > 0 ? (current / duration) * 100 : 0;
+
+      progress.style.width = `${ratio}%`;
+      currentTimeEl.textContent = formatTime(current);
+      durationEl.textContent = formatTime(duration);
+      playButton.textContent = engine.audio.paused ? '▶' : 'Ⅱ';
+    },
+    tryNextCandidate(shouldPlay = false, token = engine.token) {
+      if (audioCandidateIndex >= audioCandidates.length - 1) return false;
+
+      audioCandidateIndex += 1;
+
+      if (engine.activePlayer === player && token === engine.token) {
+        engine.audio.pause();
+        engine.audio.src = audioCandidates[audioCandidateIndex];
+        engine.audio.load();
+
+        if (shouldPlay) {
+          playSharedAudio(player, token);
+        }
+      }
+
+      return true;
+    }
+  };
+
+  engine.players.add(player);
+
+  if (!engine.installed) {
+    engine.installed = true;
+
+    engine.audio.addEventListener('timeupdate', () => {
+      if (engine.activePlayer) engine.activePlayer.syncUI();
+    });
+
+    engine.audio.addEventListener('loadedmetadata', () => {
+      if (engine.activePlayer) engine.activePlayer.syncUI();
+    });
+
+    engine.audio.addEventListener('play', () => {
+      if (engine.activePlayer) engine.activePlayer.syncUI();
+    });
+
+    engine.audio.addEventListener('pause', () => {
+      if (engine.activePlayer) engine.activePlayer.syncUI();
+    });
+
+    engine.audio.addEventListener('ended', () => {
+      if (engine.activePlayer) {
+        engine.activePlayer.syncUI();
+      }
+    });
+
+    engine.audio.addEventListener('error', () => {
+      const active = engine.activePlayer;
+      const token = engine.token;
+
+      if (active) {
+        const moved = active.tryNextCandidate(true, token);
+        if (!moved) {
+          active.resetUI();
+        }
+      }
+    });
+  }
+
+  function resetInactivePlayers(activePlayer) {
+    engine.players.forEach((p) => {
+      if (p !== activePlayer) p.resetUI();
+    });
+  }
+
+  function abortCurrentSharedAudio() {
+    engine.audio.pause();
+
+    try {
+      engine.audio.currentTime = 0;
+    } catch (err) {}
+
+    /*
+      This is important on iPhone/Safari:
+      removing src + load() aborts any pending load/play cycle.
+    */
+    try {
+      engine.audio.removeAttribute('src');
+      engine.audio.load();
+    } catch (err) {}
+  }
+
+  function playSharedAudio(playerToPlay, token) {
+    const src = playerToPlay.currentSrc;
+    if (!src) return;
+
+    engine.activePlayer = playerToPlay;
+    resetInactivePlayers(playerToPlay);
+
+    abortCurrentSharedAudio();
+
+    engine.audio.preload = 'auto';
+    engine.audio.src = src;
+    engine.audio.load();
+
+    playerToPlay.syncUI();
+
+    const playPromise = engine.audio.play();
+
+    if (playPromise && typeof playPromise.then === 'function') {
+      playPromise
+        .then(() => {
+          if (token !== engine.token || engine.activePlayer !== playerToPlay) {
+            abortCurrentSharedAudio();
+            playerToPlay.resetUI();
+            return;
+          }
+
+          playerToPlay.syncUI();
+        })
+        .catch((err) => {
+          if (token !== engine.token || engine.activePlayer !== playerToPlay) return;
+
+          console.warn('Audio play failed, trying next candidate.', err);
+          const moved = playerToPlay.tryNextCandidate(true, token);
+          if (!moved) {
+            playerToPlay.resetUI();
+          }
+        });
+    }
   }
 
   playButton.addEventListener('click', () => {
-    if (audio.paused) {
-      document.querySelectorAll('.preview-audio').forEach((other) => {
-        if (other !== audio) other.pause();
-      });
-      audio.play().catch((err) => {
-        console.warn('Audio play failed, trying next candidate.', err);
-        tryNextAudioCandidate(true);
-      });
-    } else {
-      audio.pause();
+    const isCurrentPlayer = engine.activePlayer === player;
+    const isCurrentlyPlaying = isCurrentPlayer && !engine.audio.paused;
+
+    engine.token += 1;
+    const token = engine.token;
+
+    if (isCurrentlyPlaying) {
+      abortCurrentSharedAudio();
+      player.resetUI();
+      engine.activePlayer = null;
+      return;
     }
+
+    playSharedAudio(player, token);
   });
 
   waveformHit.addEventListener('click', (event) => {
+    if (engine.activePlayer !== player) return;
+
     const rect = waveformHit.getBoundingClientRect();
-    const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
-    if (Number.isFinite(audio.duration) && audio.duration > 0) {
-      audio.currentTime = ratio * audio.duration;
-      syncUI();
+    const ratio = Math.min(Math.max((event.clientX - rect.left) / rect.width, 0), 1);
+
+    if (Number.isFinite(engine.audio.duration) && engine.audio.duration > 0) {
+      engine.audio.currentTime = ratio * engine.audio.duration;
+      player.syncUI();
     }
   });
 
-  audio.addEventListener('timeupdate', syncUI);
-  audio.addEventListener('play', syncUI);
-  audio.addEventListener('pause', syncUI);
-  audio.addEventListener('loadedmetadata', syncUI);
-  audio.addEventListener('ended', syncUI);
-
-  syncUI();
+  player.resetUI();
 }
-
 function bindViewAllButton() {
   const button = document.querySelector('.view-all');
   const main = document.querySelector('.poster-main');
