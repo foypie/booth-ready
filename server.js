@@ -658,15 +658,25 @@ app.post("/create-checkout-session", async (req, res) => {
 
     const licenseTermsUrl = buildLicenseTermsUrl(license.code || license.name);
 
-    const session = await stripe.checkout.sessions.create({
+    
+  const checkoutLicenseTermsUrl = licenseTermsUrl.startsWith("http")
+    ? licenseTermsUrl
+    : `${DOMAIN}${licenseTermsUrl}`;
+const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
       customer_creation: "always",
       billing_address_collection: "auto",
-      custom_text: {
+      consent_collection: {
+      terms_of_service: "required"
+    },
+    custom_text: {
         submit: {
-          message: `By completing this purchase, you agree to the Booth Ready ${String(license.name || "License").trim()} terms: ${licenseTermsUrl}`
-        }
+          message: `By completing this purchase, you agree to the Booth Ready ${String(license.name || "License").trim()} terms: ${checkoutLicenseTermsUrl}`
+        },
+      terms_of_service_acceptance: {
+        message: `I agree to the [Booth Ready License Terms](${checkoutLicenseTermsUrl}) for this purchase.`
+      }
       },
       line_items: [{
         price_data: {

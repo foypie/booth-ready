@@ -5,12 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Booth Ready Unlimited License Agreement</title>
   <link rel="stylesheet" href="/licenses/_style.css">
-</head>
+<script>
+  function closeOrHome(event) {
+    event.preventDefault();
+    window.close();
+    setTimeout(function () {
+      window.location.href = "/";
+    }, 300);
+  }
+</script>\n</head>
 <body>
   <main class="page agreement-page">
     <div class="top">
       <div class="brand">Booth Ready • Current License Terms</div>
-      <a class="back" href="/licenses/">← All license terms</a>
+      <a class="back" href="/" onclick="closeOrHome(event)">← Close this tab to return to checkout</a>
     </div>
     <section class="card agreement-card">
       <h1>BOOTH READY UNLIMITED NON-EXCLUSIVE LICENSE AGREEMENT</h1>
