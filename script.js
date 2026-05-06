@@ -1,4 +1,3 @@
-let boothReadyAudioPlayToken = 0;
 // RESET HASH + FORCE TOP LOAD
 window.addEventListener("load", function () {
   window.scrollTo(0, 0);
@@ -16,6 +15,13 @@ const API_BASE =
 let catalog = [];
 let licenses = [];
 
+const LICENSE_TERM_PATHS = {
+  basic: '/licenses/basic-license.html',
+  premium: '/licenses/premium-license.html',
+  unlimited: '/licenses/unlimited-license.html',
+  exclusive: '/licenses/exclusive-license.html',
+};
+
 const COVER_MANIFEST = {
   '60s-remix': '/assets/beat-art-1.png',
   '60s': '/assets/beat-art-2.png',
@@ -27,13 +33,35 @@ const COVER_MANIFEST = {
   'widgets': '/assets/beat-art-8.png',
 };
 
-const COVER_POOL = Object.values(COVER_MANIFEST);
-const KNOWN_ART_KEYS = new Set(Object.keys(COVER_MANIFEST));
+const COVER_POOL = [
+  '/assets/beat-art-1.png',
+  '/assets/beat-art-2.png',
+  '/assets/beat-art-3.png',
+  '/assets/beat-art-4.png',
+  '/assets/beat-art-5.png',
+  '/assets/beat-art-6.png',
+  '/assets/beat-art-7.png',
+  '/assets/beat-art-8.png',
+];
 
 const DEFAULT_WAVEFORM = '/assets/waveforms/default-wave.svg';
 
 function formatPrice(price) {
   return `$${Number(price).toFixed(0)}`;
+}
+
+function licensePathForCode(code) {
+  const key = String(code || '').toLowerCase().trim();
+  return LICENSE_TERM_PATHS[key] || '/licenses/';
+}
+
+function licenseCodeFromName(name) {
+  const value = String(name || '').toLowerCase();
+  if (value.includes('basic')) return 'basic';
+  if (value.includes('premium')) return 'premium';
+  if (value.includes('unlimited')) return 'unlimited';
+  if (value.includes('exclusive')) return 'exclusive';
+  return '';
 }
 
 function scrollToCurrentHash() {
@@ -50,7 +78,6 @@ function scrollToCurrentHash() {
     });
   }, 180);
 }
-
 
 function shortLicenseName(license) {
   const name = String(license?.name || '').toLowerCase();
@@ -103,7 +130,6 @@ function removeLowerStripArtifacts() {
   });
 }
 
-
 function moveFounderPhotoToRightRail() {
   if (document.querySelector('.founder-rail-card')) return;
 
@@ -139,12 +165,14 @@ function renderLicenses() {
   if (!grid) return;
   grid.innerHTML = '';
   licenses.forEach((license) => {
+    const code = licenseCodeFromName(license.name) || String(license.code || '').toLowerCase();
     const box = document.createElement('article');
     box.className = 'license-box';
     box.innerHTML = `
       <h4>${license.name}</h4>
       <div class="license-price">${formatPrice(license.price)}</div>
       <p>${license.description || ''}</p>
+      <a class="license-terms-inline" href="${licensePathForCode(code)}" target="_blank" rel="noopener" style="display:inline-block;margin-top:12px;color:#ffb25c;font-weight:800;text-transform:uppercase;font-size:.76rem;letter-spacing:.05em;">View License Terms</a>
     `;
     grid.appendChild(box);
   });
@@ -173,32 +201,69 @@ function getBeatKey(beat) {
   return slugify(beat?.slug || beat?.name || '');
 }
 
-function getBeatMeta(beat) {
-  return String(beat?.meta || beat?.description || beat?.style || '').trim();
-}
-
-function isKnownArtBeat(beat) {
-  return KNOWN_ART_KEYS.has(getBeatKey(beat));
-}
-
-function getCoverUrl(beat) {
+function getCoverUrl(beat, index) {
   const key = getBeatKey(beat);
   if (key && COVER_MANIFEST[key]) return COVER_MANIFEST[key];
-
-  // New beats are assigned one of the same 8 Booth Ready backgrounds.
-  // This is stable per beat slug, so the card does not change every refresh.
-  if (COVER_POOL.length === 0) return '';
-  const poolIndex = key ? hashString(key) % COVER_POOL.length : 0;
-  return COVER_POOL[poolIndex];
+  if (COVER_POOL.length > 0) {
+    const poolIndex = key ? hashString(key) % COVER_POOL.length : index % COVER_POOL.length;
+    return COVER_POOL[poolIndex];
+  }
+  return null;
 }
 
-function getArtBackground(beat) {
-  const coverUrl = getCoverUrl(beat);
-  return `linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.30)), url("${coverUrl}") center/cover`;
+function getArtBackground(beat, index) {
+  const coverUrl = getCoverUrl(beat, index);
+  if (!coverUrl) {
+    return 'linear-gradient(135deg, rgba(76,35,18,.92), rgba(10,8,7,.95))';
+  }
+  return `linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.10)), url("${coverUrl}") center/cover`;
 }
 
 function getWaveformUrl(beat) {
   return `/assets/waveforms/${getBeatKey(beat)}.svg`;
+}
+
+function injectLicenseTermLinks() {
+  const licenseSection = document.getElementById('licenses-section') || document.getElementById('licenses');
+  if (licenseSection && !licenseSection.querySelector('.license-current-terms-note')) {
+    const head = licenseSection.querySelector('.license-section-head');
+    if (head) {
+      const note = document.createElement('p');
+      note.className = 'license-current-terms-note';
+      note.style.cssText = 'margin:10px 0 0;color:#dfcfba;font-size:.9rem;line-height:1.45;max-width:780px;';
+      note.innerHTML = 'Current Booth Ready License Terms are available below. By completing a purchase, you agree to the terms applicable to the license selected.';
+      head.appendChild(note);
+    }
+  }
+
+  document.querySelectorAll('.license-conversion-card, .license-box').forEach((card) => {
+    if (card.querySelector('.license-terms-inline')) return;
+    const heading = card.querySelector('h4');
+    const code = licenseCodeFromName(heading ? heading.textContent : '');
+    if (!code) return;
+
+    if (code === 'exclusive') {
+      const summary = card.querySelector('.license-card-summary');
+      if (summary && /own the beat/i.test(summary.textContent || '')) {
+        summary.textContent = 'Secure an exclusive license for your record. Once sold, the beat is removed from the public catalog. Booth Ready retains copyright ownership unless a separate written transfer agreement is signed.';
+      }
+    }
+
+    const link = document.createElement('a');
+    link.className = 'license-terms-inline';
+    link.href = licensePathForCode(code);
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = 'View License Terms';
+    link.style.cssText = 'display:inline-block;margin-top:12px;color:#ffb25c;font-weight:800;text-transform:uppercase;font-size:.76rem;letter-spacing:.05em;';
+    card.appendChild(link);
+  });
+
+  document.querySelectorAll('.stay-links a').forEach((link) => {
+    if ((link.textContent || '').trim().toLowerCase() === 'terms') {
+      link.href = '/licenses/';
+    }
+  });
 }
 
 async function launchCheckout(beat, licenseCode, triggerButton) {
@@ -215,7 +280,7 @@ async function launchCheckout(beat, licenseCode, triggerButton) {
         licenseCode,
       }),
     });
-    const data = await res.json().catch(() => ({}));
+    const data = await res.json();
     if (data.url) {
       window.location.href = data.url;
       return;
@@ -232,27 +297,18 @@ async function launchCheckout(beat, licenseCode, triggerButton) {
 }
 
 function bindWaveformPlayer(card) {
-  const audioEl = card.querySelector('audio');
+  const audio = card.querySelector('audio');
   const playButton = card.querySelector('.preview-play');
   const progress = card.querySelector('.preview-progress');
   const currentTimeEl = card.querySelector('.preview-time-current');
   const durationEl = card.querySelector('.preview-time-duration');
   const waveformHit = card.querySelector('.preview-wave-hit');
   const waveformImg = card.querySelector('.preview-wave');
+  if (!audio || !playButton || !progress || !currentTimeEl || !durationEl || !waveformHit) return;
 
-  if (!audioEl || !playButton || !progress || !currentTimeEl || !durationEl || !waveformHit) return;
-
-  const audioCandidates = String(audioEl.dataset.audioCandidates || audioEl.getAttribute('src') || '')
-    .split('|')
-    .filter(Boolean);
-
-  let audioCandidateIndex = Math.max(0, audioCandidates.indexOf(audioEl.getAttribute('src')));
-
-  if (waveformImg) {
-    waveformImg.addEventListener('error', () => {
-      waveformImg.src = DEFAULT_WAVEFORM;
-    });
-  }
+  waveformImg.addEventListener('error', () => {
+    waveformImg.src = DEFAULT_WAVEFORM;
+  });
 
   function formatTime(seconds) {
     if (!Number.isFinite(seconds)) return '0:00';
@@ -261,215 +317,45 @@ function bindWaveformPlayer(card) {
     return `${mins}:${String(secs).padStart(2, '0')}`;
   }
 
-  /*
-    Booth Ready shared audio engine.
-    This intentionally uses ONE real Audio object for every beat card.
-
-    Why:
-    iPhone/Safari can allow delayed play/load activity from multiple <audio>
-    elements. A beat tapped first can finish buffering late and start after
-    another beat was selected. One shared Audio object prevents overlap at
-    the root because only one media engine exists.
-  */
-  if (!window.boothReadySharedAudioEngine) {
-    const sharedAudio = new Audio();
-    sharedAudio.preload = 'metadata';
-
-    window.boothReadySharedAudioEngine = {
-      audio: sharedAudio,
-      token: 0,
-      activePlayer: null,
-      players: new Set(),
-      installed: false
-    };
-  }
-
-  const engine = window.boothReadySharedAudioEngine;
-
-  const player = {
-    card,
-    playButton,
-    progress,
-    currentTimeEl,
-    durationEl,
-    audioCandidates,
-    get currentSrc() {
-      return audioCandidates[audioCandidateIndex] || audioEl.getAttribute('src') || '';
-    },
-    resetUI() {
-      progress.style.width = '0%';
-      currentTimeEl.textContent = '0:00';
-      durationEl.textContent = '0:00';
-      playButton.textContent = '▶';
-    },
-    syncUI() {
-      if (engine.activePlayer !== player) {
-        playButton.textContent = '▶';
-        return;
-      }
-
-      const duration = engine.audio.duration || 0;
-      const current = engine.audio.currentTime || 0;
-      const ratio = duration > 0 ? (current / duration) * 100 : 0;
-
-      progress.style.width = `${ratio}%`;
-      currentTimeEl.textContent = formatTime(current);
-      durationEl.textContent = formatTime(duration);
-      playButton.textContent = engine.audio.paused ? '▶' : 'Ⅱ';
-    },
-    tryNextCandidate(shouldPlay = false, token = engine.token) {
-      if (audioCandidateIndex >= audioCandidates.length - 1) return false;
-
-      audioCandidateIndex += 1;
-
-      if (engine.activePlayer === player && token === engine.token) {
-        engine.audio.pause();
-        engine.audio.src = audioCandidates[audioCandidateIndex];
-        engine.audio.load();
-
-        if (shouldPlay) {
-          playSharedAudio(player, token);
-        }
-      }
-
-      return true;
-    }
-  };
-
-  engine.players.add(player);
-
-  if (!engine.installed) {
-    engine.installed = true;
-
-    engine.audio.addEventListener('timeupdate', () => {
-      if (engine.activePlayer) engine.activePlayer.syncUI();
-    });
-
-    engine.audio.addEventListener('loadedmetadata', () => {
-      if (engine.activePlayer) engine.activePlayer.syncUI();
-    });
-
-    engine.audio.addEventListener('play', () => {
-      if (engine.activePlayer) engine.activePlayer.syncUI();
-    });
-
-    engine.audio.addEventListener('pause', () => {
-      if (engine.activePlayer) engine.activePlayer.syncUI();
-    });
-
-    engine.audio.addEventListener('ended', () => {
-      if (engine.activePlayer) {
-        engine.activePlayer.syncUI();
-      }
-    });
-
-    engine.audio.addEventListener('error', () => {
-      const active = engine.activePlayer;
-      const token = engine.token;
-
-      if (active) {
-        const moved = active.tryNextCandidate(true, token);
-        if (!moved) {
-          active.resetUI();
-        }
-      }
-    });
-  }
-
-  function resetInactivePlayers(activePlayer) {
-    engine.players.forEach((p) => {
-      if (p !== activePlayer) p.resetUI();
-    });
-  }
-
-  function abortCurrentSharedAudio() {
-    engine.audio.pause();
-
-    try {
-      engine.audio.currentTime = 0;
-    } catch (err) {}
-
-    /*
-      This is important on iPhone/Safari:
-      removing src + load() aborts any pending load/play cycle.
-    */
-    try {
-      engine.audio.removeAttribute('src');
-      engine.audio.load();
-    } catch (err) {}
-  }
-
-  function playSharedAudio(playerToPlay, token) {
-    const src = playerToPlay.currentSrc;
-    if (!src) return;
-
-    engine.activePlayer = playerToPlay;
-    resetInactivePlayers(playerToPlay);
-
-    abortCurrentSharedAudio();
-
-    engine.audio.preload = 'auto';
-    engine.audio.src = src;
-    engine.audio.load();
-
-    playerToPlay.syncUI();
-
-    const playPromise = engine.audio.play();
-
-    if (playPromise && typeof playPromise.then === 'function') {
-      playPromise
-        .then(() => {
-          if (token !== engine.token || engine.activePlayer !== playerToPlay) {
-            abortCurrentSharedAudio();
-            playerToPlay.resetUI();
-            return;
-          }
-
-          playerToPlay.syncUI();
-        })
-        .catch((err) => {
-          if (token !== engine.token || engine.activePlayer !== playerToPlay) return;
-
-          console.warn('Audio play failed, trying next candidate.', err);
-          const moved = playerToPlay.tryNextCandidate(true, token);
-          if (!moved) {
-            playerToPlay.resetUI();
-          }
-        });
-    }
+  function syncUI() {
+    const duration = audio.duration || 0;
+    const current = audio.currentTime || 0;
+    const ratio = duration > 0 ? (current / duration) * 100 : 0;
+    progress.style.width = `${ratio}%`;
+    currentTimeEl.textContent = formatTime(current);
+    durationEl.textContent = formatTime(duration);
+    playButton.textContent = audio.paused ? '▶' : '❚❚';
   }
 
   playButton.addEventListener('click', () => {
-    const isCurrentPlayer = engine.activePlayer === player;
-    const isCurrentlyPlaying = isCurrentPlayer && !engine.audio.paused;
-
-    engine.token += 1;
-    const token = engine.token;
-
-    if (isCurrentlyPlaying) {
-      abortCurrentSharedAudio();
-      player.resetUI();
-      engine.activePlayer = null;
-      return;
+    if (audio.paused) {
+      document.querySelectorAll('.preview-audio').forEach((other) => {
+        if (other !== audio) other.pause();
+      });
+      audio.play().catch((err) => console.error(err));
+    } else {
+      audio.pause();
     }
-
-    playSharedAudio(player, token);
   });
 
   waveformHit.addEventListener('click', (event) => {
-    if (engine.activePlayer !== player) return;
-
     const rect = waveformHit.getBoundingClientRect();
-    const ratio = Math.min(Math.max((event.clientX - rect.left) / rect.width, 0), 1);
-
-    if (Number.isFinite(engine.audio.duration) && engine.audio.duration > 0) {
-      engine.audio.currentTime = ratio * engine.audio.duration;
-      player.syncUI();
+    const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+    if (Number.isFinite(audio.duration) && audio.duration > 0) {
+      audio.currentTime = ratio * audio.duration;
+      syncUI();
     }
   });
 
-  player.resetUI();
+  audio.addEventListener('timeupdate', syncUI);
+  audio.addEventListener('play', syncUI);
+  audio.addEventListener('pause', syncUI);
+  audio.addEventListener('loadedmetadata', syncUI);
+  audio.addEventListener('ended', syncUI);
+
+  syncUI();
 }
+
 function bindViewAllButton() {
   const button = document.querySelector('.view-all');
   const main = document.querySelector('.poster-main');
@@ -481,97 +367,15 @@ function bindViewAllButton() {
   });
 }
 
-
-function uniqueList(items) {
-  return Array.from(new Set(items.filter(Boolean)));
-}
-
-function titleCaseWords(input) {
-  return String(input || '')
-    .replace(/[-_]+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .split(' ')
-    .map((word) => word ? word[0].toUpperCase() + word.slice(1).toLowerCase() : '')
-    .join(' ');
-}
-
-function getAudioCandidates(beat) {
-  const rawFile = String(beat?.file || '').trim();
-  const rawNoExt = rawFile.replace(/\.[a-z0-9]+$/i, '');
-  const name = String(beat?.name || '').trim();
-  const slug = getBeatKey(beat);
-
-  const baseNames = uniqueList([
-    rawNoExt,
-    rawFile,
-    name,
-    slug,
-    slug.replace(/-/g, ' '),
-    slug.replace(/-/g, '_'),
-    name.replace(/\s+/g, '-'),
-    name.replace(/\s+/g, '_'),
-    name.replace(/\s+/g, ''),
-    rawNoExt.replace(/\s+/g, '-'),
-    rawNoExt.replace(/\s+/g, '_'),
-    rawNoExt.replace(/\s+/g, ''),
-    titleCaseWords(slug),
-    titleCaseWords(slug).replace(/\s+/g, '-'),
-    titleCaseWords(slug).replace(/\s+/g, '_'),
-  ]);
-
-  const variants = [];
-  baseNames.forEach((base) => {
-    if (!base) return;
-    variants.push(base);
-    variants.push(base.toLowerCase());
-    variants.push(base.toUpperCase());
-    variants.push(titleCaseWords(base));
-  });
-
-  const extensions = ['mp3', 'MP3', 'wav', 'WAV', 'm4a', 'M4A', 'aac', 'AAC', 'ogg', 'OGG'];
-
-  const files = [];
-  variants.forEach((variant) => {
-    const hasExt = /\.[a-z0-9]+$/i.test(variant);
-    if (hasExt) {
-      files.push(variant);
-    } else {
-      extensions.forEach((ext) => files.push(`${variant}.${ext}`));
-    }
-  });
-
-  return uniqueList(files).map((file) => `/audio/${encodeURIComponent(file)}`);
-}
-
-function audioCandidatesAttribute(beat) {
-  return getAudioCandidates(beat).join('|');
-}
-
-function isBeatVisible(beat) {
-  const status = String(beat?.status || (beat?.active === false ? 'hidden' : 'active')).toLowerCase().trim();
-  return beat?.active !== false && status !== 'hidden' && status !== 'sold' && status !== 'inactive';
-}
-
 function renderCatalog() {
   const container = document.getElementById('beatGrid');
   if (!container) return;
   container.innerHTML = '';
 
-  const visibleCatalog = catalog.filter(isBeatVisible);
-
-  if (catalog.length > 0 && visibleCatalog.length === 0) {
-    const banner = document.getElementById('statusBanner');
-    if (banner) {
-      banner.hidden = false;
-      banner.textContent = 'No active beats are currently available.';
-    }
-  }
-
-  visibleCatalog.forEach((beat) => {
+  catalog.forEach((beat, index) => {
     const card = document.createElement('article');
-    card.className = isKnownArtBeat(beat) ? 'beat-card beat-card-known-art' : 'beat-card beat-card-generic-art';
-    const art = getArtBackground(beat);
+    card.className = 'beat-card';
+    const art = getArtBackground(beat, index);
     const waveformUrl = getWaveformUrl(beat);
 
     const priceButtons = licenses.map((license) => `
@@ -587,11 +391,9 @@ function renderCatalog() {
     `).join('');
 
     card.innerHTML = `
-      <div class="beat-art" style='--art:${art};'>
-        ${isKnownArtBeat(beat) ? '' : `<div class="beat-art-title">${beat.name}</div>`}
-      </div>
+      <div class="beat-art" style='--art:${art};'></div>
       <h3 class="beat-title">${beat.name}</h3>
-      <p class="beat-subtitle">${getBeatMeta(beat)}</p>
+      <p class="beat-subtitle">${beat.meta || ''}</p>
       <div class="preview-player">
         <button class="preview-play" type="button" aria-label="Play preview">▶</button>
         <div class="preview-wave-wrap">
@@ -604,11 +406,14 @@ function renderCatalog() {
           <span class="preview-time-sep">/</span>
           <span class="preview-time-duration">0:00</span>
         </div>
-        <audio class="preview-audio" preload="metadata" data-audio-candidates="${audioCandidatesAttribute(beat)}" src="${getAudioCandidates(beat)[0]}"></audio>
+        <audio class="preview-audio" preload="metadata" src="/audio/${encodeURIComponent(beat.file)}"></audio>
       </div>
       <div class="price-button-row">
         ${priceButtons}
       </div>
+      <p class="checkout-terms-note" style="margin:8px 0 0;color:#d6bfaa;font-size:.58rem;line-height:1.3;">
+        By completing your purchase, you agree to the <a href="/licenses/" target="_blank" rel="noopener" style="color:#ffb25c;font-weight:800;">Booth Ready License Terms</a> for the license selected.
+      </p>
     `;
 
     card.querySelectorAll('.price-option').forEach((button) => {
@@ -626,47 +431,15 @@ function renderCatalog() {
   updateRightRailCopy();
   removeLowerStripArtifacts();
   moveFounderPhotoToRightRail();
+  injectLicenseTermLinks();
 }
 
 async function loadCatalog() {
   try {
-    let usedLocalCatalog = false;
-
-    try {
-      const localRes = await fetch('/data/beats.json', { cache: 'no-store' });
-
-      if (localRes.ok) {
-        const localData = await localRes.json();
-
-        if (Array.isArray(localData)) {
-          catalog = localData;
-        } else if (Array.isArray(localData.catalog)) {
-          catalog = localData.catalog;
-        } else {
-          throw new Error('beats.json must be an array or contain a catalog array');
-        }
-
-        licenses = Array.isArray(localData.licenses)
-          ? localData.licenses
-          : [
-              { code: 'basic', name: 'Basic License', price: 29 },
-              { code: 'premium', name: 'Premium License', price: 79 },
-              { code: 'unlimited', name: 'Unlimited License', price: 199 },
-            ];
-
-        usedLocalCatalog = true;
-      }
-    } catch (localErr) {
-      console.warn('Local beats.json not used; falling back to API catalog.', localErr);
-    }
-
-    if (!usedLocalCatalog) {
-      const res = await fetch(`${API_BASE}/api/catalog`);
-      const data = await res.json();
-      catalog = data.catalog || [];
-      licenses = data.licenses || [];
-    }
-
+    const res = await fetch(`${API_BASE}/api/catalog`);
+    const data = await res.json();
+    catalog = data.catalog || [];
+    licenses = data.licenses || [];
     renderCatalog();
     renderLicenses();
     scrollToCurrentHash();
@@ -686,60 +459,6 @@ window.addEventListener('DOMContentLoaded', () => {
   updateRightRailCopy();
   removeLowerStripArtifacts();
   moveFounderPhotoToRightRail();
+  injectLicenseTermLinks();
   loadCatalog();
 });
-
-
-
-(function injectGenericBeatArtStyles() {
-  if (document.getElementById('genericBeatArtStyles')) return;
-  const style = document.createElement('style');
-  style.id = 'genericBeatArtStyles';
-  style.textContent = `
-    .beat-card-generic-art .beat-art {
-      position: relative;
-      overflow: hidden;
-      background: var(--art) !important;
-      background-size: cover !important;
-      background-position: center center !important;
-    }
-
-    /* Covers any baked-in title from the reused art and replaces it with the real beat name. */
-    .beat-card-generic-art .beat-art::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 0;
-      height: 46%;
-      z-index: 1;
-      background: linear-gradient(180deg, rgba(12,6,4,.98) 0%, rgba(12,6,4,.94) 58%, rgba(12,6,4,.18) 100%);
-      pointer-events: none;
-    }
-
-    .beat-card-generic-art .beat-art-title {
-      position: absolute;
-      left: 9px;
-      right: 9px;
-      top: 9px;
-      z-index: 2;
-      color: #e2d0a8;
-      font-family: Anton, Impact, sans-serif;
-      font-size: clamp(22px, 2.35vw, 38px);
-      line-height: .88;
-      letter-spacing: .025em;
-      text-transform: uppercase;
-      text-shadow: 0 3px 0 rgba(0,0,0,.8), 0 0 18px rgba(0,0,0,.95);
-      overflow-wrap: anywhere;
-    }
-
-    .beat-card-generic-art .beat-subtitle {
-      display: block !important;
-      color: #d9c7a3 !important;
-      opacity: 1 !important;
-      visibility: visible !important;
-      min-height: 12px;
-    }
-  `;
-  document.head.appendChild(style);
-})();

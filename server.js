@@ -60,13 +60,13 @@ function requireAdmin(req, res, next) {
 ========================= */
 
 const FALLBACK_CATALOG = [
-  { slug: "60s-remix", name: "60s Remix", file: "60s Remix.mp3", meta: "Boom Bap • Vintage Feel" },
+  { slug: "60s-remix", name: "60s Remix", file: "60s-Remix.mp3", meta: "Boom Bap • Vintage Feel" },
   { slug: "60s", name: "60s", file: "60s.mp3", meta: "Classic • Warm" },
-  { slug: "black-shuga", name: "Black Shuga", file: "Black Shuga.mp3", meta: "Soulful • Boom Bap" },
+  { slug: "black-shuga", name: "Black Shuga", file: "Black_Shuga.mp3", meta: "Soulful • Boom Bap" },
   { slug: "epic", name: "Epic", file: "Epic.mp3", meta: "Cinematic • Hard-Hitting" },
-  { slug: "key-witness", name: "Key Witness", file: "Key Witness.mp3", meta: "Dark • Gritty" },
+  { slug: "key-witness", name: "Key Witness", file: "Key_Witness.mp3", meta: "Dark • Gritty" },
   { slug: "moonstruck", name: "Moonstruck", file: "Moonstruck.mp3", meta: "Moody • Atmospheric" },
-  { slug: "mozee-along", name: "Mozee Along", file: "Mozee Along.mp3", meta: "Smooth • Head-Nod" },
+  { slug: "mozee-along", name: "Mozee Along", file: "Mozee_Along.mp3", meta: "Smooth • Head-Nod" },
   { slug: "widgets", name: "Widgets", file: "Widgets.mp3", meta: "Modern • Punchy" },
 ];
 
@@ -173,6 +173,19 @@ function getLicenseByCode(code) {
   return licenses.find((item) => item.code === code);
 }
 
+function getLicenseTermsPath(licenseCodeOrName) {
+  const value = String(licenseCodeOrName || "").toLowerCase();
+  if (value.includes("basic")) return "/licenses/basic-license.html";
+  if (value.includes("premium")) return "/licenses/premium-license.html";
+  if (value.includes("unlimited")) return "/licenses/unlimited-license.html";
+  if (value.includes("exclusive")) return "/licenses/exclusive-license.html";
+  return "/licenses/";
+}
+
+function buildLicenseTermsUrl(licenseCodeOrName) {
+  return `${DOMAIN}${getLicenseTermsPath(licenseCodeOrName)}`;
+}
+
 function upsertOrder(session, extra = {}) {
   const orders = readOrders();
   const existing = orders[session.id] || {};
@@ -186,6 +199,7 @@ function upsertOrder(session, extra = {}) {
     beatFile: session.metadata?.beatFile || existing.beatFile || null,
     licenseCode: session.metadata?.licenseCode || existing.licenseCode || null,
     licenseName: session.metadata?.licenseName || existing.licenseName || null,
+    licenseTermsUrl: session.metadata?.licenseTermsUrl || existing.licenseTermsUrl || buildLicenseTermsUrl(session.metadata?.licenseCode || session.metadata?.licenseName),
     downloadToken: existing.downloadToken || buildDownloadToken(session.id),
     emailSentAt: extra.emailSentAt || existing.emailSentAt || null,
     emailError: extra.emailError || existing.emailError || null,
@@ -222,7 +236,6 @@ function buildDownloadUrlForOrder(order) {
 function buildOrderUrl(sessionId) {
   return `${DOMAIN}/order.html?session_id=${encodeURIComponent(sessionId)}`;
 }
-
 
 const AUDIO_EXTENSIONS = [".mp3", ".MP3", ".wav", ".WAV", ".m4a", ".M4A"];
 
@@ -319,12 +332,13 @@ function buildEmailHtml(order) {
   const amount = order.amountTotal ? `$${(order.amountTotal / 100).toFixed(2)}` : "-";
   const downloadUrl = buildDownloadUrlForOrder(order);
   const orderUrl = buildOrderUrl(order.sessionId);
+  const licenseTermsUrl = order.licenseTermsUrl || buildLicenseTermsUrl(order.licenseCode || order.licenseName);
 
   return `
     <div style="font-family: Arial, sans-serif; background:#0b0b0b; padding:32px; color:#f5f5f5;">
       <div style="max-width:680px; margin:0 auto; background:#151515; border:1px solid rgba(255,255,255,.08); border-radius:20px; padding:32px;">
         <h1 style="margin:0 0 14px; font-size:32px;">Your Booth Ready order is confirmed</h1>
-        <p style="color:#cfcfcf; line-height:1.65; margin:0 0 22px;">Thanks for your purchase. Your beat is ready now.</p>
+        <p style="color:#cfcfcf; line-height:1.65; margin:0 0 22px;">Thanks for your purchase. Your beat is ready now. Your purchase is governed by the Booth Ready license terms for the license selected.</p>
         <div style="background:#101010; border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:18px; margin:0 0 22px;">
           <div style="display:flex; justify-content:space-between; gap:12px; padding:8px 0;"><span>Beat</span><strong>${order.beatName || "-"}</strong></div>
           <div style="display:flex; justify-content:space-between; gap:12px; padding:8px 0;"><span>License</span><strong>${order.licenseName || "-"}</strong></div>
@@ -332,8 +346,9 @@ function buildEmailHtml(order) {
           <div style="display:flex; justify-content:space-between; gap:12px; padding:8px 0;"><span>Status</span><strong>${order.paymentStatus || "-"}</strong></div>
         </div>
         <div style="margin:24px 0;">
-          <a href="${downloadUrl}" style="display:inline-block; padding:14px 22px; border-radius:999px; background:#c79a2b; color:#111; text-decoration:none; font-weight:700; margin-right:10px;">Download your beat</a>
-          <a href="${orderUrl}" style="display:inline-block; padding:14px 22px; border-radius:999px; border:1px solid rgba(255,255,255,.12); color:#f5f5f5; text-decoration:none;">Open order page</a>
+          <a href="${downloadUrl}" style="display:inline-block; padding:14px 22px; border-radius:999px; background:#c79a2b; color:#111; text-decoration:none; font-weight:700; margin:0 10px 10px 0;">Download your beat</a>
+          <a href="${orderUrl}" style="display:inline-block; padding:14px 22px; border-radius:999px; border:1px solid rgba(255,255,255,.12); color:#f5f5f5; text-decoration:none; margin:0 10px 10px 0;">Open order page</a>
+          <a href="${licenseTermsUrl}" style="display:inline-block; padding:14px 22px; border-radius:999px; border:1px solid rgba(255,178,92,.45); color:#ffb25c; text-decoration:none; font-weight:700; margin:0 0 10px 0;">View license terms</a>
         </div>
         <p style="color:#8e8e8e; font-size:12px; line-height:1.5;">Keep this email for your records. If you have trouble downloading, open the order page link above.</p>
       </div>
@@ -537,6 +552,8 @@ app.get("/api/session-status", async (req, res) => {
       order = await deliverOrderIfNeeded(order);
     }
 
+    const licenseTermsUrl = order?.licenseTermsUrl || buildLicenseTermsUrl(session.metadata?.licenseCode || session.metadata?.licenseName);
+
     res.json({
       sessionId: session.id,
       paymentStatus: session.payment_status,
@@ -546,6 +563,7 @@ app.get("/api/session-status", async (req, res) => {
       beatFile: session.metadata?.beatFile || null,
       licenseName: session.metadata?.licenseName || null,
       licenseCode: session.metadata?.licenseCode || null,
+      licenseTermsUrl,
       amountTotal: session.amount_total || null,
       downloadUrl: order && order.paymentStatus === "paid" ? buildDownloadUrlForOrder(order) : null,
       orderUrl: buildOrderUrl(session.id),
@@ -569,6 +587,7 @@ app.get("/api/order", (req, res) => {
 
   res.json({
     ...order,
+    licenseTermsUrl: order.licenseTermsUrl || buildLicenseTermsUrl(order.licenseCode || order.licenseName),
     downloadUrl: order.paymentStatus === "paid" ? buildDownloadUrlForOrder(order) : null,
     orderUrl: buildOrderUrl(order.sessionId)
   });
@@ -637,17 +656,24 @@ app.post("/create-checkout-session", async (req, res) => {
       return res.status(400).json({ error: `Invalid license price for ${licenseCode}` });
     }
 
+    const licenseTermsUrl = buildLicenseTermsUrl(license.code || license.name);
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
       customer_creation: "always",
       billing_address_collection: "auto",
+      custom_text: {
+        submit: {
+          message: `By completing this purchase, you agree to the Booth Ready ${String(license.name || "License").trim()} terms: ${licenseTermsUrl}`
+        }
+      },
       line_items: [{
         price_data: {
           currency: "usd",
           product_data: {
             name: `${String(beat.name || "Untitled Beat").trim()} — ${String(license.name || "License").trim()}`,
-            description: String(beat.meta || "Booth Ready instrumental").trim() || "Booth Ready instrumental"
+            description: `Booth Ready instrumental. Purchase subject to applicable Booth Ready License Terms.`
           },
           unit_amount: Math.round(price * 100)
         },
@@ -658,7 +684,8 @@ app.post("/create-checkout-session", async (req, res) => {
         beatName: String(beat.name || ""),
         beatFile: String(beat.file || ""),
         licenseCode: String(license.code || ""),
-        licenseName: String(license.name || "")
+        licenseName: String(license.name || ""),
+        licenseTermsUrl
       },
       success_url: `${DOMAIN}/success.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${DOMAIN}/cancel.html`
