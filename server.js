@@ -175,10 +175,10 @@ function getLicenseByCode(code) {
 
 function getLicenseTermsPath(licenseCodeOrName) {
   const value = String(licenseCodeOrName || "").toLowerCase();
-  if (value.includes("basic")) return "/licenses/basic-license.html";
-  if (value.includes("premium")) return "/licenses/premium-license.html";
-  if (value.includes("unlimited")) return "/licenses/unlimited-license.html";
-  if (value.includes("exclusive")) return "/licenses/exclusive-license.html";
+  if (value.includes("basic")) return "/licenses/basic-license.html?source=checkout";
+  if (value.includes("premium")) return "/licenses/premium-license.html?source=checkout";
+  if (value.includes("unlimited")) return "/licenses/unlimited-license.html?source=checkout";
+  if (value.includes("exclusive")) return "/licenses/exclusive-license.html?source=checkout";
   return "/licenses/";
 }
 
@@ -447,6 +447,73 @@ app.get("/admin.html", requireAdmin, (req, res) => {
   return res.sendFile(path.join(__dirname, "admin.html"));
 });
 
+
+
+// ============================================================
+// Title Art Engine v1 Server Helpers
+// Scalable clean-art and titleArt assignment for admin-added beats.
+// ============================================================
+
+const CLEAN_ART_POOL_V1 = Array.from(
+  { length: 24 },
+  (_, i) => `/assets/beat-art-pool/clean-24/art-${String(i + 1).padStart(2, "0")}.webp`
+);
+
+function stableHashV1(input) {
+  const s = String(input || "");
+  let hash = 0;
+
+  for (let i = 0; i < s.length; i += 1) {
+    hash = ((hash << 5) - hash) + s.charCodeAt(i);
+    hash |= 0;
+  }
+
+  return Math.abs(hash);
+}
+
+function assignCleanArtV1(slug) {
+  if (!CLEAN_ART_POOL_V1.length) return "";
+  return CLEAN_ART_POOL_V1[stableHashV1(slug) % CLEAN_ART_POOL_V1.length];
+}
+
+function buildTitleArtV1(name) {
+  const words = String(name || "").trim().split(/\s+/).filter(Boolean);
+
+  if (words.length === 0) {
+    return {
+      mode: "single",
+      primary: "Untitled"
+    };
+  }
+
+  if (words.length === 1) {
+    return {
+      mode: "single",
+      primary: words[0]
+    };
+  }
+
+  if (words.length === 2) {
+    return {
+      mode: "accent",
+      primary: words[0],
+      accent: words[1]
+    };
+  }
+
+  if (words.length <= 4) {
+    return {
+      mode: "stacked",
+      lines: words
+    };
+  }
+
+  return {
+    mode: "compact",
+    lines: words
+  };
+}
+
 app.post("/admin/add-beat", requireAdmin, (req, res) => {
   try {
     const { name, file, meta, style, description, slug } = req.body;
@@ -472,6 +539,8 @@ app.post("/admin/add-beat", requireAdmin, (req, res) => {
       slug: finalSlug,
       file: String(file).trim(),
       meta: finalMeta,
+      art: assignCleanArtV1(finalSlug),
+      titleArt: buildTitleArtV1(String(name).trim()),
       status: "active",
       active: true,
       createdAt: new Date().toISOString(),

@@ -2994,3 +2994,219 @@ html {
 }
 
 
+
+/* ============================================================
+   Title Art Engine v1 Styles
+   Scalable, rule-based, data-driven title-art system.
+   Scope:
+   - Applies only inside .beat-art
+   - Does not change card dimensions, grid, audio, license, or layout
+   ============================================================ */
+
+:root {
+  --br-title-art-primary: #efe3c4;
+  --br-title-art-primary-shadow: rgba(0, 0, 0, 0.78);
+  --br-title-art-accent: #df4d31;
+  --br-title-art-accent-shadow: rgba(0, 0, 0, 0.72);
+}
+
+.beat-art.has-title-art-engine-v1 {
+  position: relative;
+  overflow: hidden;
+}
+
+.title-art-engine-v1 {
+  position: absolute;
+  z-index: 2;
+  top: 7%;
+  left: 7%;
+  right: 8%;
+  max-width: 85%;
+  max-height: 44%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  pointer-events: none;
+  overflow: hidden;
+  transform: rotate(-1deg);
+}
+
+.title-art-line {
+  display: block;
+  max-width: 100%;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.title-art-primary {
+  color: var(--br-title-art-primary);
+  font-family: Anton, Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: clamp(1.65rem, 2.35vw, 2.85rem);
+  line-height: 0.86;
+  letter-spacing: 0.01em;
+  text-shadow:
+    0 2px 0 var(--br-title-art-primary-shadow),
+    0 6px 14px rgba(0, 0, 0, 0.52);
+}
+
+.title-art-primary--single {
+  font-size: clamp(1.65rem, 2.2vw, 2.65rem);
+  max-width: 100%;
+}
+
+.title-art-accent {
+  color: var(--br-title-art-accent);
+  font-family: "Brush Script MT", "Marker Felt", "Segoe Script", cursive;
+  font-size: clamp(1.3rem, 1.9vw, 2.2rem);
+  line-height: 0.9;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin-top: 0.02em;
+  margin-left: 0.04em;
+  max-width: 96%;
+  transform: rotate(-6deg) skewX(-6deg);
+  text-shadow:
+    0 2px 0 var(--br-title-art-accent-shadow),
+    0 6px 12px rgba(0, 0, 0, 0.48);
+}
+
+/* Generated title-art accent refinement - Key Witness direction - 2026-05-08
+   Scope: generated title-art overlays only.
+   Does not affect original baked-in artwork, card layout, grid, audio, licenses, checkout, catalog routing, or admin upload workflow.
+*/
+.has-title-art-engine-v1 .title-art-accent {
+  font-family: "Marker Felt", "Brush Script MT", "Segoe Script", cursive;
+  font-size: clamp(1.32rem, 1.98vw, 2.28rem);
+  line-height: 0.88;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  transform: rotate(-7deg) skewX(-7deg);
+  text-shadow:
+    0 2px 0 var(--br-title-art-accent-shadow),
+    0 6px 12px rgba(0, 0, 0, 0.50);
+}
+
+
+.title-art-mode-stacked,
+.title-art-mode-compact {
+  gap: 0.02em;
+}
+
+.title-art-mode-stacked .title-art-primary {
+  font-size: clamp(1.35rem, 1.95vw, 2.35rem);
+  line-height: 0.86;
+}
+
+.title-art-mode-compact .title-art-primary {
+  font-size: clamp(1.05rem, 1.55vw, 1.9rem);
+  line-height: 0.9;
+}
+
+@media (max-width: 768px) {
+  .title-art-engine-v1 {
+    top: 7%;
+    left: 7%;
+    right: 9%;
+    max-width: 84%;
+    max-height: 44%;
+  }
+
+  .title-art-primary {
+    font-size: clamp(1.5rem, 7vw, 2.7rem);
+  }
+
+  .title-art-primary--single {
+    font-size: clamp(1.5rem, 6.8vw, 2.55rem);
+  }
+
+  .title-art-accent {
+    font-size: clamp(1.25rem, 5.8vw, 2.2rem);
+  }
+
+  .title-art-mode-stacked .title-art-primary {
+    font-size: clamp(1.25rem, 5.8vw, 2.2rem);
+  }
+
+  .title-art-mode-compact .title-art-primary {
+    font-size: clamp(1rem, 4.8vw, 1.75rem);
+  }
+}
+
+/* ============================================================
+   Full Catalog Page v1 — 2026-05-07
+   Purpose:
+   - Keep homepage capped at latest beats.
+   - Let /catalog.html display all active beats in a dedicated page.
+   - Does not change beat card dimensions, audio, licenses, artwork, or title-art engine.
+   ============================================================ */
+
+.full-catalog-page {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 56px);
+}
+
+.full-catalog-marketplace {
+  width: 100%;
+}
+
+.full-catalog-marketplace .poster-main {
+  width: 100%;
+}
+
+/* ============================================================
+   Full Catalog Page v1 Structure — 2026-05-07
+   Purpose:
+   - catalog.html reuses the approved homepage catalog DOM.
+   - Hide non-catalog marketing sections on the dedicated catalog page.
+   - Do not change beat card dimensions, grid, audio, licenses, artwork, or title-art engine.
+   ============================================================ */
+
+body.full-catalog-page-v1 .br-hero-foundation,
+body.full-catalog-page-v1 #about-section,
+body.full-catalog-page-v1 #faq-section,
+body.full-catalog-page-v1 #licenses-section,
+body.full-catalog-page-v1 #exclusives-section,
+body.full-catalog-page-v1 #contact-section,
+body.full-catalog-page-v1 .anchor-target {
+  display: none !important;
+}
+
+body.full-catalog-page-v1 .poster-marketplace {
+  margin-top: clamp(24px, 4vw, 56px);
+}
+
+/* ============================================================
+   Title Art Color Tokens v1.1 — Option 5 Approved — 2026-05-07
+   Purpose:
+   - Use Option 5 / Antique Gold Cream as the approved generated
+     art-title color scheme for newly uploaded beats.
+   Scope:
+   - Shared title-art color tokens only.
+   - No aspect ratio, title-size ratio, card, grid, layout, catalog,
+     admin, audio, license, or artwork assignment changes.
+   ============================================================ */
+
+:root {
+  --title-art-primary-v1: #d8c38a;
+  --title-art-primary-shadow-v1: rgba(39, 22, 9, 0.88);
+  --title-art-primary-edge-v1: rgba(255, 230, 170, 0.24);
+
+  --title-art-accent-v1: #cf4727;
+  --title-art-accent-deep-v1: #812212;
+  --title-art-accent-shadow-v1: rgba(18, 4, 2, 0.78);
+
+/* Title Art Engine Token Bridge - Option 5 Active - 2026-05-08
+   Purpose: make generated title art use approved Option 5 / Antique Gold Cream tokens.
+   Scope: color tokens only. Does not alter layout, card dimensions, grid, audio, licenses, artwork, or title-art sizing.
+*/
+:root {
+  --br-title-art-primary: var(--title-art-primary-v1);
+  --br-title-art-primary-shadow: var(--title-art-primary-shadow-v1);
+  --br-title-art-accent: var(--title-art-accent-v1);
+  --br-title-art-accent-shadow: var(--title-art-accent-shadow-v1);
+}
+
+}
+

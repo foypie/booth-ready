@@ -71,6 +71,307 @@
       "status": "active",
       "active": true,
       "updatedAt": "2026-05-01T19:05:05.040Z"
+    },
+    {
+      "slug": "laid-multiples",
+      "name": "Laid Multiples",
+      "file": "Laid_Multiples.mp3",
+      "meta": "Boom bap • soulful focused",
+      "status": "active",
+      "active": true,
+      "updatedAt": null,
+      "art": "/assets/beat-art-pool/clean-24/art-09.webp",
+      "titleArt": {
+        "mode": "accent",
+        "primary": "Laid",
+        "accent": "Multiples"
+      }
+    },
+    {
+      "slug": "methods",
+      "name": "Methods",
+      "file": "Methods.mp3",
+      "meta": "Boom bap • dark methodical",
+      "status": "active",
+      "active": true,
+      "updatedAt": null,
+      "art": "/assets/beat-art-pool/clean-24/art-10.webp",
+      "titleArt": {
+        "mode": "single",
+        "primary": "Methods"
+      }
+    },
+    {
+      "name": "Beastin",
+      "slug": "beastin",
+      "file": "Beastin.mp3",
+      "meta": "Boom bap • aggressive gritty",
+      "status": "active",
+      "active": true,
+      "createdAt": "2026-05-07T19:35:20.584Z",
+      "updatedAt": "2026-05-07T19:35:20.585Z",
+      "art": "/assets/beat-art-pool/clean-24/art-21.webp",
+      "titleArt": {
+        "mode": "single",
+        "primary": "Beastin"
+      }
+    },
+    {
+      "name": "Flows",
+      "slug": "flows",
+      "file": "Flowz.mp3",
+      "meta": "Boom bap • smooth confident",
+      "art": "/assets/beat-art-pool/clean-24/art-22.webp",
+      "titleArt": {
+        "mode": "single",
+        "primary": "Flows"
+      },
+      "status": "active",
+      "active": true,
+      "createdAt": "2026-05-07T21:37:48.743Z",
+      "updatedAt": "2026-05-07T21:37:48.744Z"
+    },
+    {
+      "title": "Black Flies",
+      "slug": "black-flies",
+      "file": "Black_Flies.mp3",
+      "meta": "Boom bap • dark underground",
+      "status": "active",
+      "active": true,
+      "titleArt": {
+        "mode": "accent",
+        "primary": "Black",
+        "accent": "Flies"
+      },
+      "name": "Black Flies",
+      "art": "/assets/beat-art-pool/clean-24/art-01.webp",
+      "createdAt": "2026-04-01T00:00:00Z",
+      "updatedAt": "2026-04-01T00:00:00Z",
+      "isBackfill": true,
+      "catalogBatch": "backfill-older-beats-2026-05-08"
+    },
+    {
+      "title": "Brooklyn Dust",
+      "slug": "brooklyn-dust",
+      "file": "Brooklyn Dust.mp3",
+      "meta": "Boom bap",
+      "status": "hidden",
+      "active": false,
+      "titleArt": {
+        "mode": "accent",
+        "primary": "Brooklyn",
+        "accent": "Dust"
+      },
+      "name": "Brooklyn Dust",
+      "art": "/assets/beat-art-pool/clean-24/art-02.webp",
+      "createdAt": "2026-04-01T00:00:00Z",
+      "updatedAt": "2026-05-08T17:41:52.732Z",
+      "isBackfill": true,
+      "catalogBatch": "backfill-older-beats-2026-05-08",
+      "removedFromPublicCatalog": true,
+      "removalReason": "Removed from catalog backfill per user QA on 2026-05-08."
+    },
+    {
+      "title": "Custard",
+      "slug": "custard",
+      "file": "Custard.mp3",
+      "meta": "Boom bap • warm soulful",
+      "status": "active",
+      "active": true,
+      "titleArt": {
+        "mode": "single",
+        "primary": "Custard"
+      },
+      "name": "Custard",
+      "art": "/assets/beat-art-pool/clean-24/art-03.webp",
+      "createdAt": "2026-04-01T00:00:00Z",
+      "updatedAt": "2026-04-01T00:00:00Z",
+      "isBackfill": true,
+      "catalogBatch": "backfill-older-beats-2026-05-08"
+    },
+    {
+      "title": "Dirty",
+      "slug": "dirty",
+      "file": "Dirty.mp3",
+      "meta": "Boom bap • dusty raw",
+      "status": "active",
+      "active": true,
+      "titleArt": {
+        "mode": "single",
+        "primary": "Dirty"
+      },
+      "name": "Dirty",
+      "art": "/assets/beat-art-pool/clean-24/art-04.webp",
+      "createdAt": "2026-04-01T00:00:00Z",
+      "updatedAt": "2026-04-01T00:00:00Z",
+      "isBackfill": true,
+      "catalogBatch": "backfill-older-beats-2026-05-08"
+    },
+    {
+      "title": "Distort",
+      "slug": "distort",
+      "file": "Distort.mp3",
+      "meta": "Boom bap • gritty distorted",
+      "status": "active",
+      "active": true,
+      "titleArt": {
+        "mode": "single",
+        "primary": "Distort"
+      },
+      "name": "Distort",
+      "art": "/assets/beat-art-pool/clean-24/art-05.webp",
+      "createdAt": "2026-04-01T00:00:00Z",
+      "updatedAt": "2026-04-01T00:00:00Z",
+      "isBackfill": true,
+      "catalogBatch": "backfill-older-beats-2026-05-08"
+    },
+    {
+      "title": "Flairs",
+      "slug": "flairs",
+      "file": "Flairs.mp3",
+      "meta": "Boom bap • confident bounce",
+      "status": "active",
+      "active": true,
+      "titleArt": {
+        "mode": "single",
+        "primary": "Flairs"
+      },
+      "name": "Flairs",
+      "art": "/assets/beat-art-pool/clean-24/art-06.webp",
+      "createdAt": "2026-04-01T00:00:00Z",
+      "updatedAt": "2026-04-01T00:00:00Z",
+      "isBackfill": true,
+      "catalogBatch": "backfill-older-beats-2026-05-08"
+    },
+    {
+      "title": "Hidden 22",
+      "slug": "hidden-22",
+      "file": "Hidden_22.mp3",
+      "meta": "Boom bap • tense gritty",
+      "status": "active",
+      "active": true,
+      "titleArt": {
+        "mode": "accent",
+        "primary": "Hidden",
+        "accent": "22"
+      },
+      "name": "Hidden 22",
+      "art": "/assets/beat-art-pool/clean-24/art-07.webp",
+      "createdAt": "2026-04-01T00:00:00Z",
+      "updatedAt": "2026-04-01T00:00:00Z",
+      "isBackfill": true,
+      "catalogBatch": "backfill-older-beats-2026-05-08"
+    },
+    {
+      "title": "Im Live",
+      "slug": "im-live",
+      "file": "Im_Live.mp3",
+      "meta": "Boom bap • live raw energy",
+      "status": "active",
+      "active": true,
+      "titleArt": {
+        "mode": "accent",
+        "primary": "Im",
+        "accent": "Live"
+      },
+      "name": "Im Live",
+      "art": "/assets/beat-art-pool/clean-24/art-08.webp",
+      "createdAt": "2026-04-01T00:00:00Z",
+      "updatedAt": "2026-04-01T00:00:00Z",
+      "isBackfill": true,
+      "catalogBatch": "backfill-older-beats-2026-05-08"
+    },
+    {
+      "title": "Loddy",
+      "slug": "loddy",
+      "file": "Loddy.mp3",
+      "meta": "Boom bap • raw underground",
+      "status": "active",
+      "active": true,
+      "titleArt": {
+        "mode": "single",
+        "primary": "Loddy"
+      },
+      "name": "Loddy",
+      "art": "/assets/beat-art-pool/clean-24/art-11.webp",
+      "createdAt": "2026-04-01T00:00:00Z",
+      "updatedAt": "2026-04-01T00:00:00Z",
+      "isBackfill": true,
+      "catalogBatch": "backfill-older-beats-2026-05-08"
+    },
+    {
+      "title": "Memories",
+      "slug": "memories",
+      "file": "Memories.mp3",
+      "meta": "Boom bap • reflective soul",
+      "status": "active",
+      "active": true,
+      "titleArt": {
+        "mode": "single",
+        "primary": "Memories"
+      },
+      "name": "Memories",
+      "art": "/assets/beat-art-pool/clean-24/art-12.webp",
+      "createdAt": "2026-04-01T00:00:00Z",
+      "updatedAt": "2026-04-01T00:00:00Z",
+      "isBackfill": true,
+      "catalogBatch": "backfill-older-beats-2026-05-08"
+    },
+    {
+      "title": "Missin",
+      "slug": "missin",
+      "file": "Missin.mp3",
+      "meta": "Boom bap • moody reflective",
+      "status": "active",
+      "active": true,
+      "titleArt": {
+        "mode": "single",
+        "primary": "Missin"
+      },
+      "name": "Missin",
+      "art": "/assets/beat-art-pool/clean-24/art-13.webp",
+      "createdAt": "2026-04-01T00:00:00Z",
+      "updatedAt": "2026-04-01T00:00:00Z",
+      "isBackfill": true,
+      "catalogBatch": "backfill-older-beats-2026-05-08"
+    },
+    {
+      "title": "Mold Em",
+      "slug": "mold-em",
+      "file": "Mold_Em.mp3",
+      "meta": "Boom bap • hard street",
+      "status": "active",
+      "active": true,
+      "titleArt": {
+        "mode": "accent",
+        "primary": "Mold",
+        "accent": "Em"
+      },
+      "name": "Mold Em",
+      "art": "/assets/beat-art-pool/clean-24/art-14.webp",
+      "createdAt": "2026-04-01T00:00:00Z",
+      "updatedAt": "2026-04-01T00:00:00Z",
+      "isBackfill": true,
+      "catalogBatch": "backfill-older-beats-2026-05-08"
+    },
+    {
+      "title": "Musique Bells",
+      "slug": "musique-bells",
+      "file": "Musique_Bells.mp3",
+      "meta": "Boom bap • cinematic soulful",
+      "status": "active",
+      "active": true,
+      "titleArt": {
+        "mode": "accent",
+        "primary": "Musique",
+        "accent": "Bells"
+      },
+      "name": "Musique Bells",
+      "art": "/assets/beat-art-pool/clean-24/art-15.webp",
+      "createdAt": "2026-04-01T00:00:00Z",
+      "updatedAt": "2026-04-01T00:00:00Z",
+      "isBackfill": true,
+      "catalogBatch": "backfill-older-beats-2026-05-08"
     }
   ],
   "licenses": [

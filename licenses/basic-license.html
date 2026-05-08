@@ -18,7 +18,7 @@
   <main class="page agreement-page">
     <div class="top">
       <div class="brand">Booth Ready • Current License Terms</div>
-      <a class="back" href="/" onclick="closeOrHome(event)">← Close this tab to return to checkout</a>
+      <a class="back" id="license-return-link" href="/">← Return to Booth Ready</a>
     </div>
     <section class="card agreement-card">
       <h1>BOOTH READY BASIC NON-EXCLUSIVE LICENSE AGREEMENT</h1>
@@ -68,5 +68,33 @@
     </section>
     <p class="sig">Current Booth Ready License Terms • Attorney review pending internally</p>
   </main>
+
+<script>
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var fromCheckout = params.get("source") === "checkout";
+  var link = document.getElementById("license-return-link");
+
+  if (!link) return;
+
+  if (fromCheckout) {
+    link.textContent = "← Close this tab to return to checkout";
+    link.setAttribute("href", "#");
+    link.addEventListener("click", function (event) {
+      event.preventDefault();
+      window.close();
+      setTimeout(function () {
+        if (!window.closed) {
+          history.back();
+        }
+      }, 300);
+    });
+  } else {
+    link.textContent = "← Return to Booth Ready";
+    link.setAttribute("href", "/#licenses");
+  }
+})();
+</script>
+
 </body>
 </html>
