@@ -13,6 +13,60 @@ const API_BASE =
     : window.location.origin;
 
 let catalog = [];
+
+const HOMEPAGE_CATALOG_LIMIT_V1 = 10;
+const IS_FULL_CATALOG_PAGE_V1 = /\/catalog\.html$/i.test(window.location.pathname);
+let catalogDisplayModeV1 = 'homepage';
+
+function isBeatActive(beat) {
+  if (!beat) return false;
+
+  const status = String(beat.status || 'active').trim().toLowerCase();
+
+  if (beat.active === false) return false;
+  if (status === 'inactive') return false;
+  if (status === 'hidden') return false;
+  if (status === 'sold') return false;
+  if (status === 'archived') return false;
+
+  return true;
+}
+
+function getBeatFreshnessV1(beat, index) {
+  const timestamp = beat?.createdAt || beat?.updatedAt || beat?.date || beat?.addedAt || '';
+  const parsed = Date.parse(timestamp);
+
+  if (Number.isFinite(parsed)) {
+    return parsed;
+  }
+
+  // Fallback keeps manually ordered legacy beats deterministic.
+  return index;
+}
+
+function getVisibleCatalogV1(items) {
+  const activeItems = Array.isArray(items) ? items.filter(isBeatActive) : [];
+
+  if (IS_FULL_CATALOG_PAGE_V1) {
+    return activeItems;
+  }
+
+  return activeItems
+    .filter((beat) => beat.isBackfill !== true && beat.homepageEligible !== false)
+    .map((beat, index) => ({ beat, index }))
+    .sort((a, b) => getBeatFreshnessV1(b.beat, b.index) - getBeatFreshnessV1(a.beat, a.index))
+    .slice(0, HOMEPAGE_CATALOG_LIMIT_V1)
+    .map((entry) => entry.beat);
+}
+
+function refreshCatalogDisplayV1() {
+  renderCatalog();
+
+  if (typeof applyTitleArtEngineV1 === 'function') {
+    requestAnimationFrame(() => applyTitleArtEngineV1());
+  }
+}
+
 let licenses = [];
 
 const LICENSE_TERM_PATHS = {
@@ -31,6 +85,8 @@ const COVER_MANIFEST = {
   'moonstruck': '/assets/beat-art-6.png',
   'mozee-along': '/assets/beat-art-7.png',
   'widgets': '/assets/beat-art-8.png',
+  'laid-multiples': '/assets/beat-art-pool/clean-24/art-09.webp',
+  'methods': '/assets/beat-art-pool/clean-24/art-10.webp',
 };
 
 const COVER_POOL = [
@@ -202,13 +258,23 @@ function getBeatKey(beat) {
 }
 
 function getCoverUrl(beat, index) {
-  const key = getBeatKey(beat);
-  if (key && COVER_MANIFEST[key]) return COVER_MANIFEST[key];
-  if (COVER_POOL.length > 0) {
-    const poolIndex = key ? hashString(key) % COVER_POOL.length : index % COVER_POOL.length;
-    return COVER_POOL[poolIndex];
+  const explicitArt = String(beat?.art || beat?.artImage || beat?.cover || beat?.coverUrl || '').trim();
+
+  if (explicitArt) {
+    return explicitArt;
   }
-  return null;
+
+  const key = String(getBeatKey(beat) || beat?.slug || beat?.name || index || '').trim().toLowerCase();
+
+  if (typeof COVER_MANIFEST !== 'undefined' && COVER_MANIFEST && COVER_MANIFEST[key]) {
+    return COVER_MANIFEST[key];
+  }
+
+  if (typeof COVER_POOL !== 'undefined' && Array.isArray(COVER_POOL) && COVER_POOL.length > 0) {
+    return COVER_POOL[index % COVER_POOL.length];
+  }
+
+  return '';
 }
 
 function getArtBackground(beat, index) {
@@ -358,12 +424,34 @@ function bindWaveformPlayer(card) {
 
 function bindViewAllButton() {
   const button = document.querySelector('.view-all');
-  const main = document.querySelector('.poster-main');
-  if (!button || !main) return;
-  button.setAttribute('type', 'button');
+
+  if (!button) return;
+
+  if (IS_FULL_CATALOG_PAGE_V1) {
+    if (button.dataset.latestBeatsBound === 'true') return;
+    button.dataset.latestBeatsBound = 'true';
+
+    button.textContent = 'LATEST BEATS';
+    button.setAttribute('aria-label', 'Return to latest beats');
+
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      window.location.href = '/#beats';
+    });
+
+    return;
+  }
+
+  if (button.dataset.catalogPageBound === 'true') return;
+  button.dataset.catalogPageBound = 'true';
+
+  button.textContent = 'VIEW ALL BEATS';
   button.setAttribute('aria-label', 'View all beats');
-  button.addEventListener('click', () => {
-    main.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  button.setAttribute('href', '/catalog.html');
+
+  button.addEventListener('click', (event) => {
+    event.preventDefault();
+    window.location.href = '/catalog.html';
   });
 }
 
@@ -372,7 +460,7 @@ function renderCatalog() {
   if (!container) return;
   container.innerHTML = '';
 
-  catalog.forEach((beat, index) => {
+  getVisibleCatalogV1(catalog).forEach((beat, index) => {
     const card = document.createElement('article');
     card.className = 'beat-card';
     const art = getArtBackground(beat, index);
@@ -462,3 +550,188 @@ window.addEventListener('DOMContentLoaded', () => {
   injectLicenseTermLinks();
   loadCatalog();
 });
+
+/* ============================================================
+   Title Art Engine v1
+   Scalable, rule-based, data-driven title-art system.
+   - Uses beat.titleArt when present
+   - Falls back to beat name parsing
+   - No beat-specific CSS
+   - Does not alter card dimensions, grid, audio, or license layout
+   ============================================================ */
+
+const TITLE_ART_ENGINE_V1 = {
+  tokens: {
+    primaryClass: 'title-art-token-primary',
+    accentClass: 'title-art-token-accent'
+  },
+
+  modes: new Set(['single', 'stacked', 'accent', 'compact'])
+};
+
+function titleArtWords(value) {
+  return String(value || '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
+function inferTitleArtSpec(beat) {
+  const name = String(beat?.name || beat?.title || '').trim();
+  const words = titleArtWords(name);
+
+  if (!words.length) return null;
+
+  if (beat?.titleArt && typeof beat.titleArt === 'object') {
+    const supplied = {
+      mode: String(beat.titleArt.mode || '').trim().toLowerCase(),
+      primary: String(beat.titleArt.primary || '').trim(),
+      accent: String(beat.titleArt.accent || '').trim(),
+      lines: Array.isArray(beat.titleArt.lines) ? beat.titleArt.lines.map(String).filter(Boolean) : null
+    };
+
+    if (!TITLE_ART_ENGINE_V1.modes.has(supplied.mode)) {
+      supplied.mode = '';
+    }
+
+    if (supplied.mode && (supplied.primary || supplied.lines?.length)) {
+      return supplied;
+    }
+  }
+
+  if (words.length === 1) {
+    return {
+      mode: 'single',
+      primary: words[0],
+      accent: ''
+    };
+  }
+
+  if (words.length === 2) {
+    return {
+      mode: 'accent',
+      primary: words[0],
+      accent: words[1]
+    };
+  }
+
+  if (words.length <= 4) {
+    return {
+      mode: 'stacked',
+      lines: words
+    };
+  }
+
+  return {
+    mode: 'compact',
+    lines: words
+  };
+}
+
+function escapeTitleArtText(value) {
+  return String(value || '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function getTitleArtHTML(spec) {
+  if (!spec) return '';
+
+  const mode = spec.mode || 'single';
+
+  if (mode === 'single') {
+    return `<span class="title-art-line title-art-primary title-art-primary--single">${escapeTitleArtText(spec.primary)}</span>`;
+  }
+
+  if (mode === 'accent') {
+    return `
+      <span class="title-art-line title-art-primary">${escapeTitleArtText(spec.primary)}</span>
+      <span class="title-art-line title-art-accent">${escapeTitleArtText(spec.accent)}</span>
+    `;
+  }
+
+  const lines = Array.isArray(spec.lines) && spec.lines.length
+    ? spec.lines
+    : titleArtWords(spec.primary);
+
+  return lines.map((line) => (
+    `<span class="title-art-line title-art-primary">${escapeTitleArtText(line)}</span>`
+  )).join('');
+}
+
+function applyTitleArtEngineV1() {
+  const cards = document.querySelectorAll('.beat-card');
+
+  cards.forEach((card) => {
+    const artEl = card.querySelector('.beat-art');
+    const titleEl = card.querySelector('.beat-title') || card.querySelector('h3');
+
+    if (!artEl || !titleEl) return;
+
+    const title = String(titleEl.textContent || '').trim();
+
+    // Preserve original 8 legacy titled covers. Title Art Engine applies to clean-art/admin beats.
+    const isLegacyTitledCover = [
+      '60s Remix',
+      '60s',
+      'Black Shuga',
+      'Epic',
+      'Key Witness',
+      'Moonstruck',
+      'Mozee Along',
+      'Widgets'
+    ].includes(title);
+
+    if (isLegacyTitledCover) return;
+
+    if (artEl.querySelector('.title-art-engine-v1')) return;
+
+    const beat = Array.isArray(window.__boothReadyCatalog)
+      ? window.__boothReadyCatalog.find((item) => String(item?.name || item?.title || '').trim() === title)
+      : null;
+
+    const spec = inferTitleArtSpec(beat || { name: title });
+
+    if (!spec) return;
+
+    const overlay = document.createElement('div');
+    overlay.className = `title-art-engine-v1 title-art-mode-${spec.mode || 'single'}`;
+    overlay.setAttribute('aria-hidden', 'true');
+    overlay.innerHTML = getTitleArtHTML(spec);
+
+    artEl.appendChild(overlay);
+    artEl.classList.add('has-title-art-engine-v1');
+  });
+}
+
+if (typeof renderCatalog === 'function' && !window.__titleArtEngineV1Wrapped) {
+  const __originalRenderCatalogForTitleArtV1 = renderCatalog;
+
+  renderCatalog = function(...args) {
+    const result = __originalRenderCatalogForTitleArtV1.apply(this, args);
+
+    try {
+      if (Array.isArray(args[0])) {
+        window.__boothReadyCatalog = args[0];
+      }
+    } catch (err) {}
+
+    requestAnimationFrame(() => {
+      applyTitleArtEngineV1();
+    });
+
+    return result;
+  };
+
+  window.__titleArtEngineV1Wrapped = true;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  requestAnimationFrame(() => {
+    applyTitleArtEngineV1();
+  });
+});
+
