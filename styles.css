@@ -3210,3 +3210,18 @@ body.full-catalog-page-v1 .poster-marketplace {
 
 }
 
+/* Mobile catalog access fallback: keeps full catalog reachable on phones without changing desktop/tablet layout. */
+.view-all-mobile{
+  display:none;
+}
+
+@media (max-width:648px){
+  .view-all-mobile{
+    display:block;
+    width:100%;
+    margin:14px 0 2px;
+    text-align:center;
+    text-decoration:none;
+  }
+}
+\n
