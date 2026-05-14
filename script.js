@@ -102,6 +102,61 @@ const COVER_POOL = [
 
 const DEFAULT_WAVEFORM = '/assets/waveforms/default-wave.svg';
 
+// ============================================================
+// Preview Audio Watermark Overlay v1 - 2026-05-14
+// Plays a reusable vocal tag over public beat previews.
+// This is a preview deterrent layer, not a clean-master delivery system.
+// ============================================================
+const PREVIEW_WATERMARK_TAG_SRC = '/assets/audio-tags/b4l-tag-v2.mp3';
+const PREVIEW_WATERMARK_INTERVAL_MS = 7000;
+let activePreviewWatermarkTimer = null;
+let activePreviewWatermarkAudio = null;
+
+function stopPreviewWatermark() {
+  if (activePreviewWatermarkTimer) {
+    clearInterval(activePreviewWatermarkTimer);
+    activePreviewWatermarkTimer = null;
+  }
+
+  if (activePreviewWatermarkAudio) {
+    try {
+      activePreviewWatermarkAudio.pause();
+      activePreviewWatermarkAudio.currentTime = 0;
+    } catch (error) {
+      console.warn('Preview watermark stop warning:', error);
+    }
+    activePreviewWatermarkAudio = null;
+  }
+}
+
+function playPreviewWatermarkTag() {
+  const tagAudio = new Audio(PREVIEW_WATERMARK_TAG_SRC);
+  tagAudio.preload = 'auto';
+  tagAudio.volume = 0.9;
+  activePreviewWatermarkAudio = tagAudio;
+
+  tagAudio.play().catch((error) => {
+    console.warn('Preview watermark playback warning:', error);
+  });
+}
+
+function startPreviewWatermark(audio) {
+  stopPreviewWatermark();
+
+  if (!audio) return;
+
+  // Wait briefly so the beat starts first, then place the tag over the preview.
+  activePreviewWatermarkTimer = setInterval(() => {
+    if (!audio || audio.paused || audio.ended) {
+      stopPreviewWatermark();
+      return;
+    }
+
+    playPreviewWatermarkTag();
+  }, PREVIEW_WATERMARK_INTERVAL_MS);
+}
+
+
 function formatPrice(price) {
   return `$${Number(price).toFixed(0)}`;
 }
@@ -398,9 +453,12 @@ function bindWaveformPlayer(card) {
       document.querySelectorAll('.preview-audio').forEach((other) => {
         if (other !== audio) other.pause();
       });
-      audio.play().catch((err) => console.error(err));
+      audio.play()
+        .then(() => startPreviewWatermark(audio))
+        .catch((err) => console.error(err));
     } else {
       audio.pause();
+      stopPreviewWatermark();
     }
   });
 
@@ -415,9 +473,15 @@ function bindWaveformPlayer(card) {
 
   audio.addEventListener('timeupdate', syncUI);
   audio.addEventListener('play', syncUI);
-  audio.addEventListener('pause', syncUI);
+  audio.addEventListener('pause', () => {
+    syncUI();
+    stopPreviewWatermark();
+  });
   audio.addEventListener('loadedmetadata', syncUI);
-  audio.addEventListener('ended', syncUI);
+  audio.addEventListener('ended', () => {
+    syncUI();
+    stopPreviewWatermark();
+  });
 
   syncUI();
 }
