@@ -707,6 +707,105 @@ function applyTitleArtEngineV1() {
   });
 }
 
+
+/* ============================================================
+   Dynamic Mobile Title-Art Font Fit v1
+   Purpose:
+   - Mobile/catalog generated title-art only.
+   - Measures actual rendered text inside each thumbnail.
+   - Reduces font-size per title line until it fits the safe title-art area.
+   - Does not transform/scale the overlay container.
+   - Does not change card dimensions, grid, data, audio, checkout, admin, or legacy baked-in covers.
+   ============================================================ */
+
+function resetDynamicTitleArtFontFitV1() {
+  document
+    .querySelectorAll('.beat-card .beat-art .title-art-engine-v1')
+    .forEach((overlay) => {
+      overlay.removeAttribute('data-title-art-font-fit');
+      overlay.querySelectorAll('.title-art-line').forEach((line) => {
+        line.style.removeProperty('font-size');
+      });
+    });
+}
+
+function fitDynamicMobileTitleArtFontV1() {
+  const overlays = document.querySelectorAll('.beat-card .beat-art .title-art-engine-v1');
+
+  // Outside mobile: remove inline font fitting and allow normal CSS rules to govern.
+  if (window.matchMedia('(min-width: 769px)').matches) {
+    resetDynamicTitleArtFontFitV1();
+    return;
+  }
+
+  overlays.forEach((overlay) => {
+    const art = overlay.closest('.beat-art');
+    if (!art) return;
+
+    const lines = Array.from(overlay.querySelectorAll('.title-art-line'));
+    if (!lines.length) return;
+
+    // Start every pass from the CSS-defined size, not from a previous inline fit.
+    lines.forEach((line) => {
+      line.style.removeProperty('font-size');
+    });
+
+    const overlayRect = overlay.getBoundingClientRect();
+    if (!overlayRect.width) return;
+
+    // Conservative safe width: this prevents long words like "Memories"
+    // from visually crowding the right thumbnail edge even when they technically fit.
+    const safeLineWidth = overlayRect.width * 0.88;
+
+    lines.forEach((line) => {
+      const computed = window.getComputedStyle(line);
+      const originalPx = parseFloat(computed.fontSize || '0');
+      if (!originalPx) return;
+
+      let lineRect = line.getBoundingClientRect();
+      let fittedPx = originalPx;
+
+      if (lineRect.width > safeLineWidth) {
+        fittedPx = originalPx * (safeLineWidth / lineRect.width);
+      }
+
+      // Keep title art readable. Accent/script lines can tolerate slightly smaller type.
+      const isAccent = line.classList.contains('title-art-accent');
+      const minPx = isAccent ? 10 : 11;
+
+      fittedPx = Math.max(minPx, fittedPx);
+
+      if (fittedPx < originalPx) {
+        line.style.fontSize = `${fittedPx.toFixed(2)}px`;
+      }
+    });
+
+    overlay.setAttribute('data-title-art-font-fit', 'true');
+  });
+}
+
+function scheduleDynamicTitleArtFontFitV1() {
+  requestAnimationFrame(() => {
+    applyTitleArtEngineV1();
+    fitDynamicMobileTitleArtFontV1();
+  });
+}
+
+if (!window.__dynamicTitleArtFontFitV1ResizeBound) {
+  let dynamicTitleArtFontFitTimer = 0;
+
+  const scheduleResizeFontFit = () => {
+    window.clearTimeout(dynamicTitleArtFontFitTimer);
+    dynamicTitleArtFontFitTimer = window.setTimeout(() => {
+      scheduleDynamicTitleArtFontFitV1();
+    }, 120);
+  };
+
+  window.addEventListener('resize', scheduleResizeFontFit);
+  window.addEventListener('orientationchange', scheduleResizeFontFit);
+  window.__dynamicTitleArtFontFitV1ResizeBound = true;
+}
+
 if (typeof renderCatalog === 'function' && !window.__titleArtEngineV1Wrapped) {
   const __originalRenderCatalogForTitleArtV1 = renderCatalog;
 
@@ -719,9 +818,7 @@ if (typeof renderCatalog === 'function' && !window.__titleArtEngineV1Wrapped) {
       }
     } catch (err) {}
 
-    requestAnimationFrame(() => {
-      applyTitleArtEngineV1();
-    });
+    scheduleDynamicTitleArtFontFitV1();
 
     return result;
   };
@@ -730,8 +827,102 @@ if (typeof renderCatalog === 'function' && !window.__titleArtEngineV1Wrapped) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  requestAnimationFrame(() => {
-    applyTitleArtEngineV1();
+  scheduleDynamicTitleArtFontFitV1();
+});
+
+/* ============================================================
+   Stay Connected Lead Capture v1 - 2026-05-13
+   - Email required
+   - Phone optional
+   - SMS consent required only when phone is entered
+   - Posts to /api/subscribe
+   ============================================================ */
+function bindStayConnectedForms() {
+  document.querySelectorAll('.stay-form').forEach((form) => {
+    if (form.dataset.stayConnectedBound === 'true') return;
+    form.dataset.stayConnectedBound = 'true';
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const emailInput = form.querySelector('input[name="email"]');
+      const phoneInput = form.querySelector('input[name="phone"]');
+      const consentInput = form.querySelector('input[name="smsConsent"]');
+      const status = form.querySelector('.stay-form-status');
+      const submitButton = form.querySelector('button[type="submit"]');
+
+      const email = emailInput ? emailInput.value.trim() : '';
+      const phone = phoneInput ? phoneInput.value.trim() : '';
+      const smsConsent = Boolean(consentInput && consentInput.checked);
+
+      if (status) {
+        status.textContent = '';
+        status.className = 'stay-form-status';
+      }
+
+      if (!email) {
+        if (status) {
+          status.textContent = 'Please enter your email address.';
+          status.classList.add('is-error');
+        }
+        return;
+      }
+
+      if (phone && !smsConsent) {
+        if (status) {
+          status.textContent = 'Please check the text-message consent box to receive SMS updates.';
+          status.classList.add('is-error');
+        }
+        return;
+      }
+
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.dataset.originalText = submitButton.textContent;
+        submitButton.textContent = '...';
+      }
+
+      try {
+        const response = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            phone,
+            smsConsent,
+            source: form.dataset.subscribeSource || 'stay-connected',
+            page: window.location.pathname || '/'
+          })
+        });
+
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Signup failed. Please try again.');
+        }
+
+        if (status) {
+          status.textContent = result.message || 'Thanks — you are on the Booth Ready list.';
+          status.classList.add('is-success');
+        }
+
+        form.reset();
+      } catch (error) {
+        if (status) {
+          status.textContent = error.message || 'Signup failed. Please try again.';
+          status.classList.add('is-error');
+        }
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = submitButton.dataset.originalText || '→';
+        }
+      }
+    });
   });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  bindStayConnectedForms();
 });
 

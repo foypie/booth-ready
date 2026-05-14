@@ -91,9 +91,23 @@
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body class="full-catalog-page-v1">
-  <header class="topbar">
-    <div class="page">
-      <div class="topbar-spacer"></div>
+  <header class="br-page-header" id="top" aria-label="Booth Ready catalog navigation">
+    <div class="page br-page-header-inner">
+      <a class="br-page-brand" href="/" aria-label="Booth Ready home">
+        <picture>
+          <source srcset="/assets/brand/booth-ready-logo-horizontal.webp" type="image/webp">
+          <img src="/assets/brand/booth-ready-logo-horizontal.png" alt="Booth Ready">
+        </picture>
+      </a>
+
+      <nav class="br-page-nav" aria-label="Catalog navigation">
+        <a href="/">Home</a>
+        <a href="#beats" aria-current="page">All Beats</a>
+        <a href="/licenses/">Licenses</a>
+        <a href="#contactRail">Contact</a>
+      </nav>
+
+      <a class="br-page-admin" href="/admin-login.html">Admin</a>
     </div>
   </header>
 
@@ -136,8 +150,14 @@
           <div class="stay-stars">★ ★</div>
           <h3>STAY CONNECTED</h3>
           <p>NEW BEATS. SPECIAL OFFERS. UPDATES.</p>
-          <form class="stay-form">
-            <input type="email" placeholder="Enter your email" aria-label="Enter your email" />
+          <form class="stay-form" data-subscribe-source="stay-connected">
+            <input type="email" name="email" placeholder="Enter your email" aria-label="Enter your email" required />
+            <input type="tel" name="phone" placeholder="Mobile number (optional)" aria-label="Mobile number optional" />
+            <label class="sms-opt-in">
+              <input type="checkbox" name="smsConsent" />
+              <span>I agree to receive Booth Ready text updates. Msg & data rates may apply. Reply STOP to unsubscribe.</span>
+            </label>
+            <div class="stay-form-status" role="status" aria-live="polite"></div>
             <button type="submit" aria-label="Subscribe">→</button>
           </form>
           <div class="stay-links">
@@ -353,8 +373,14 @@
             <h4>Stay Connected</h4>
           </div>
           <p class="license-card-summary">Get updates on new beats, special offers, and Booth Ready announcements.</p>
-          <form class="stay-form">
-            <input type="email" placeholder="Enter your email" aria-label="Enter your email" />
+          <form class="stay-form" data-subscribe-source="stay-connected">
+            <input type="email" name="email" placeholder="Enter your email" aria-label="Enter your email" required />
+            <input type="tel" name="phone" placeholder="Mobile number (optional)" aria-label="Mobile number optional" />
+            <label class="sms-opt-in">
+              <input type="checkbox" name="smsConsent" />
+              <span>I agree to receive Booth Ready text updates. Msg & data rates may apply. Reply STOP to unsubscribe.</span>
+            </label>
+            <div class="stay-form-status" role="status" aria-live="polite"></div>
             <button type="submit" aria-label="Subscribe">→</button>
           </form>
         </article>

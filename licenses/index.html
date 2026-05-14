@@ -1,9 +1,28 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Booth Ready License Terms</title><link rel="stylesheet" href="/_style.css"><link rel="stylesheet" href="/licenses/_style.css"><script>
-  function closeOrHome(event) {
-    event.preventDefault();
-    window.close();
-    setTimeout(function () {
-      window.location.href = "/";
-    }, 300);
+  function handleLicenseIndexReturn(event) {
+    var params = new URLSearchParams(window.location.search);
+    var fromCheckout = params.get("source") === "checkout";
+
+    if (fromCheckout) {
+      event.preventDefault();
+      window.close();
+      setTimeout(function () {
+        window.location.href = "/";
+      }, 300);
+    }
   }
-</script>\n</head><body><main class="page"><div class="top"><div class="brand">Booth Ready • Current License Terms</div><a class="back" href="/" onclick="closeOrHome(event)">← Close this tab to return to checkout</a><h1>License Terms</h1><p class="summary">Select the agreement that matches the license purchased or requested. These terms govern the applicable purchase unless Booth Ready and the buyer sign a separate written agreement.</p></div><section class="card"><h2>Available Agreements</h2><ul><li><a href="/licenses/basic-license.html">Basic License Agreement</a></li><li><a href="/licenses/premium-license.html">Premium License Agreement</a></li><li><a href="/licenses/unlimited-license.html">Unlimited License Agreement</a></li><li><a href="/licenses/exclusive-license.html">Exclusive Rights Agreement</a></li></ul><p class="notice">Exclusive purchase grants an exclusive license, not a copyright ownership transfer. Booth Ready retains copyright ownership unless a separate written transfer agreement is signed.</p></section></main></body></html>
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var params = new URLSearchParams(window.location.search);
+    var fromCheckout = params.get("source") === "checkout";
+    var link = document.getElementById("license-index-return-link");
+
+    if (!link) return;
+
+    if (fromCheckout) {
+      link.textContent = "← Close this tab to return to checkout";
+    } else {
+      link.textContent = "← Return to Booth Ready";
+    }
+  });
+</script>\n</head><body><main class="page"><div class="top"><div class="brand">Booth Ready • Current License Terms</div><a class="back" id="license-index-return-link" href="/" onclick="handleLicenseIndexReturn(event)">← Return to Booth Ready</a><h1>License Terms</h1><p class="summary">Select the agreement that matches the license purchased or requested. These terms govern the applicable purchase unless Booth Ready and the buyer sign a separate written agreement.</p></div><section class="card"><h2>Available Agreements</h2><ul><li><a href="/licenses/basic-license.html">Basic License Agreement</a></li><li><a href="/licenses/premium-license.html">Premium License Agreement</a></li><li><a href="/licenses/unlimited-license.html">Unlimited License Agreement</a></li><li><a href="/licenses/exclusive-license.html">Exclusive Rights Agreement</a></li></ul><p class="notice">Exclusive purchase grants an exclusive license, not a copyright ownership transfer. Booth Ready retains copyright ownership unless a separate written transfer agreement is signed.</p></section></main></body></html>

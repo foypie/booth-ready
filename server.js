@@ -799,6 +799,205 @@ app.post("/webhook", async (req, res) => {
   }
 });
 
+
+/* ============================================================
+   Stay Connected Lead Capture v1 - 2026-05-13
+   - Stores owned-audience signup records locally
+   - Email required
+   - Phone optional
+   - SMS consent required only when phone is entered
+   ============================================================ */
+const SUBSCRIBERS_PATH = path.join(__dirname, "data", "subscribers.json");
+
+function readSubscribers() {
+  try {
+    if (!fs.existsSync(SUBSCRIBERS_PATH)) return [];
+    const raw = fs.readFileSync(SUBSCRIBERS_PATH, "utf8").trim();
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.error("Subscriber read error:", error.message);
+    return [];
+  }
+}
+
+function writeSubscribers(subscribers) {
+  fs.mkdirSync(path.dirname(SUBSCRIBERS_PATH), { recursive: true });
+  fs.writeFileSync(SUBSCRIBERS_PATH, JSON.stringify(subscribers, null, 2) + "\n");
+}
+
+function normalizeEmail(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function normalizePhone(value) {
+  return String(value || "").trim();
+}
+
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+async function brevoRequest(method, path, payload) {
+  const https = require("https");
+  const apiKey = process.env.BREVO_API_KEY;
+  const body = payload ? JSON.stringify(payload) : "";
+
+  if (!apiKey) {
+    const error = new Error("BREVO_API_KEY is not configured.");
+    error.statusCode = 500;
+    throw error;
+  }
+
+  return new Promise((resolve, reject) => {
+    const req = https.request({
+      hostname: "api.brevo.com",
+      path,
+      method,
+      headers: {
+        "api-key": apiKey,
+        "accept": "application/json",
+        "content-type": "application/json",
+        "content-length": Buffer.byteLength(body)
+      }
+    }, (res) => {
+      let raw = "";
+      res.on("data", (chunk) => {
+        raw += chunk;
+      });
+      res.on("end", () => {
+        let parsed = {};
+        if (raw) {
+          try {
+            parsed = JSON.parse(raw);
+          } catch (error) {
+            parsed = { raw };
+          }
+        }
+
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve({ statusCode: res.statusCode, data: parsed });
+          return;
+        }
+
+        const error = new Error(parsed.message || parsed.code || `Brevo API error ${res.statusCode}`);
+        error.statusCode = res.statusCode;
+        error.data = parsed;
+        reject(error);
+      });
+    });
+
+    req.on("error", reject);
+    req.write(body);
+    req.end();
+  });
+}
+
+function normalizeBrevoSmsPhone(value) {
+  const phone = normalizePhone(value);
+  if (!phone) return "";
+
+  if (phone.startsWith("+")) {
+    return phone;
+  }
+
+  const digits = phone.replace(/\D/g, "");
+
+  if (digits.length === 10) {
+    return `+1${digits}`;
+  }
+
+  if (digits.length === 11 && digits.startsWith("1")) {
+    return `+${digits}`;
+  }
+
+  return phone;
+}
+
+async function sendSubscriberToBrevo(record) {
+  const listId = Number(process.env.BREVO_LIST_ID || 0);
+
+  if (!Number.isInteger(listId) || listId <= 0) {
+    const error = new Error("BREVO_LIST_ID is not configured.");
+    error.statusCode = 500;
+    throw error;
+  }
+
+  const attributes = {};
+
+  if (record.phone && record.smsConsent) {
+    attributes.SMS = normalizeBrevoSmsPhone(record.phone);
+  }
+
+  const payload = {
+    email: record.email,
+    listIds: [listId],
+    updateEnabled: true
+  };
+
+  if (Object.keys(attributes).length) {
+    payload.attributes = attributes;
+  }
+
+  return brevoRequest("POST", "/v3/contacts", payload);
+}
+
+/* ============================================================
+   Stay Connected Brevo Integration v1 - 2026-05-13
+   - Email required
+   - Phone optional
+   - SMS consent required before phone is sent to Brevo
+   - Stores live contacts in Brevo list, not local JSON
+   ============================================================ */
+app.post("/api/subscribe", async (req, res) => {
+  try {
+    const email = normalizeEmail(req.body.email);
+    const phone = normalizePhone(req.body.phone);
+    const smsConsent = req.body.smsConsent === true || req.body.smsConsent === "true";
+    const source = String(req.body.source || "stay-connected").trim().slice(0, 80);
+    const page = String(req.body.page || "/").trim().slice(0, 200);
+    const now = new Date().toISOString();
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: "Please enter a valid email address." });
+    }
+
+    if (phone && !smsConsent) {
+      return res.status(400).json({ error: "Please check the text-message consent box to receive SMS updates." });
+    }
+
+    const record = {
+      email,
+      phone,
+      smsConsent,
+      source,
+      page,
+      tags: ["booth-ready", "stay-connected"],
+      updatedAt: now
+    };
+
+    if (smsConsent && phone) {
+      record.smsConsentText = "I agree to receive Booth Ready text updates. Msg & data rates may apply. Reply STOP to unsubscribe.";
+      record.smsConsentAt = now;
+    }
+
+    await sendSubscriberToBrevo(record);
+
+    res.json({
+      ok: true,
+      provider: "brevo",
+      message: "Thanks — you are on the Booth Ready list."
+    });
+  } catch (error) {
+    console.error("Subscribe/Brevo error:", error.message, error.data || "");
+    res.status(error.statusCode || 500).json({
+      error: "Subscription could not be saved. Please try again."
+    });
+  }
+});
+
+
 app.use(express.static(__dirname));
 
 app.listen(PORT, "0.0.0.0", () => {

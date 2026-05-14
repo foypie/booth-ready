@@ -2519,39 +2519,17 @@ html {
   left: clamp(24px, 4.4vw, 76px);
   right: clamp(24px, 4.4vw, 76px);
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: start;
+  grid-template-columns: 1fr auto;
+  align-items: center;
   gap: 28px;
-}
-
-.br-hero-logo {
-  display: inline-flex;
-  flex-direction: column;
-  color: #f4ead4;
-  text-decoration: none;
-  text-transform: uppercase;
-  line-height: 0.82;
-  font-weight: 1000;
-  letter-spacing: -0.04em;
-  font-size: clamp(1.45rem, 2.35vw, 2.7rem);
-}
-
-.br-hero-logo em {
-  margin-top: 7px;
-  color: #f4ead4;
-  font-style: italic;
-  font-size: clamp(0.56rem, 0.85vw, 0.86rem);
-  line-height: 1;
-  letter-spacing: 0.01em;
-  text-transform: none;
-  opacity: 0.94;
 }
 
 .br-hero-nav {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(16px, 2.25vw, 42px);
+  justify-self: center;
+  gap: clamp(20px, 3vw, 52px);
   min-height: 34px;
 }
 
@@ -2588,30 +2566,26 @@ html {
 .br-hero-copy {
   position: absolute;
   z-index: 2;
-  left: clamp(28px, 7.6vw, 132px);
-  bottom: clamp(48px, 7vw, 112px);
-  max-width: min(760px, 52vw);
+  left: clamp(28px, 6.3vw, 112px);
+  bottom: clamp(24px, 3.8vw, 58px);
+  width: min(450px, 34vw);
+  max-width: 450px;
   color: #f4ead4;
   text-transform: uppercase;
 }
 
-.br-hero-kicker {
-  margin: 0 0 12px;
-  color: #ff4a2b;
-  font-size: clamp(1.05rem, 1.72vw, 2rem);
-  line-height: 1;
-  letter-spacing: 0.05em;
-  font-weight: 1000;
+.br-hero-brandmark {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 18px;
 }
 
-.br-hero-copy h1 {
-  margin: 0;
-  color: #f4ead4;
-  font-size: clamp(5.8rem, 9.4vw, 13rem);
-  line-height: 0.76;
-  letter-spacing: -0.06em;
-  font-weight: 1000;
-  text-shadow: 0 5px 0 rgba(0, 0, 0, 0.35);
+.br-hero-brandmark img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 .br-hero-subtitle {
@@ -2629,13 +2603,15 @@ html {
 .br-hero-actions {
   display: flex;
   gap: 16px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  align-items: center;
 }
 
 .br-hero-actions a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 auto;
   min-height: clamp(44px, 3.7vw, 64px);
   padding: 0 clamp(20px, 2.6vw, 42px);
   border: 2px solid rgba(231, 215, 181, 0.88);
@@ -2647,6 +2623,7 @@ html {
   letter-spacing: 0.05em;
   font-weight: 1000;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .br-hero-primary {
@@ -2672,19 +2649,13 @@ html {
     top: 14px;
     left: 22px;
     right: 22px;
+    grid-template-columns: 1fr auto;
+    align-items: center;
     gap: 16px;
   }
 
-  .br-hero-logo {
-    font-size: clamp(1rem, 2.1vw, 1.55rem);
-  }
-
-  .br-hero-logo em {
-    font-size: 0.52rem;
-  }
-
   .br-hero-nav {
-    gap: clamp(10px, 1.6vw, 18px);
+    gap: clamp(12px, 1.9vw, 24px);
   }
 
   .br-hero-nav a,
@@ -2701,15 +2672,12 @@ html {
   .br-hero-copy {
     left: 34px;
     bottom: 36px;
-    max-width: 58vw;
+    width: min(430px, 48vw);
+    max-width: 430px;
   }
 
-  .br-hero-copy h1 {
-    font-size: clamp(4.6rem, 9.5vw, 7.8rem);
-  }
-
-  .br-hero-kicker {
-    font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+  .br-hero-brandmark {
+    margin-bottom: 14px;
   }
 
   .br-hero-subtitle {
@@ -2757,20 +2725,17 @@ html {
   }
 
   .br-hero-copy {
-    left: 18px;
-    right: 18px;
-    bottom: 26px;
-    max-width: none;
+    left: 20px;
+    right: 20px;
+    bottom: 28px;
+    width: min(390px, calc(100vw - 40px));
+    max-width: 390px;
   }
 
-  .br-hero-kicker {
-    margin-bottom: 8px;
-    font-size: 0.9rem;
-    letter-spacing: 0.08em;
-  }
-
-  .br-hero-copy h1 {
-    font-size: clamp(4.1rem, 19vw, 6.2rem);
+  .br-hero-brandmark {
+    width: min(250px, 60vw);
+    max-width: 250px;
+    margin-bottom: 12px;
   }
 
   .br-hero-subtitle {
@@ -2781,6 +2746,7 @@ html {
 
   .br-hero-actions {
     gap: 10px;
+    flex-wrap: nowrap;
   }
 
   .br-hero-actions a {
@@ -2816,19 +2782,26 @@ html {
   }
 
   .br-hero-copy {
-    left: 16px;
-    right: 16px;
-    bottom: 22px;
+    left: 18px;
+    right: 18px;
+    bottom: 24px;
+    width: min(360px, calc(100vw - 36px));
+    max-width: 360px;
   }
 
-  .br-hero-copy h1 {
-    font-size: clamp(3.8rem, 18vw, 5.5rem);
+  .br-hero-brandmark {
+    width: min(238px, 60vw);
+    max-width: 238px;
+  }
+
+  .br-hero-actions {
+    flex-wrap: nowrap;
   }
 
   .br-hero-actions a {
     min-height: 40px;
-    padding: 0 12px;
-    font-size: 0.72rem;
+    padding: 0 10px;
+    font-size: 0.7rem;
   }
 }
 
@@ -3133,6 +3106,51 @@ html {
   }
 }
 
+/* Mobile catalog title-art fit — keeps generated title overlays inside small list thumbnails. */
+@media (max-width: 768px) {
+  .beat-card .beat-art .title-art-engine-v1 {
+    top: 8%;
+    left: 7%;
+    right: 7%;
+    max-width: 86%;
+    max-height: 54%;
+  }
+
+  .beat-card .beat-art .title-art-primary,
+  .beat-card .beat-art .title-art-primary--single {
+    font-size: clamp(0.9rem, 4.9vw, 1.72rem);
+    line-height: 0.88;
+    letter-spacing: -0.01em;
+  }
+
+  .beat-card .beat-art .title-art-accent {
+    font-size: clamp(0.78rem, 4.1vw, 1.42rem);
+    line-height: 0.88;
+  }
+}
+
+@media (max-width: 420px) {
+  .beat-card .beat-art .title-art-engine-v1 {
+    top: 8%;
+    left: 7%;
+    right: 7%;
+    max-width: 86%;
+    max-height: 56%;
+  }
+
+  .beat-card .beat-art .title-art-primary,
+  .beat-card .beat-art .title-art-primary--single {
+    font-size: clamp(0.82rem, 4.5vw, 1.42rem);
+    line-height: 0.88;
+    letter-spacing: -0.015em;
+  }
+
+  .beat-card .beat-art .title-art-accent {
+    font-size: clamp(0.72rem, 3.9vw, 1.22rem);
+    line-height: 0.88;
+  }
+}
+
 /* ============================================================
    Full Catalog Page v1 — 2026-05-07
    Purpose:
@@ -3225,3 +3243,272 @@ body.full-catalog-page-v1 .poster-marketplace {
   }
 }
 \n
+
+/* ============================================================
+   Catalog Page Brand Navigation v1 - 2026-05-13
+   Purpose:
+   - Add professional top navigation to catalog.html / View All Beats page.
+   - Reuse Booth Ready brand assets without touching homepage hero/nav.
+   - Preserve catalog grid, beat cards, audio, checkout, title-art, and data behavior.
+   ============================================================ */
+
+.br-page-header {
+  position: relative;
+  z-index: 20;
+  padding: 14px 0 12px;
+  border-bottom: 1px solid rgba(241, 90, 42, 0.28);
+  background:
+    radial-gradient(circle at 20% 0%, rgba(241, 90, 42, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(12, 5, 3, 0.96), rgba(6, 3, 2, 0.88));
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.26);
+}
+
+.br-page-header-inner {
+  display: grid;
+  grid-template-columns: minmax(150px, 240px) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(14px, 2vw, 28px);
+}
+
+.br-page-brand {
+  display: inline-flex;
+  align-items: center;
+  width: min(240px, 24vw);
+  min-width: 150px;
+  text-decoration: none;
+}
+
+.br-page-brand picture,
+.br-page-brand img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.br-page-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 2vw, 34px);
+}
+
+.br-page-nav a,
+.br-page-admin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 8px;
+  color: #f4ead4;
+  text-decoration: none;
+  font-family: Anton, Impact, sans-serif;
+  font-size: clamp(0.72rem, 0.8vw, 0.96rem);
+  line-height: 1;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: transform 160ms ease, color 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.br-page-nav a:hover,
+.br-page-nav a:focus-visible,
+.br-page-admin:hover,
+.br-page-admin:focus-visible {
+  color: #fff3d0;
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.br-page-nav a[aria-current="page"] {
+  color: #ff6a3d;
+}
+
+.br-page-admin {
+  min-width: 76px;
+  padding: 0 12px;
+  border: 1px solid rgba(241, 90, 42, 0.72);
+  background: rgba(8, 4, 3, 0.62);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.28), 0 8px 22px rgba(0, 0, 0, 0.22);
+}
+
+/* Keep the dedicated catalog page content comfortably below the new page header. */
+body.full-catalog-page-v1 .br-page-header + .page .poster-marketplace {
+  margin-top: clamp(14px, 1.8vw, 28px);
+}
+
+@media (max-width: 900px) {
+  .br-page-header {
+    padding: 12px 0;
+  }
+
+  .br-page-header-inner {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 10px;
+  }
+
+  .br-page-brand {
+    width: min(230px, 62vw);
+    min-width: 0;
+  }
+
+  .br-page-nav {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+  }
+
+  .br-page-nav a,
+  .br-page-admin {
+    min-height: 34px;
+    font-size: 0.76rem;
+  }
+
+  .br-page-admin {
+    min-width: 84px;
+  }
+}
+
+@media (max-width: 520px) {
+  .br-page-brand {
+    width: min(210px, 70vw);
+  }
+
+  .br-page-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .br-page-nav a,
+  .br-page-admin {
+    width: 100%;
+    min-height: 38px;
+    padding: 0 10px;
+    border: 1px solid rgba(231, 215, 181, 0.26);
+    background: rgba(0, 0, 0, 0.28);
+  }
+
+  .br-page-admin {
+    max-width: 180px;
+  }
+}
+
+/* Stay Connected Lead Capture v1 - 2026-05-13 */
+.stay-form {
+  gap: 0.45rem;
+}
+
+.stay-form input[type="tel"] {
+  width: 100%;
+  min-height: 2.2rem;
+  padding: 0.68rem 0.75rem;
+  border: 1px solid rgba(237, 218, 184, 0.18);
+  background: rgba(10, 3, 1, 0.55);
+  color: var(--cream);
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+.sms-opt-in {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  color: rgba(237, 218, 184, 0.72);
+  font-size: 0.62rem;
+  line-height: 1.25;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.sms-opt-in input {
+  margin-top: 0.1rem;
+  flex: 0 0 auto;
+}
+
+.stay-form-status {
+  min-height: 0.95rem;
+  color: rgba(237, 218, 184, 0.72);
+  font-size: 0.66rem;
+  line-height: 1.25;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.stay-form-status.is-success {
+  color: #f5c16c;
+}
+
+.stay-form-status.is-error {
+  color: #ff7043;
+}
+
+.stay-form button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+
+/* Stay Connected Layout Fix v1 - 2026-05-13
+   Purpose: make expanded email + optional SMS form readable in narrow right rail.
+   Scope: layout only. Does not alter subscriber logic, Stripe, audio, catalog, or admin.
+*/
+.stay-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.42rem;
+  border: 1px solid rgba(233,193,151,.24);
+  background: rgba(255,255,255,.03);
+  padding: 0.45rem;
+}
+
+.stay-form input[type="email"],
+.stay-form input[type="tel"] {
+  width: 100%;
+  min-height: 2.15rem;
+  border: 1px solid rgba(237, 218, 184, 0.18);
+  background: rgba(10, 3, 1, 0.55);
+  color: var(--cream);
+  padding: 0.58rem 0.65rem;
+  font-size: 0.72rem;
+  line-height: 1.15;
+  box-sizing: border-box;
+}
+
+.stay-form input::placeholder {
+  color: rgba(237, 218, 184, 0.55);
+}
+
+.sms-opt-in {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 0.38rem;
+  margin: 0.05rem 0;
+  color: rgba(237, 218, 184, 0.72);
+  font-size: 0.55rem;
+  line-height: 1.2;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.sms-opt-in input {
+  margin: 0.08rem 0 0;
+}
+
+.stay-form-status {
+  min-height: 0.8rem;
+  font-size: 0.58rem;
+  line-height: 1.2;
+}
+
+.stay-form button {
+  width: 100%;
+  min-height: 2.25rem;
+  border: none;
+  background: linear-gradient(180deg, #d84e2b, #b3341d);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
