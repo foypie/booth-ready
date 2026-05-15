@@ -111,6 +111,8 @@ const PREVIEW_WATERMARK_TAG_SRC = '/assets/audio-tags/b4l-tag-v2.mp3';
 const PREVIEW_WATERMARK_INTERVAL_MS = 7000;
 let activePreviewWatermarkTimer = null;
 let activePreviewWatermarkAudio = null;
+let previewWatermarkUnlockedAudio = null;
+let previewWatermarkUnlockAttempted = false;
 
 function stopPreviewWatermark() {
   if (activePreviewWatermarkTimer) {
@@ -129,11 +131,67 @@ function stopPreviewWatermark() {
   }
 }
 
+// ============================================================
+// Preview Audio Watermark Overlay v1.2 - Mobile Audio Unlock
+// Real mobile/tablet browsers may block delayed secondary audio.
+// This unlocks one reusable tag audio object during the user tap.
+// ============================================================
+function getPreviewWatermarkAudio() {
+  if (!previewWatermarkUnlockedAudio) {
+    previewWatermarkUnlockedAudio = new Audio(PREVIEW_WATERMARK_TAG_SRC);
+    previewWatermarkUnlockedAudio.preload = 'auto';
+    previewWatermarkUnlockedAudio.volume = 0.9;
+  }
+
+  return previewWatermarkUnlockedAudio;
+}
+
+function unlockPreviewWatermarkAudio() {
+  if (previewWatermarkUnlockAttempted) return;
+  previewWatermarkUnlockAttempted = true;
+
+  const tagAudio = getPreviewWatermarkAudio();
+  const originalVolume = tagAudio.volume;
+
+  try {
+    tagAudio.volume = 0;
+    tagAudio.currentTime = 0;
+
+    const unlockPromise = tagAudio.play();
+
+    if (unlockPromise && typeof unlockPromise.then === 'function') {
+      unlockPromise
+        .then(() => {
+          tagAudio.pause();
+          tagAudio.currentTime = 0;
+          tagAudio.volume = originalVolume;
+        })
+        .catch((error) => {
+          tagAudio.volume = originalVolume;
+          console.warn('Preview watermark unlock warning:', error);
+        });
+    } else {
+      tagAudio.pause();
+      tagAudio.currentTime = 0;
+      tagAudio.volume = originalVolume;
+    }
+  } catch (error) {
+    tagAudio.volume = originalVolume;
+    console.warn('Preview watermark unlock warning:', error);
+  }
+}
+
 function playPreviewWatermarkTag() {
-  const tagAudio = new Audio(PREVIEW_WATERMARK_TAG_SRC);
-  tagAudio.preload = 'auto';
-  tagAudio.volume = 0.9;
+  const tagAudio = getPreviewWatermarkAudio();
   activePreviewWatermarkAudio = tagAudio;
+
+  try {
+    tagAudio.pause();
+    tagAudio.currentTime = 0;
+    tagAudio.volume = 0.9;
+  } catch (error) {
+    console.warn('Preview watermark reset warning:', error);
+  }
 
   tagAudio.play().catch((error) => {
     console.warn('Preview watermark playback warning:', error);
@@ -154,6 +212,40 @@ function startPreviewWatermark(audio) {
 
     playPreviewWatermarkTag();
   }, PREVIEW_WATERMARK_INTERVAL_MS);
+}
+
+// ============================================================
+// Preview Audio Watermark Overlay v1.1 - Mobile/Tablet Safety Binding
+// Ensures any .preview-audio playback path starts/stops the watermark,
+// including mobile/tablet/future responsive render paths.
+// ============================================================
+function bindPreviewWatermarkGlobalFallback() {
+  if (window.__previewWatermarkGlobalFallbackBound) return;
+  window.__previewWatermarkGlobalFallbackBound = true;
+
+  document.addEventListener('play', (event) => {
+    const audio = event.target;
+    if (!audio || !audio.classList || !audio.classList.contains('preview-audio')) return;
+
+    document.querySelectorAll('.preview-audio').forEach((other) => {
+      if (other !== audio) other.pause();
+    });
+
+    unlockPreviewWatermarkAudio();
+    startPreviewWatermark(audio);
+  }, true);
+
+  document.addEventListener('pause', (event) => {
+    const audio = event.target;
+    if (!audio || !audio.classList || !audio.classList.contains('preview-audio')) return;
+    stopPreviewWatermark();
+  }, true);
+
+  document.addEventListener('ended', (event) => {
+    const audio = event.target;
+    if (!audio || !audio.classList || !audio.classList.contains('preview-audio')) return;
+    stopPreviewWatermark();
+  }, true);
 }
 
 
@@ -450,6 +542,7 @@ function bindWaveformPlayer(card) {
 
   playButton.addEventListener('click', () => {
     if (audio.paused) {
+      unlockPreviewWatermarkAudio();
       document.querySelectorAll('.preview-audio').forEach((other) => {
         if (other !== audio) other.pause();
       });
@@ -606,6 +699,7 @@ async function loadCatalog() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  bindPreviewWatermarkGlobalFallback();
   bindViewAllButton();
   updateSectionHeading();
   updateRightRailCopy();
