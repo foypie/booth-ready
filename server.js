@@ -7,6 +7,7 @@ const fs = require("fs");
 const crypto = require("crypto");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { Resend } = require("resend");
+const { S3Client, ListObjectsV2Command } = require("@aws-sdk/client-s3");
 
 const app = express();
 const PORT = process.env.PORT || 4242;
@@ -491,6 +492,95 @@ app.use(express.urlencoded({ extended: false }));
    These must come BEFORE express.static so admin.html is protected.
 ========================= */
 
+
+/*
+   R2 STORAGE STATUS HELPERS
+   v1.2B-0A: configuration/connectivity verification only.
+   No upload, download, checkout, catalog, or public route behavior is changed here.
+*/
+function getR2Config() {
+  const accountId = String(process.env.R2_ACCOUNT_ID || "").trim();
+  const endpoint = String(
+    process.env.R2_ENDPOINT ||
+    (accountId ? `https://${accountId}.r2.cloudflarestorage.com` : "")
+  ).trim();
+
+  return {
+    accountId,
+    accessKeyId: String(process.env.R2_ACCESS_KEY_ID || "").trim(),
+    secretAccessKey: String(process.env.R2_SECRET_ACCESS_KEY || "").trim(),
+    bucketName: String(process.env.R2_BUCKET_NAME || "").trim(),
+    endpoint,
+    region: String(process.env.R2_REGION || "auto").trim() || "auto",
+  };
+}
+
+function getMissingR2ConfigFields(config) {
+  const required = {
+    R2_ACCOUNT_ID: config.accountId,
+    R2_ACCESS_KEY_ID: config.accessKeyId,
+    R2_SECRET_ACCESS_KEY: config.secretAccessKey,
+    R2_BUCKET_NAME: config.bucketName,
+    R2_ENDPOINT: config.endpoint,
+    R2_REGION: config.region,
+  };
+
+  return Object.entries(required)
+    .filter(([, value]) => !value)
+    .map(([key]) => key);
+}
+
+function createR2Client(config) {
+  return new S3Client({
+    region: config.region,
+    endpoint: config.endpoint,
+    credentials: {
+      accessKeyId: config.accessKeyId,
+      secretAccessKey: config.secretAccessKey,
+    },
+  });
+}
+
+async function getR2Status() {
+  const config = getR2Config();
+  const missingFields = getMissingR2ConfigFields(config);
+
+  if (missingFields.length) {
+    return {
+      configured: false,
+      storageProvider: "cloudflare-r2",
+      bucket: config.bucketName || null,
+      canListBucket: false,
+      missingFieldCount: missingFields.length,
+    };
+  }
+
+  try {
+    const client = createR2Client(config);
+    const result = await client.send(new ListObjectsV2Command({
+      Bucket: config.bucketName,
+      MaxKeys: 1,
+    }));
+
+    return {
+      configured: true,
+      storageProvider: "cloudflare-r2",
+      bucket: config.bucketName,
+      canListBucket: true,
+      objectCountSample: Number(result.KeyCount || 0),
+    };
+  } catch (error) {
+    return {
+      configured: true,
+      storageProvider: "cloudflare-r2",
+      bucket: config.bucketName,
+      canListBucket: false,
+      errorCode: String(error && (error.name || error.Code || error.code) || "R2_STATUS_CHECK_FAILED"),
+    };
+  }
+}
+
+
 app.get("/admin-login.html", (req, res) => {
   if (isAdminAuthenticated(req)) return res.redirect("/admin.html");
   return res.sendFile(path.join(__dirname, "admin-login.html"));
@@ -527,6 +617,12 @@ app.get("/admin.html", requireAdmin, (req, res) => {
 
 // ============================================================
 // Title Art Engine v1 Server Helpers
+
+app.get("/admin/api/r2/status", requireAdmin, async (req, res) => {
+  const status = await getR2Status();
+  return res.json(status);
+});
+
 // Scalable clean-art and titleArt assignment for admin-added beats.
 // ============================================================
 
