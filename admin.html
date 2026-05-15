@@ -123,7 +123,8 @@
       margin: 16px 0 7px;
     }
 
-    input {
+    input,
+    select {
       width: 100%;
       border: 1px solid rgba(226, 208, 168, .22);
       background: rgba(0,0,0,.34);
@@ -134,7 +135,8 @@
       outline: none;
     }
 
-    input:focus {
+    input:focus,
+    select:focus {
       border-color: var(--orange);
       box-shadow: 0 0 0 3px rgba(241, 90, 42, .16);
     }
@@ -142,6 +144,18 @@
     input.invalid {
       border-color: var(--error);
       box-shadow: 0 0 0 3px rgba(255, 105, 97, .16);
+    }
+
+    select {
+      appearance: none;
+      background-image:
+        linear-gradient(45deg, transparent 50%, rgba(226, 208, 168, .85) 50%),
+        linear-gradient(135deg, rgba(226, 208, 168, .85) 50%, transparent 50%);
+      background-position:
+        calc(100% - 18px) 50%,
+        calc(100% - 12px) 50%;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
     }
 
     .hint {
@@ -409,13 +423,36 @@
           <div>
             <label for="beatFile">Audio Filename</label>
             <input id="beatFile" name="file" type="text" placeholder="Street Gospel.mp3" required />
-            <div class="hint">The audio file must already be inside the <strong>/audio</strong> folder.</div>
+            <div class="hint">The audio file must already be inside the <strong>/audio</strong> folder. Admin v1.1 validates that the filename exists before adding the beat.</div>
           </div>
 
           <div>
             <label for="beatMeta">Style / Description</label>
-            <input id="beatMeta" name="meta" type="text" placeholder="Boom Bap • Gritty" required minlength="3" />
-            <div class="hint">Required. Example: <strong>Boom Bap • Gritty</strong></div>
+            <select id="beatMeta" name="meta" required>
+              <option value="">Choose a preset style</option>
+              <option value="Boom Bap • Gritty">Boom Bap • Gritty</option>
+              <option value="Boom Bap • Soulful">Boom Bap • Soulful</option>
+              <option value="Boom Bap • Dark">Boom Bap • Dark</option>
+              <option value="Boom Bap • Cinematic">Boom Bap • Cinematic</option>
+              <option value="Boom Bap • Vintage Feel">Boom Bap • Vintage Feel</option>
+              <option value="Boom Bap • Smooth">Boom Bap • Smooth</option>
+              <option value="Boom Bap • Hard-Hitting">Boom Bap • Hard-Hitting</option>
+            </select>
+            <div class="hint">Required preset. Keeps catalog metadata consistent.</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="beatArtistType">Artist Type (optional)</label>
+            <input id="beatArtistType" name="artistType" type="text" placeholder="Example: Griselda, Nas, J. Cole" />
+            <div class="hint">Optional fit notes for future marketing/search use.</div>
+          </div>
+
+          <div>
+            <label for="beatTempo">Tempo / BPM (optional)</label>
+            <input id="beatTempo" name="tempo" type="number" min="40" max="240" step="1" placeholder="Example: 92" />
+            <div class="hint">Optional numeric BPM only.</div>
           </div>
         </div>
 
@@ -469,6 +506,8 @@
     const nameInput = document.getElementById("beatName");
     const fileInput = document.getElementById("beatFile");
     const metaInput = document.getElementById("beatMeta");
+    const artistTypeInput = document.getElementById("beatArtistType");
+    const tempoInput = document.getElementById("beatTempo");
     const slugInput = document.getElementById("beatSlug");
 
     const previewTitle = document.getElementById("previewTitle");
@@ -503,10 +542,21 @@
 
     function updatePreview() {
       previewTitle.textContent = nameInput.value.trim() || "New Beat";
-      previewMeta.textContent = normalizeMeta(metaInput.value) || DEFAULT_META;
+
+      const style = normalizeMeta(metaInput.value) || DEFAULT_META;
+      const tempo = String(tempoInput.value || "").trim();
+      const artistType = normalizeMeta(artistTypeInput.value);
+      const extras = [];
+
+      if (tempo) extras.push(`${tempo} BPM`);
+      if (artistType) extras.push(`Artist fit: ${artistType}`);
+
+      previewMeta.textContent = extras.length ? `${style} • ${extras.join(" • ")}` : style;
+
       if (!fileInput.value.trim() && nameInput.value.trim()) {
         fileInput.placeholder = nameInput.value.trim() + ".mp3";
       }
+
       metaInput.classList.toggle("invalid", metaInput.value.length > 0 && normalizeMeta(metaInput.value).length < 3);
     }
 
@@ -547,6 +597,8 @@
               <strong>Slug:</strong> ${beat.slug || "-"} &nbsp; | &nbsp;
               <strong>File:</strong> ${beat.file || "-"}<br>
               <strong>Meta:</strong> ${beat.meta || "-"}
+              ${beat.artistType ? `<br><strong>Artist Type:</strong> ${beat.artistType}` : ""}
+              ${beat.tempo ? `<br><strong>Tempo:</strong> ${beat.tempo} BPM` : ""}
             </div>
           </div>
           <div class="beat-actions">
@@ -590,8 +642,9 @@
       }
     }
 
-    [nameInput, metaInput, fileInput, slugInput].forEach((input) => {
+    [nameInput, metaInput, fileInput, artistTypeInput, tempoInput, slugInput].forEach((input) => {
       input.addEventListener("input", updatePreview);
+      input.addEventListener("change", updatePreview);
     });
 
     clearButton.addEventListener("click", () => {
@@ -609,6 +662,8 @@
         name: nameInput.value.trim(),
         file: fileInput.value.trim(),
         meta: normalizeMeta(metaInput.value),
+        artistType: normalizeMeta(artistTypeInput.value),
+        tempo: String(tempoInput.value || "").trim(),
         slug: slugInput.value.trim()
       };
 
@@ -645,6 +700,7 @@
       }
     });
 
+    // Admin Beat Manager v1.1 - metadata presets, optional artist/tempo fields, and server-side audio filename validation.
     updatePreview();
     loadBeatManager();
   </script>

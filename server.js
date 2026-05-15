@@ -328,6 +328,59 @@ function resolveAudioFileForOrder(order) {
   return null;
 }
 
+// ============================================================
+// Admin Beat Manager v1.1 - Audio Filename Validation
+// Validates that an admin-entered filename maps to an existing /audio file.
+// ============================================================
+function resolveAudioFilenameForCatalog(value) {
+  const audioDir = path.join(__dirname, "audio");
+  if (!fs.existsSync(audioDir)) return null;
+
+  const candidates = new Set();
+  addAudioNameVariants(candidates, value);
+
+  for (const candidate of candidates) {
+    const candidatePath = path.join(audioDir, candidate);
+    if (fs.existsSync(candidatePath) && fs.statSync(candidatePath).isFile()) {
+      return path.basename(candidatePath);
+    }
+  }
+
+  const candidateLowerNames = new Set(Array.from(candidates).map((name) => name.toLowerCase()));
+  const candidateKeys = new Set(Array.from(candidates).map(audioLookupKey).filter(Boolean));
+
+  const audioFiles = fs.readdirSync(audioDir, { withFileTypes: true })
+    .filter((entry) => entry.isFile())
+    .map((entry) => entry.name);
+
+  for (const filename of audioFiles) {
+    const lowerName = filename.toLowerCase();
+    const lookupKey = audioLookupKey(filename);
+
+    if (candidateLowerNames.has(lowerName) || candidateKeys.has(lookupKey)) {
+      return filename;
+    }
+  }
+
+  return null;
+}
+
+function normalizeOptionalAdminText(value) {
+  return String(value || "").replace(/\s+/g, " ").trim();
+}
+
+function normalizeTempo(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+
+  const bpm = Number(raw);
+  if (!Number.isInteger(bpm) || bpm < 40 || bpm > 240) {
+    return null;
+  }
+
+  return String(bpm);
+}
+
 function buildEmailHtml(order) {
   const amount = order.amountTotal ? `$${(order.amountTotal / 100).toFixed(2)}` : "-";
   const downloadUrl = buildDownloadUrlForOrder(order);
@@ -516,11 +569,24 @@ function buildTitleArtV1(name) {
 
 app.post("/admin/add-beat", requireAdmin, (req, res) => {
   try {
-    const { name, file, meta, style, description, slug } = req.body;
-    const finalMeta = String(meta || style || description || "").replace(/\s+/g, " ").trim();
+    const { name, file, meta, style, description, slug, artistType, tempo } = req.body;
+    const finalMeta = normalizeOptionalAdminText(meta || style || description);
+    const finalArtistType = normalizeOptionalAdminText(artistType);
+    const finalTempo = normalizeTempo(tempo);
 
     if (!name || !file || !finalMeta) {
       return res.status(400).json({ error: "Beat name, audio filename, and metadata are required." });
+    }
+
+    if (finalTempo === null) {
+      return res.status(400).json({ error: "Tempo must be a whole number between 40 and 240 BPM." });
+    }
+
+    const matchedAudioFilename = resolveAudioFilenameForCatalog(file);
+    if (!matchedAudioFilename) {
+      return res.status(400).json({
+        error: `Audio file not found in /audio: ${cleanAudioFilename(file) || file}. Upload/copy the MP3 into /audio first, then add the beat.`
+      });
     }
 
     const data = readCatalogData();
@@ -537,8 +603,10 @@ app.post("/admin/add-beat", requireAdmin, (req, res) => {
     const newBeat = normalizeBeat({
       name: String(name).trim(),
       slug: finalSlug,
-      file: String(file).trim(),
+      file: matchedAudioFilename,
       meta: finalMeta,
+      artistType: finalArtistType || undefined,
+      tempo: finalTempo || undefined,
       art: assignCleanArtV1(finalSlug),
       titleArt: buildTitleArtV1(String(name).trim()),
       status: "active",
