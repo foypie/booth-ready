@@ -651,7 +651,7 @@ function renderCatalog() {
           <span class="preview-time-sep">/</span>
           <span class="preview-time-duration">0:00</span>
         </div>
-        <audio class="preview-audio" preload="metadata" src="/audio/${encodeURIComponent(beat.file)}"></audio>
+        <audio class="preview-audio" preload="metadata" src="/audio/${encodeURIComponent(beat.previewFile || beat.file)}"></audio>
       </div>
       <div class="price-button-row">
         ${priceButtons}

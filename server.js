@@ -107,7 +107,11 @@ function normalizeBeat(beat) {
     ...beat,
     name: String(beat.name || "Untitled Beat").trim(),
     slug,
-    file: String(beat.file || "").trim(),
+    file: String(beat.file || beat.previewFile || "").trim(),
+    previewFile: String(beat.previewFile || beat.file || "").trim(),
+    masterFile: String(beat.masterFile || "").trim(),
+    masterStorageKey: String(beat.masterStorageKey || "").trim(),
+    storageProvider: String(beat.storageProvider || "local-legacy").trim(),
     meta: String(beat.meta || beat.style || beat.description || "").replace(/\s+/g, " ").trim(),
     status,
     active: status === "active",
@@ -118,6 +122,19 @@ function normalizeBeat(beat) {
 function isBeatActive(beat) {
   const normalized = normalizeBeat(beat);
   return normalized.status === "active" && normalized.active !== false;
+}
+
+function publicCatalogBeat(beat) {
+  const normalized = normalizeBeat(beat);
+  const {
+    masterFile,
+    masterStorageKey,
+    storageProvider,
+    ...publicBeat
+  } = normalized;
+
+  publicBeat.previewFile = normalized.previewFile || normalized.file;
+  return publicBeat;
 }
 
 function readCatalogData() {
@@ -197,6 +214,10 @@ function upsertOrder(session, extra = {}) {
     beatSlug: session.metadata?.beatSlug || existing.beatSlug || null,
     beatName: session.metadata?.beatName || existing.beatName || null,
     beatFile: session.metadata?.beatFile || existing.beatFile || null,
+    beatPreviewFile: session.metadata?.beatPreviewFile || existing.beatPreviewFile || null,
+    beatMasterFile: session.metadata?.beatMasterFile || existing.beatMasterFile || null,
+    masterStorageKey: session.metadata?.masterStorageKey || existing.masterStorageKey || null,
+    storageProvider: session.metadata?.storageProvider || existing.storageProvider || "local-legacy",
     licenseCode: session.metadata?.licenseCode || existing.licenseCode || null,
     licenseName: session.metadata?.licenseName || existing.licenseName || null,
     licenseTermsUrl: session.metadata?.licenseTermsUrl || existing.licenseTermsUrl || buildLicenseTermsUrl(session.metadata?.licenseCode || session.metadata?.licenseName),
@@ -282,12 +303,14 @@ function resolveAudioFileForOrder(order) {
   if (!fs.existsSync(audioDir)) return null;
 
   const candidates = new Set();
+  addAudioNameVariants(candidates, order.beatMasterFile);
   addAudioNameVariants(candidates, order.beatFile);
   addAudioNameVariants(candidates, order.beatName);
   addAudioNameVariants(candidates, order.beatSlug);
 
   const currentBeat = order.beatSlug ? getBeatBySlug(order.beatSlug) : null;
   if (currentBeat) {
+    addAudioNameVariants(candidates, currentBeat.masterFile);
     addAudioNameVariants(candidates, currentBeat.file);
     addAudioNameVariants(candidates, currentBeat.name);
     addAudioNameVariants(candidates, currentBeat.slug);
@@ -604,6 +627,10 @@ app.post("/admin/add-beat", requireAdmin, (req, res) => {
       name: String(name).trim(),
       slug: finalSlug,
       file: matchedAudioFilename,
+      previewFile: matchedAudioFilename,
+      masterFile: "",
+      masterStorageKey: "",
+      storageProvider: "local-legacy",
       meta: finalMeta,
       artistType: finalArtistType || undefined,
       tempo: finalTempo || undefined,
@@ -671,7 +698,7 @@ app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 app.get("/api/catalog", (req, res) => {
   const data = readCatalogData();
   res.json({
-    catalog: data.catalog.filter(isBeatActive),
+    catalog: data.catalog.filter(isBeatActive).map(publicCatalogBeat),
     licenses: data.licenses
   });
 });
@@ -830,6 +857,10 @@ const session = await stripe.checkout.sessions.create({
         beatSlug: String(beat.slug || ""),
         beatName: String(beat.name || ""),
         beatFile: String(beat.file || ""),
+        beatPreviewFile: String(beat.previewFile || beat.file || ""),
+        beatMasterFile: String(beat.masterFile || ""),
+        masterStorageKey: String(beat.masterStorageKey || ""),
+        storageProvider: String(beat.storageProvider || "local-legacy"),
         licenseCode: String(license.code || ""),
         licenseName: String(license.name || ""),
         licenseTermsUrl
