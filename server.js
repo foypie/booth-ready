@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const multer = require("multer");
 const fs = require("fs");
 const crypto = require("crypto");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -582,6 +583,115 @@ async function getR2Status() {
 
 
 
+
+const MASTER_UPLOAD_MAX_BYTES = 250 * 1024 * 1024;
+const MASTER_UPLOAD_ALLOWED_EXTENSIONS = new Set([".mp3", ".wav", ".m4a", ".aiff", ".aif"]);
+const MASTER_UPLOAD_ALLOWED_MIME_PREFIXES = ["audio/"];
+const MASTER_UPLOAD_ALLOWED_MIME_TYPES = new Set([
+  "application/octet-stream",
+  "audio/mp4",
+  "audio/mpeg",
+  "audio/wav",
+  "audio/x-aiff",
+  "audio/aiff",
+  "audio/x-wav",
+]);
+
+const uploadMasterTest = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: MASTER_UPLOAD_MAX_BYTES,
+    files: 1,
+  },
+  fileFilter: (req, file, cb) => {
+    const originalName = String(file.originalname || "");
+    const ext = path.extname(originalName).toLowerCase();
+    const mimeType = String(file.mimetype || "").toLowerCase();
+
+    const allowedExt = MASTER_UPLOAD_ALLOWED_EXTENSIONS.has(ext);
+    const allowedMime = MASTER_UPLOAD_ALLOWED_MIME_PREFIXES.some((prefix) => mimeType.startsWith(prefix))
+      || MASTER_UPLOAD_ALLOWED_MIME_TYPES.has(mimeType);
+
+    if (!allowedExt) {
+      return cb(new Error("Unsupported master file extension. Use MP3, WAV, M4A, AIFF, or AIF."));
+    }
+
+    if (!allowedMime) {
+      return cb(new Error("Unsupported master file type. Upload an audio file."));
+    }
+
+    return cb(null, true);
+  },
+});
+
+function safeObjectName(value) {
+  return String(value || "upload")
+    .trim()
+    .replace(/\\/g, "/")
+    .split("/")
+    .pop()
+    .replace(/[^A-Za-z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 120) || "upload";
+}
+
+async function uploadMasterTestFileToR2(file) {
+  const config = getR2Config();
+  const missingFields = getMissingR2ConfigFields(config);
+
+  if (missingFields.length) {
+    return {
+      configured: false,
+      storageProvider: "cloudflare-r2",
+      bucket: config.bucketName || null,
+      uploaded: false,
+      missingFieldCount: missingFields.length,
+    };
+  }
+
+  if (!file || !file.buffer || !file.originalname) {
+    return {
+      configured: true,
+      storageProvider: "cloudflare-r2",
+      bucket: config.bucketName,
+      uploaded: false,
+      errorCode: "NO_FILE_PROVIDED",
+    };
+  }
+
+  const client = createR2Client(config);
+  const originalName = safeObjectName(file.originalname);
+  const ext = path.extname(originalName).toLowerCase();
+  const base = safeObjectName(path.basename(originalName, ext));
+  const testKey = `masters/test/upload-master-test-${Date.now()}-${base}${ext}`;
+
+  await client.send(new PutObjectCommand({
+    Bucket: config.bucketName,
+    Key: testKey,
+    Body: file.buffer,
+    ContentType: file.mimetype || "application/octet-stream",
+    Metadata: {
+      purpose: "booth-ready-master-upload-test",
+      phase: "v1-2b-2a",
+      originalName,
+    },
+  }));
+
+  return {
+    configured: true,
+    storageProvider: "cloudflare-r2",
+    bucket: config.bucketName,
+    uploaded: true,
+    cleanup: "manual-delete-required-test-object",
+    testPrefix: "masters/test/",
+    masterStorageKey: testKey,
+    originalFilename: originalName,
+    contentType: file.mimetype || "application/octet-stream",
+    sizeBytes: file.size,
+  };
+}
+
+
 async function runR2TestUpload() {
   const config = getR2Config();
   const missingFields = getMissingR2ConfigFields(config);
@@ -694,6 +804,36 @@ app.post("/admin/api/r2/test-upload", requireAdmin, async (req, res) => {
   const result = await runR2TestUpload();
   return res.json(result);
 });
+
+
+app.post("/admin/api/r2/upload-master-test", requireAdmin, (req, res) => {
+  uploadMasterTest.single("masterFile")(req, res, async (error) => {
+    if (error) {
+      const message = String(error.message || "Upload failed.");
+      const isSizeError = String(error.code || "") === "LIMIT_FILE_SIZE";
+      return res.status(400).json({
+        configured: true,
+        storageProvider: "cloudflare-r2",
+        uploaded: false,
+        errorCode: isSizeError ? "MASTER_FILE_TOO_LARGE" : "MASTER_UPLOAD_REJECTED",
+        message: isSizeError ? "Master file is too large for this test endpoint." : message,
+      });
+    }
+
+    try {
+      const result = await uploadMasterTestFileToR2(req.file);
+      return res.json(result);
+    } catch (uploadError) {
+      return res.status(500).json({
+        configured: true,
+        storageProvider: "cloudflare-r2",
+        uploaded: false,
+        errorCode: String(uploadError && (uploadError.name || uploadError.Code || uploadError.code) || "R2_MASTER_UPLOAD_TEST_FAILED"),
+      });
+    }
+  });
+});
+
 
 
 // Scalable clean-art and titleArt assignment for admin-added beats.
