@@ -7,7 +7,7 @@ const fs = require("fs");
 const crypto = require("crypto");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { Resend } = require("resend");
-const { S3Client, ListObjectsV2Command } = require("@aws-sdk/client-s3");
+const { S3Client, ListObjectsV2Command, PutObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 
 const app = express();
 const PORT = process.env.PORT || 4242;
@@ -581,6 +581,72 @@ async function getR2Status() {
 }
 
 
+
+async function runR2TestUpload() {
+  const config = getR2Config();
+  const missingFields = getMissingR2ConfigFields(config);
+
+  if (missingFields.length) {
+    return {
+      configured: false,
+      storageProvider: "cloudflare-r2",
+      bucket: config.bucketName || null,
+      writeTest: false,
+      deleteTest: false,
+      missingFieldCount: missingFields.length,
+    };
+  }
+
+  const client = createR2Client(config);
+  const testKey = `masters/test/r2-upload-smoke-${Date.now()}.txt`;
+  const body = `Booth Ready R2 smoke test\nCreated: ${new Date().toISOString()}\nPurpose: v1.2B-1A backend-only write/delete verification\n`;
+
+  let writeTest = false;
+  let deleteTest = false;
+
+  try {
+    await client.send(new PutObjectCommand({
+      Bucket: config.bucketName,
+      Key: testKey,
+      Body: body,
+      ContentType: "text/plain; charset=utf-8",
+      Metadata: {
+        purpose: "booth-ready-r2-smoke-test",
+        phase: "v1-2b-1a",
+      },
+    }));
+    writeTest = true;
+
+    await client.send(new DeleteObjectCommand({
+      Bucket: config.bucketName,
+      Key: testKey,
+    }));
+    deleteTest = true;
+
+    return {
+      configured: true,
+      storageProvider: "cloudflare-r2",
+      bucket: config.bucketName,
+      writeTest,
+      deleteTest,
+      cleanup: "deleted-test-object",
+      testPrefix: "masters/test/",
+    };
+  } catch (error) {
+    return {
+      configured: true,
+      storageProvider: "cloudflare-r2",
+      bucket: config.bucketName,
+      writeTest,
+      deleteTest,
+      cleanup: deleteTest ? "deleted-test-object" : "not-confirmed",
+      testPrefix: "masters/test/",
+      errorCode: String(error && (error.name || error.Code || error.code) || "R2_TEST_UPLOAD_FAILED"),
+    };
+  }
+}
+
+
 app.get("/admin-login.html", (req, res) => {
   if (isAdminAuthenticated(req)) return res.redirect("/admin.html");
   return res.sendFile(path.join(__dirname, "admin-login.html"));
@@ -622,6 +688,13 @@ app.get("/admin/api/r2/status", requireAdmin, async (req, res) => {
   const status = await getR2Status();
   return res.json(status);
 });
+
+
+app.post("/admin/api/r2/test-upload", requireAdmin, async (req, res) => {
+  const result = await runR2TestUpload();
+  return res.json(result);
+});
+
 
 // Scalable clean-art and titleArt assignment for admin-added beats.
 // ============================================================
